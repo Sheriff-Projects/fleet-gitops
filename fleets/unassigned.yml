@@ -55,6 +55,8 @@ software:
   packages:
   - path: ../lib/unassigned/software/capture_one.yml
     self_service: true
+  - path: ../lib/unassigned/software/carbon_copy_cloner.yml
+    self_service: true
   fleet_maintained_apps:
     - slug: slack/darwin
       self_service: true
