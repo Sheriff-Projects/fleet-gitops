@@ -7,15 +7,15 @@ labels:
 - description:
   hosts:
   label_membership_type: manual
-  name: Primo Device Group - B54 - IT
+  name: B54 - IT
 - description:
   hosts:
   label_membership_type: manual
-  name: Primo Device Group - BU06 - ECOM
+  name: BU06 - ECOM
 - description:
   hosts:
   label_membership_type: manual
-  name: Primo Device Group - BU05 - PUB
+  name: BU05 - PUB
 org_settings:
   certificate_authorities:
     custom_est_proxy:
