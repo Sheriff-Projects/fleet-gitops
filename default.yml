@@ -7,6 +7,10 @@ labels:
 - description:
   hosts:
   label_membership_type: manual
+  name: Primo Device Group - B54 - IT
+- description:
+  hosts:
+  label_membership_type: manual
   name: Primo Device Group - BU06 - ECOM
 - description:
   hosts:
