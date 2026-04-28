@@ -394,6 +394,8 @@ mkdir -p "$(dirname "$YAML_FILE")"
 cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
+  icon:
+    path: ../../all/icon/ccc.png
   install_script:
     path: ./install_carbon_copy_cloner.sh
   uninstall_script:
