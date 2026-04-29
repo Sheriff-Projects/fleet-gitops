@@ -334,12 +334,21 @@ echo -e "${BLUE}[3/4] Building PKG...${NC}"
 mkdir -p "$DOWNLOAD_DIR"
 rm -f "$OUTPUT_PKG"
 
-# Construire d'abord un PKG composant (basique, sans payload — c'est un stub)
+# Construire d'abord un PKG composant.
+# On utilise --root sur un dossier vide (au lieu de --nopayload) pour que
+# pkgbuild génère un receipt enregistré dans /var/db/receipts/ après install.
+# Sans receipt, Fleet ne peut pas faire le lien entre le PKG installé et
+# l'app présente sur l'host → pas de bouton Uninstall en self-service.
+# Le dossier vide signifie "aucun fichier à installer", le travail réel est
+# fait par le postinstall qui télécharge et copie l'app.
 COMPONENT_PKG="$BUILD_DIR/component.pkg"
+EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
+mkdir -p "$EMPTY_PAYLOAD_ROOT"
+
 pkgbuild \
     --identifier "$PKG_IDENTIFIER" \
     --version "$LATEST_VERSION" \
-    --nopayload \
+    --root "$EMPTY_PAYLOAD_ROOT" \
     --scripts "$SCRIPTS_DIR" \
     "$COMPONENT_PKG" > /dev/null
 
