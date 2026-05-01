@@ -59,7 +59,7 @@ PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/
 EXPECTED_TEAM_ID="L4F2DED5Q7"
 EXPECTED_BUNDLE_ID="com.bombich.ccc"
 
-PKG_IDENTIFIER="com.bombich.ccc.pkg"
+PKG_IDENTIFIER="com.bombich.ccc"
 
 BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
