@@ -21,49 +21,31 @@
 			<integer>1</integer>
 			<key>Services</key>
 			<dict>
-				<key>FileProviderPresence</key>
+				<key>SystemPolicyAllFiles</key>
 				<array>
 					<dict>
 						<key>Allowed</key>
 						<true/>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
-						<key>Comment</key>
-						<string></string>
 						<key>Identifier</key>
 						<string>com.bombich.ccc</string>
 						<key>IdentifierType</key>
 						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
 					</dict>
-				</array>
-				<key>SystemPolicyNetworkVolumes</key>
-				<array>
 					<dict>
 						<key>Allowed</key>
 						<true/>
 						<key>CodeRequirement</key>
-						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
-						<key>Comment</key>
-						<string></string>
+						<string>anchor apple generic and identifier "com.bombich.ccchelper" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
 						<key>Identifier</key>
-						<string>com.bombich.ccc</string>
+						<string>/Library/PrivilegedHelperTools/com.bombich.ccchelper</string>
 						<key>IdentifierType</key>
-						<string>bundleID</string>
-					</dict>
-				</array>
-				<key>SystemPolicyRemovableVolumes</key>
-				<array>
-					<dict>
-						<key>Allowed</key>
-						<true/>
-						<key>CodeRequirement</key>
-						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
-						<key>Comment</key>
-						<string></string>
-						<key>Identifier</key>
-						<string>com.bombich.ccc</string>
-						<key>IdentifierType</key>
-						<string>bundleID</string>
+						<string>path</string>
+						<key>StaticCode</key>
+						<false/>
 					</dict>
 				</array>
 			</dict>
@@ -77,7 +59,7 @@
 					<key>BadgesEnabled</key>
 					<true/>
 					<key>BundleIdentifier</key>
-					<string>com.bombich.ccc.dashboard</string>
+					<string>com.bombich.ccchelper</string>
 					<key>CriticalAlertEnabled</key>
 					<false/>
 					<key>GroupingType</key>
