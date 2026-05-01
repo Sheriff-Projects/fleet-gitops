@@ -2,21 +2,7 @@
 # Build le PKG stub Carbon Copy Cloner.
 # Le PKG est versionné dans Git, URL fixe via raw.githubusercontent.com.
 #
-# Le PKG produit est un "stub" : pas de payload réel, juste un postinstall qui
-# télécharge le ZIP officiel Bombich et installe Carbon Copy Cloner.app.
-# Avantages : taille minimale (~10 KB), pas de duplication binaire dans Git.
-#
-# v3 (2026-05-01) — Reprise approche stub avec URL Bombich corrigée
-#   - Stub léger : postinstall fait le download / extract / install
-#   - URL Bombich fixée : api.bombich.com/download/ccc?v=ccc7
-#   - Détection version au build via redirect (technique Sheriff) — pas de download
-#   - --root sur dossier vide → receipt pkg enregistré → Uninstall self-service Fleet
-#
-# v2 (abandonnée) :
-#   - Embarquait l'app dans le PKG (27 MB) — trop lourd dans Gitx
-#
-# v1 :
-#   - Première version stub avec URL bombich.scdn1.secure.raxcdn.com (cassée)
+
 
 set -euo pipefail
 
@@ -59,6 +45,9 @@ PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/
 EXPECTED_TEAM_ID="L4F2DED5Q7"
 EXPECTED_BUNDLE_ID="com.bombich.ccc"
 
+# IMPORTANT : Le PKG identifier DOIT correspondre exactement au bundle ID de l'app
+# pour que Fleet fasse le matching et affiche le bouton Uninstall en self-service.
+# Donc PAS "com.bombich.ccc.pkg" mais "com.bombich.ccc" (identique au bundle ID).
 PKG_IDENTIFIER="com.bombich.ccc"
 
 BUILD_DIR=$(mktemp -d)
@@ -68,8 +57,8 @@ EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
 trap 'rm -rf "$BUILD_DIR"' EXIT
 
 echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║  Carbon Copy Cloner — PKG Builder v3     ║${NC}"
-echo -e "${BLUE}║  (stub, lightweight, with receipt)       ║${NC}"
+echo -e "${BLUE}║  Carbon Copy Cloner — PKG Builder v4     ║${NC}"
+echo -e "${BLUE}║  (stub, with Fleet-compatible matching)  ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
 echo "Repo root: $REPO_ROOT"
 echo ""
@@ -77,7 +66,14 @@ echo ""
 # --- Étape 1 : Détection de version via filename (technique Sheriff) ---
 # On suit les redirections Bombich SANS télécharger (-o /dev/null) pour
 # récupérer le filename effectif, qui contient la version + build number.
-# Exemple : ccc-7.1.5.8335.zip → version "7.1.5.8335"
+# Exemple : ccc-7.1.5.8335.zip
+#
+# Pour Fleet, on doit utiliser la version "utilisateur" (3 segments : 7.1.5)
+# et NON la version "build" (4 segments : 7.1.5.8335). En effet :
+#   - Fleet détecte la version installée via CFBundleShortVersionString
+#     dans l'Info.plist de l'app, qui contient "7.1.5"
+#   - Si on met 7.1.5.8335 dans le PKG, Fleet voit 7.1.5 < 7.1.5.8335
+#     et propose "Update available" éternellement
 echo -e "${BLUE}[1/4] Detecting CCC version via Bombich redirect...${NC}"
 
 EFFECTIVE_URL=$(curl -s -L -w '%{url_effective}' -o /dev/null "$DOWNLOAD_URL" || echo "")
@@ -92,15 +88,20 @@ ZIP_FILENAME=$(echo "$EFFECTIVE_URL" | sed 's#.*/##' | sed 's#?.*##')
 echo -e "${GREEN}  ✓ Effective URL: $EFFECTIVE_URL${NC}"
 echo -e "${GREEN}  ✓ ZIP filename:  $ZIP_FILENAME${NC}"
 
-# Extraction de la version : ccc-7.1.5.8335.zip → 7.1.5.8335
-LATEST_VERSION=$(echo "$ZIP_FILENAME" | sed -E 's/^ccc-([0-9.]+)\.zip$/\1/')
-if [ "$LATEST_VERSION" = "$ZIP_FILENAME" ] || [ -z "$LATEST_VERSION" ]; then
+# Extraction de la version "build" complète depuis le filename
+BUILD_VERSION=$(echo "$ZIP_FILENAME" | sed -E 's/^ccc-([0-9.]+)\.zip$/\1/')
+if [ "$BUILD_VERSION" = "$ZIP_FILENAME" ] || [ -z "$BUILD_VERSION" ]; then
     echo -e "${RED}[ERROR] Filename format unexpected: $ZIP_FILENAME${NC}"
     echo -e "${RED}        Expected pattern: ccc-VERSION.zip${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}  ✓ Version:       $LATEST_VERSION${NC}"
+# Conversion en version "utilisateur" : 7.1.5.8335 → 7.1.5 (3 premiers segments)
+# C'est cette version qui matche celle dans Info.plist de l'app installée.
+LATEST_VERSION=$(echo "$BUILD_VERSION" | awk -F. '{print $1"."$2"."$3}')
+
+echo -e "${GREEN}  ✓ Build version: $BUILD_VERSION (filename)${NC}"
+echo -e "${GREEN}  ✓ User version:  $LATEST_VERSION (used for PKG)${NC}"
 echo ""
 
 # --- Étape 2 : Préparer le postinstall ---
@@ -114,7 +115,7 @@ mkdir -p "$SCRIPTS_DIR"
 cat > "$SCRIPTS_DIR/postinstall" << EOF
 #!/bin/bash
 # Carbon Copy Cloner installer (postinstall) — built on $(date '+%Y-%m-%d %H:%M:%S')
-# Target version: $LATEST_VERSION
+# Target version: $LATEST_VERSION (build $BUILD_VERSION)
 # Expected TeamID: $EXPECTED_TEAM_ID (Bombich Software, Inc.)
 #
 # Ce postinstall :
@@ -159,10 +160,6 @@ log "Expected TeamID: \$EXPECTED_TEAM_ID"
 if [ -d "\$APP_PATH" ]; then
     INSTALLED_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
     log "Installed version: \$INSTALLED_VERSION"
-    
-    # Comparaison : si \$TARGET_VERSION commence par \$INSTALLED_VERSION (ex: 7.1.5.8335 vs 7.1.5)
-    # alors c'est probablement la même version utilisateur. On force quand même le download
-    # pour vérifier le build number, mais on log que c'est juste un refresh probable.
     if [ "\$INSTALLED_VERSION" = "\$TARGET_VERSION" ]; then
         log "Already at target version. Just refreshing Sparkle settings."
         SKIP_INSTALL=1
@@ -284,7 +281,6 @@ if [ "\$SKIP_INSTALL" = "0" ]; then
     }
     
     # On peut effacer l'extract dir maintenant que l'app est dans /Applications
-    # (le trap final s'en chargerait mais on libère plus tôt)
     rm -rf "\$EXTRACT_DIR"
     log "Extracted files removed (app already copied)"
     
@@ -323,8 +319,7 @@ rm -f "$OUTPUT_PKG"
 # Avec --root sur un dossier vide :
 #   - Le PKG ne contient AUCUN fichier à installer (reste léger ~10 KB)
 #   - MAIS macOS enregistre quand même un receipt dans /var/db/receipts/
-#   - Ce receipt permet à Fleet de matcher le PKG avec l'app installée
-#   - Donc le bouton "Uninstall" apparaît bien en self-service Fleet
+#   - Ce receipt est utile pour la traçabilité et les inventaires de conformité
 mkdir -p "$EMPTY_PAYLOAD_ROOT"
 
 COMPONENT_PKG="$BUILD_DIR/component.pkg"
@@ -402,6 +397,7 @@ echo ""
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
     {
         echo "version=$LATEST_VERSION"
+        echo "build_version=$BUILD_VERSION"
         echo "filename=$ZIP_FILENAME"
         echo "pkg_path=$OUTPUT_PKG"
         echo "pkg_hash=$PKG_HASH"
@@ -413,10 +409,12 @@ fi
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Build terminé${NC}"
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
-echo "  ZIP filename : $ZIP_FILENAME"
-echo "  Version      : $LATEST_VERSION"
-echo "  PKG path     : $OUTPUT_PKG"
-echo "  PKG size     : $PKG_SIZE"
-echo "  SHA256       : $PKG_HASH"
-echo "  TeamID       : $EXPECTED_TEAM_ID"
+echo "  ZIP filename   : $ZIP_FILENAME"
+echo "  Build version  : $BUILD_VERSION"
+echo "  PKG version    : $LATEST_VERSION (3 segments, matches app Info.plist)"
+echo "  PKG identifier : $PKG_IDENTIFIER (matches app bundle ID for Fleet)"
+echo "  PKG path       : $OUTPUT_PKG"
+echo "  PKG size       : $PKG_SIZE"
+echo "  SHA256         : $PKG_HASH"
+echo "  TeamID         : $EXPECTED_TEAM_ID"
 echo ""
