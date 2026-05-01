@@ -26,8 +26,6 @@
 					<dict>
 						<key>Allowed</key>
 						<true/>
-						<key>Authorization</key>
-						<string>Allow</string>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
 						<key>Identifier</key>
@@ -43,8 +41,6 @@
 					<dict>
 						<key>Allowed</key>
 						<true/>
-						<key>Authorization</key>
-						<string>Allow</string>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
 						<key>Identifier</key>
@@ -60,8 +56,6 @@
 					<dict>
 						<key>Allowed</key>
 						<true/>
-						<key>Authorization</key>
-						<string>Allow</string>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
 						<key>Identifier</key>
@@ -75,8 +69,6 @@
 				<key>SystemPolicyDownloadsFolder</key>
 				<array>
 					<dict>
-						<key>Authorization</key>
-						<string>Allow</string>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
 						<key>Identifier</key>
@@ -90,8 +82,6 @@
 				<key>SystemPolicyNetworkVolumes</key>
 				<array>
 					<dict>
-						<key>Authorization</key>
-						<string>Allow</string>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
 						<key>Identifier</key>
