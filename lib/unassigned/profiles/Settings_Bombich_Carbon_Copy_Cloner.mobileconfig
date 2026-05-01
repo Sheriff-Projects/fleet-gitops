@@ -110,22 +110,6 @@
 			</dict>
 		</dict>
 		<dict>
-			<key>AllowedTeamIdentifiers</key>
-			<array>
-				<string>L4F2DED5Q7</string>
-			</array>
-			<key>PayloadDisplayName</key>
-			<string>System Extensions</string>
-			<key>PayloadIdentifier</key>
-			<string>com.apple.system-extension-policy.3FE2BFA9-4455-4F61-BF89-4E7003A30494</string>
-			<key>PayloadType</key>
-			<string>com.apple.system-extension-policy</string>
-			<key>PayloadUUID</key>
-			<string>3FE2BFA9-4455-4F61-BF89-4E7003A30494</string>
-			<key>PayloadVersion</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
 			<key>NotificationSettings</key>
 			<array>
 				<dict>
