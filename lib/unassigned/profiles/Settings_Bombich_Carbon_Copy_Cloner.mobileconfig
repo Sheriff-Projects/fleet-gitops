@@ -145,8 +145,12 @@
 					<string>com.bombich.ccc</string>
 					<key>CriticalAlertEnabled</key>
 					<true/>
+					<key>GroupingType</key>
+					<integer>0</integer>
 					<key>NotificationsEnabled</key>
 					<true/>
+					<key>PreviewType</key>
+					<integer>0</integer>
 					<key>ShowInLockScreen</key>
 					<true/>
 					<key>ShowInNotificationCenter</key>
@@ -158,7 +162,7 @@
 			<key>PayloadDescription</key>
 			<string>Configuration des notifications pour Carbon Copy Cloner</string>
 			<key>PayloadDisplayName</key>
-			<string>Notifications</string>
+			<string>Notifications ••• Bombich - Carbon Copy Cloner •••</string>
 			<key>PayloadIdentifier</key>
 			<string>com.bombich.ccc.notifications.992F11B2</string>
 			<key>PayloadOrganization</key>
