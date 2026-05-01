@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/carbon_copy_cloner.pkg
-  hash_sha256: 154c390c0cc19093a35b5041b075f4b47c01bf536f52e8e87db1f372c1570198
+  hash_sha256: 9e04df5b160f2ee73f373c61f05b56dfb35c1ed02f05fed85673f4b413a2fa88
   icon:
     path: ../../all/icon/ccc.png
   install_script:
