@@ -6,49 +6,64 @@
 	<array>
 		<dict>
 			<key>PayloadDescription</key>
-			<string></string>
+			<string>Settings ••• Bombich - Carbon Copy Cloner •••</string>
 			<key>PayloadDisplayName</key>
-			<string>PPPC ••• Bombich - Carbon Copy Cloner •••</string>
+			<string>Settings ••• Bombich - Carbon Copy Cloner •••</string>
 			<key>PayloadIdentifier</key>
-			<string>F0DCD919-7246-4A1E-A766-1120471CD789</string>
+			<string>com.apple.TCC.configuration-profile-policy.AF83F4EB-4178-4A7D-A7F5-DD7A53D7143E</string>
 			<key>PayloadOrganization</key>
 			<string>SHERIFF PROJECTS</string>
 			<key>PayloadType</key>
 			<string>com.apple.TCC.configuration-profile-policy</string>
 			<key>PayloadUUID</key>
-			<string>DB81EDAC-0D36-4FD6-BBA1-CC6ED5DA4630</string>
+			<string>AF83F4EB-4178-4A7D-A7F5-DD7A53D7143E</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 			<key>Services</key>
 			<dict>
-				<key>SystemPolicyAllFiles</key>
+				<key>FileProviderPresence</key>
 				<array>
 					<dict>
 						<key>Allowed</key>
 						<true/>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
+						<key>Comment</key>
+						<string></string>
 						<key>Identifier</key>
 						<string>com.bombich.ccc</string>
 						<key>IdentifierType</key>
 						<string>bundleID</string>
-						<key>StaticCode</key>
-						<false/>
+					</dict>
+				</array>
+				<key>SystemPolicyNetworkVolumes</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.bombich.ccc</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
 					</dict>
 				</array>
 				<key>SystemPolicyRemovableVolumes</key>
 				<array>
 					<dict>
-						<key>Authorization</key>
-						<string>Allow</string>
+						<key>Allowed</key>
+						<true/>
 						<key>CodeRequirement</key>
 						<string>anchor apple generic and identifier "com.bombich.ccc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
+						<key>Comment</key>
+						<string></string>
 						<key>Identifier</key>
 						<string>com.bombich.ccc</string>
 						<key>IdentifierType</key>
 						<string>bundleID</string>
-						<key>StaticCode</key>
-						<false/>
 					</dict>
 				</array>
 			</dict>
@@ -59,16 +74,20 @@
 				<dict>
 					<key>AlertType</key>
 					<integer>1</integer>
-					<key>BundleIdentifier</key>
-					<string>com.bombich.ccc</string>
-					<key>CriticalAlertEnabled</key>
+					<key>BadgesEnabled</key>
 					<true/>
+					<key>BundleIdentifier</key>
+					<string>com.bombich.ccc.dashboard</string>
+					<key>CriticalAlertEnabled</key>
+					<false/>
 					<key>GroupingType</key>
 					<integer>0</integer>
 					<key>NotificationsEnabled</key>
 					<true/>
 					<key>PreviewType</key>
 					<integer>0</integer>
+					<key>ShowInCarPlay</key>
+					<true/>
 					<key>ShowInLockScreen</key>
 					<true/>
 					<key>ShowInNotificationCenter</key>
@@ -77,38 +96,30 @@
 					<true/>
 				</dict>
 			</array>
-			<key>PayloadDescription</key>
-			<string>Configuration des notifications pour Carbon Copy Cloner</string>
 			<key>PayloadDisplayName</key>
-			<string>Notifications ••• Bombich - Carbon Copy Cloner •••</string>
+			<string>Notifications</string>
 			<key>PayloadIdentifier</key>
-			<string>com.bombich.ccc.notifications.992F11B2</string>
-			<key>PayloadOrganization</key>
-			<string>IT Support</string>
+			<string>com.apple.notificationsettings.E4FD65B2-0EB9-46A9-86A3-4571DB2517DC</string>
 			<key>PayloadType</key>
 			<string>com.apple.notificationsettings</string>
 			<key>PayloadUUID</key>
-			<string>A1B2C3D4-E5F6-4A7B-8C9D-0E1F2G3H4I5J</string>
+			<string>E4FD65B2-0EB9-46A9-86A3-4571DB2517DC</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
 	</array>
-	<key>PayloadDescription</key>
-	<string></string>
 	<key>PayloadDisplayName</key>
 	<string>Settings ••• Bombich - Carbon Copy Cloner •••</string>
 	<key>PayloadIdentifier</key>
 	<string>com.sheriffprojects.ccc</string>
 	<key>PayloadOrganization</key>
 	<string>SHERIFF PROJECTS</string>
-	<key>PayloadRemovalDisallowed</key>
-	<true/>
 	<key>PayloadScope</key>
 	<string>System</string>
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>fab89ca7-a959-4ed2-a0be-6e60d2fa36d0</string>
+	<string>3A09DA68-88E0-4B4B-A4B5-75AA70BF66C0</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
