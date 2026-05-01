@@ -77,7 +77,7 @@
 					<key>BadgesEnabled</key>
 					<true/>
 					<key>BundleIdentifier</key>
-					<string>com.bombich.ccc</string>
+					<string>com.bombich.ccc.helper</string>
 					<key>CriticalAlertEnabled</key>
 					<false/>
 					<key>GroupingType</key>
