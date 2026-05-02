@@ -39,11 +39,11 @@
 						<key>Allowed</key>
 						<true/>
 						<key>CodeRequirement</key>
-						<string>anchor apple generic and identifier "com.bombich.ccchelper" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
+						<string>anchor apple generic and identifier "com.bombich.ccc.helper" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = L4F2DED5Q7)</string>
 						<key>Identifier</key>
-						<string>/Library/PrivilegedHelperTools/com.bombich.ccchelper</string>
+						<string>com.bombich.ccc.helper</string>
 						<key>IdentifierType</key>
-						<string>path</string>
+						<string>bundleID</string>
 						<key>StaticCode</key>
 						<false/>
 					</dict>
@@ -59,9 +59,9 @@
 					<key>BadgesEnabled</key>
 					<true/>
 					<key>BundleIdentifier</key>
-					<string>com.bombich.ccchelper</string>
+					<string>com.bombich.cccdashboard</string>
 					<key>CriticalAlertEnabled</key>
-					<false/>
+					<true/>
 					<key>GroupingType</key>
 					<integer>0</integer>
 					<key>NotificationsEnabled</key>
