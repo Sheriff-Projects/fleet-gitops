@@ -1,6 +1,3 @@
-defaultValues:
-  cccEmail: "contact@entreprise.com"
-  cccLicense: "CLE-PAR-DEFAUT-123"
 agent_options:
 labels:
 - description: Label applied to softwares managed in Primo
