@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/sp_wallpapers.pkg
-  hash_sha256: 14ceb9c7afb9a3af9c9abfcdf31840520b08fbb48608fe35402725f7a5878083
+  hash_sha256: 2d9b7cdfb93a10a95d2ad90ed8bd43cf2ac933f6e981a7193b54039dd173fc43
   icon:
     path: ../../all/icon/s_p.png
   install_script:
