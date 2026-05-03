@@ -1,26 +1,55 @@
+name: Unassigned
+
+# ---------------------------------------------------------------------------
+# TEAM SETTINGS — paramètres généraux du team
+# ---------------------------------------------------------------------------
+# (Ajoute ici ton enroll secret si nécessaire)
+# team_settings:
+#   secrets:
+#     - secret: $TEAM_ENROLL_SECRET
+
+settings:
+  webhook_settings:
+    failing_policies_webhook:
+      destination_url:
+      enable_failing_policies_webhook: false
+      host_batch_size: 0
+
+# ---------------------------------------------------------------------------
+# CONTROLS — profils MDM, chiffrement, mises à jour OS, setup experience
+# ---------------------------------------------------------------------------
 controls:
+
+  # ----- Profils de configuration MDM (.mobileconfig) -----
   macos_settings:
     custom_settings:
-    - path: ../lib/unassigned/profiles/Install_Maxitype_Signs_Font.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Apple_Osascript.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Apple_Terminal.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Avid_Nexis_Client.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Bombich_Carbon_Copy_Cloner.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Capture_One.mobileconfig    
-    - path: ../lib/unassigned/profiles/Settings_DEVONTech_Xmenu.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_FleetDM_Orbit.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Fortinet_Forticlient.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Google_Chrome.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Microsoft_Teams.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Root3_SupportApp.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Ryan_Hanson_Rectangle.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Salesforce_Slack.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_SP_Tools.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
-    - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
+      - path: ../lib/unassigned/profiles/Install_Maxitype_Signs_Font.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Apple_Osascript.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Apple_Terminal.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Avid_Nexis_Client.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Bombich_Carbon_Copy_Cloner.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Capture_One.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_DEVONTech_Xmenu.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_FleetDM_Orbit.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Fortinet_Forticlient.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Google_Chrome.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Microsoft_Teams.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Root3_SupportApp.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Ryan_Hanson_Rectangle.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Salesforce_Slack.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_SP_Tools.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
+
+  # ----- Sécurité disque -----
   enable_disk_encryption: false
   enable_recovery_lock_password: false
-  enable_turn_on_windows_mdm_manually: false
+
+  # ----- Mises à jour OS -----
+  macos_updates:
+    deadline:
+    minimum_version:
+    update_new_hosts:
   ios_updates:
     deadline:
     minimum_version:
@@ -29,38 +58,65 @@ controls:
     deadline:
     minimum_version:
     update_new_hosts:
+  windows_updates:
+    deadline_days:
+    grace_period_days:
+
+  # ----- Migration MDM -----
   macos_migration:
     enable: false
     mode:
     webhook_url:
-  macos_updates:
-    deadline:
-    minimum_version:
-    update_new_hosts:
-  scripts:
   windows_migration_enabled: false
+  enable_turn_on_windows_mdm_manually: false
   windows_require_bitlocker_pin: false
-  windows_updates:
-    deadline_days:
-    grace_period_days:
-name: Unassigned
-policies:
-settings:
-  webhook_settings:
-    failing_policies_webhook:
-      destination_url:
-      enable_failing_policies_webhook: false
-      host_batch_size: 0
+
+  # ----- Scripts globaux (lancés à la demande, pas au setup) -----
+  scripts:
+    # - path: ../lib/unassigned/scripts/uninstall_captureone.sh
+
+  # ----- SETUP EXPERIENCE (à ajouter si tu veux personnaliser le 1er démarrage) -----
+  # ⚠️ Le setup experience ne s'applique qu'aux machines enrôlées via ABM (ADE).
+  #    Il ne fonctionne PAS pour le pseudo-team "No team" — il faut un vrai team
+  #    (ce qui est ton cas ici puisque "Unassigned" est un team nommé).
+  #
+  # macos_setup:
+  #   bootstrap_package:                  # URL d'un .pkg distribution signé
+  #   enable_end_user_authentication: false
+  #   enable_release_device_manually: false
+  #   script:
+  #     path: ../lib/unassigned/scripts/setup_post_install.sh
+  #   # Software à installer pendant le setup — alternative au flag
+  #   # setup_experience: true des sections software ci-dessous
+  #   # software:
+  #   #   - hash_sha256: abc123...
+  #   #   - app_store_id: "1091189122"
+
+# ---------------------------------------------------------------------------
+# SOFTWARE — apps disponibles pour ce team
+# ---------------------------------------------------------------------------
 software:
+
+  # ----- Custom packages (.pkg, .dmg) -----
   packages:
-  - path: ../lib/unassigned/software/capture_one.yml
-    self_service: true
-  - path: ../lib/unassigned/software/carbon_copy_cloner.yml
-    self_service: true
+    - path: ../lib/unassigned/software/capture_one.yml
+      self_service: true
+      # setup_experience: true   # ← décommente pour installer pendant le setup
+    - path: ../lib/unassigned/software/carbon_copy_cloner.yml
+      self_service: true
+      # setup_experience: true
+
+  # ----- Apple App Store apps (VPP) -----
+  # app_store_apps:
+  #   - app_store_id: "1091189122"
+  #     platform: darwin
+  #     self_service: true
+
+  # ----- Fleet-maintained apps -----
   fleet_maintained_apps:
     - slug: slack/darwin
       self_service: true
-      setup_experience: true      
+      setup_experience: true
       categories:
         - Communication
     - slug: google-chrome/darwin
@@ -71,3 +127,13 @@ software:
     - slug: zoom/darwin
       self_service: true
       setup_experience: true
+
+# ---------------------------------------------------------------------------
+# POLICIES (vide pour l'instant)
+# ---------------------------------------------------------------------------
+policies:
+
+# ---------------------------------------------------------------------------
+# QUERIES (vide pour l'instant)
+# ---------------------------------------------------------------------------
+# queries:
