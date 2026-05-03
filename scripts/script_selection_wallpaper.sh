@@ -13,5 +13,3 @@ defaults write /Users/$username/Library/Preferences/com.apple.systempreferences 
 
 sudo killall -HUP cfprefsd
 killall "System Settings"
-
-

@@ -6,12 +6,12 @@ installer -pkg "$INSTALLER_PATH" -target /
 username=$(stat -f%Su /dev/console)
 
 # Ajouter des fonds d'écran aux Préférences Système
-sudo rm /Users/$username/Library/Preferences/com.apple.systempreferences.plist
-sudo killall -HUP cfprefsd
+rm /Users/$username/Library/Preferences/com.apple.systempreferences.plist
+killall -HUP cfprefsd
 
 # Ajouter le chemin des fonds d'écran aux Préférences Système
-sudo defaults write /Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/Wallpapers_SP</string></array></dict>'
+defaults write /Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/Wallpapers_SP</string></array></dict>'
 defaults write /Users/$username/Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/Wallpapers_SP</string></array></dict>'
 
-sudo killall -HUP cfprefsd
+killall -HUP cfprefsd
 killall "System Settings"

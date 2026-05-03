@@ -105,6 +105,9 @@ software:
     - path: ../lib/unassigned/software/sp_wallpapers.yml
       self_service: true
       setup_experience: true
+    - path: ../lib/unassigned/software/dark_mode.yml
+      self_service: true
+      setup_experience: true
 
   # ----- Apple App Store apps (VPP) -----
   # app_store_apps:
