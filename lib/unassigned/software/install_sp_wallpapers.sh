@@ -11,25 +11,13 @@ log() {
 
 log "=== S•P Wallpapers install started ==="
 
-installer -pkg "$INSTALLER_PATH" -target /
-log "  Cleaning user: 1"
-username=$(stat -f%Su /dev/console)
-log "  Cleaning user: 2"
-
 # Ajouter des fonds d'écran aux Préférences Système
-rm /Users/$username/Library/Preferences/com.apple.systempreferences.plist
-log "  Cleaning user: 3"
-killall -HUP cfprefsd
-log "  Cleaning user: 4"
+sudo rm /Users/$username/Library/Preferences/com.apple.systempreferences.plist
+sudo killall -HUP cfprefsd
+
 # Ajouter le chemin des fonds d'écran aux Préférences Système
+sudo defaults write /Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/Wallpapers_SP</string></array></dict>'
+defaults write /Users/$username/Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/Wallpapers_SP</string></array></dict>'
 
-defaults write /Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/sp_wallpapers</string></array></dict>'
-
-log "  Cleaning user: 5"
-defaults write /Users/$username/Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/sp_wallpapers</string></array></dict>'
-log "  Cleaning user: 6"
-
-killall -HUP cfprefsd
-
-log "  Cleaning user: 7"
+sudo killall -HUP cfprefsd
 killall "System Settings"
