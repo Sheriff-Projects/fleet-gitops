@@ -3,10 +3,10 @@ name: Unassigned
 # ---------------------------------------------------------------------------
 # TEAM SETTINGS — paramètres généraux du team
 # ---------------------------------------------------------------------------
-# (Ajoute ici ton enroll secret si nécessaire)
-# team_settings:
-#   secrets:
-#     - secret: $TEAM_ENROLL_SECRET
+
+team_settings:
+     secrets:
+       - secret: $TEAM_ENROLL_SECRET
 
 settings:
   webhook_settings:
