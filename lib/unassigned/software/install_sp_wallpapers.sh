@@ -11,6 +11,9 @@ log() {
 
 log "=== S•P Wallpapers install started ==="
 
+# Définir l'utilisateur actuel
+username=$(stat -f%Su /dev/console)
+
 # Ajouter des fonds d'écran aux Préférences Système
 sudo rm /Users/$username/Library/Preferences/com.apple.systempreferences.plist
 sudo killall -HUP cfprefsd
