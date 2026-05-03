@@ -13,8 +13,7 @@ settings:
       destination_url:
       enable_failing_policies_webhook: false
       host_batch_size: 0
-  secrets:
-    - secret: "FLEET_GLOBAL_ENROLL_SECRET"
+
 
 # ---------------------------------------------------------------------------
 # CONTROLS — profils MDM, chiffrement, mises à jour OS, setup experience
