@@ -6,7 +6,7 @@ name: Unassigned
 
 team_settings:
      secrets:
-       - secret: $TEAM_ENROLL_SECRET
+       - secret: "$TEAM_ENROLL_SECRET"
 
 settings:
   webhook_settings:
