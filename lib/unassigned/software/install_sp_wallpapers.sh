@@ -1,6 +1,18 @@
 #!/bin/bash
 # Fleet passes the PKG path via $INSTALLER_PATH
 # This just runs the PKG, which contains the real install logic as postinstall script
+
+set -uo pipefail
+
+LOG="/var/log/sp_wallpapers_install.log"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"
+}
+
+log "=== S•P Wallpapers install started ==="
+
+
 installer -pkg "$INSTALLER_PATH" -target /
 
 username=$(stat -f%Su /dev/console)
