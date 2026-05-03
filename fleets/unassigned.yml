@@ -5,8 +5,6 @@ name: Unassigned
 # ---------------------------------------------------------------------------
 # (Ajoute ici ton enroll secret si nécessaire)
 
-
-
 settings:
   webhook_settings:
     failing_policies_webhook:
@@ -104,7 +102,9 @@ software:
       # setup_experience: true   # ← décommente pour installer pendant le setup
     - path: ../lib/unassigned/software/carbon_copy_cloner.yml
       self_service: true
-      # setup_experience: true
+    - path: ../lib/unassigned/software/sp_wallpaper.yml
+      self_service: true
+      setup_experience: true
 
   # ----- Apple App Store apps (VPP) -----
   # app_store_apps:
