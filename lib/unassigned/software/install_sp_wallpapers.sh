@@ -14,4 +14,4 @@ defaults write /Library/Preferences/com.apple.systempreferences DSKDesktopPrefPa
 defaults write /Users/$username/Library/Preferences/com.apple.systempreferences DSKDesktopPrefPane '<dict><key>UserFolderPaths</key><array><string>/Users/Shared/Wallpapers_SP</string></array></dict>'
 
 killall -HUP cfprefsd
-killall System Settings
+killall "System Settings"
