@@ -4,7 +4,9 @@ name: Unassigned
 # TEAM SETTINGS — paramètres généraux du team
 # ---------------------------------------------------------------------------
 # (Ajoute ici ton enroll secret si nécessaire)
-
+team_settings:
+   secrets:
+     - secret: "FLEET_GLOBAL_ENROLL_SECRET"
 
 settings:
   webhook_settings:
@@ -12,8 +14,6 @@ settings:
       destination_url:
       enable_failing_policies_webhook: false
       host_batch_size: 0
-  secrets:
-    - secret: "$TEAM_ENROLL_SECRET"
 
 # ---------------------------------------------------------------------------
 # CONTROLS — profils MDM, chiffrement, mises à jour OS, setup experience
