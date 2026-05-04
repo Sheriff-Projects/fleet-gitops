@@ -20,7 +20,7 @@
 
             <!-- Chemin du wallpaper (fichier précis ou dossier pour rotation) -->
             <key>picture</key>
-            <string>/Users/Shared/sp_wallpapers/default.heic</string>
+            <string>/Users/Shared/sp_wallpapers/Wallpaper Retina Black_SHERIFF_PROJECTS.jpg</string>
 
             <!-- Mise à l'échelle : fill | stretch | center | fit -->
             <key>scale</key>
@@ -46,7 +46,7 @@
     <key>PayloadIdentifier</key>
     <string>com.sheriff-projects.desktoppr</string>
     <key>PayloadUUID</key>
-    <string>REMPLACE-MOI-PAR-UN-AUTRE-UUID-UNIQUE</string>
+    <string>EB868014-75DA-44A9-B019-74AC9E31ADBD</string>
     <key>PayloadVersion</key>
     <integer>1</integer>
     <key>PayloadDisplayName</key>
