@@ -13,10 +13,10 @@
 # ---------------------------------------------------------------------------
 
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/Desktoppr_Manage.pkg
-  hash_sha256: 942dbf835c2aacc82019ef2666edf5dd592a25d2f6723f7b90fcdf38e56096cc
+  hash_sha256: 62f40cb456b578768b2cd01a989fbba4762c556dbd1ed9f63018bfe502c87440
   icon:
     path: ../../all/icon/s_p.png
   install_script:
-    path: ./install_Desktoppr_Manage.sh
+    path: ./install_desktoppr_manage.sh
   uninstall_script:
-    path: ./uninstall_Desktoppr_Manage.sh
+    path: ./uninstall_desktoppr_manage.sh
