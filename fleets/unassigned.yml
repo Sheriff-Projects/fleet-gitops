@@ -38,6 +38,7 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_SP_Tools.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Wallpapers_Desktoppr.mobileconfig
 
   # ----- Sécurité disque -----
   enable_disk_encryption: false
