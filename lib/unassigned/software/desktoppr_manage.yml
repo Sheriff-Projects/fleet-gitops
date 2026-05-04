@@ -13,7 +13,7 @@
 # ---------------------------------------------------------------------------
 
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/Desktoppr_Manage.pkg
-  hash_sha256: 62f40cb456b578768b2cd01a989fbba4762c556dbd1ed9f63018bfe502c87440
+  hash_sha256: c0487737bdbda7d046ac5e569b4efa8bdb9daf3855e64a1c78e22818c7291972
   icon:
     path: ../../all/icon/s_p.png
   install_script:
