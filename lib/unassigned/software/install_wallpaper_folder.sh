@@ -10,7 +10,7 @@
 installer -pkg "$INSTALLER_PATH" -target /
 
 WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers/"
-WALLPAPER_NAME="Wallpaper Retina Black_SHERIFF_PROJECTS.jpg"
+WALLPAPER_NAME="Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
 
 # Vérifie que le dossier existe
 if [ ! -d "$WALLPAPER_FOLDER" ]; then
