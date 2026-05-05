@@ -112,6 +112,7 @@ software:
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/wallpaper_folder.yml
+      display_name: Wallpaper Folder
       self_service: true
       setup_experience: true
 
