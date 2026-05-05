@@ -3,9 +3,6 @@
 
 installer -pkg "$INSTALLER_PATH" -target /
 
-LOGGED_USER=$(stat -f%Su /dev/console)
-
-
 
 WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers"
 
@@ -16,7 +13,7 @@ if [ ! -d "$WALLPAPER_FOLDER" ]; then
 fi
 
 # Ajoute le dossier dans les préférences Fond d'écran
-sudo -u $LOGGED_USER wallpaper-folder add "$WALLPAPER_FOLDER" --verbose
+wallpaper-folder add "$WALLPAPER_FOLDER" --verbose
 
 # Redémarre les services nécessaires
 killall cfprefsd 2>/dev/null
