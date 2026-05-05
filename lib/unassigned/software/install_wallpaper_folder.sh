@@ -9,7 +9,8 @@
 # Installe le pkg Fleet
 installer -pkg "$INSTALLER_PATH" -target /
 
-WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers"
+WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers/"
+WALLPAPER_NAME="Wallpaper Retina Black_SHERIFF_PROJECTS.jpg"
 
 # Vérifie que le dossier existe
 if [ ! -d "$WALLPAPER_FOLDER" ]; then
@@ -54,4 +55,7 @@ if [ "$RESULT" -ne 0 ]; then
 fi
 
 echo "Dossier ajouté aux préférences Fond d'écran pour $LOGGED_IN_USER : $WALLPAPER_FOLDER"
+
+/bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
+  /usr/local/bin/desktoppr "$WALLPAPER_NAME" --verbose
 exit 0
