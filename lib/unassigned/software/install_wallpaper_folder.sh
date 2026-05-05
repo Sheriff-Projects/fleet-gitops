@@ -58,4 +58,8 @@ echo "Dossier ajouté aux préférences Fond d'écran pour $LOGGED_IN_USER : $WA
 
 /bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
   /usr/local/bin/desktoppr "$WALLPAPER_PATH"
+
+/bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
+  /usr/local/bin/dark-mode
+
 exit 0
