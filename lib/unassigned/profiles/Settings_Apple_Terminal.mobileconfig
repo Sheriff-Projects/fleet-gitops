@@ -42,6 +42,21 @@
 						<string>bundleID</string>
 					</dict>
 				</array>
+				<key>SystemPolicyAppBundles</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>identifier "com.apple.Terminal" and anchor apple</string>
+						<key>Identifier</key>
+						<string>com.apple.Terminal</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
+				</array>
 			</dict>
 		</dict>
 	</array>
