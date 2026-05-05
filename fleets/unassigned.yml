@@ -109,10 +109,11 @@ software:
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/desktoppr.yml
+      display_name: desktoppr
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/wallpaper_folder.yml
-      display_name: Wallpaper Folder
+      display_name: WallpaperFolderManager
       self_service: true
       setup_experience: true
 
