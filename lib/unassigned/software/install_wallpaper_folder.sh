@@ -10,7 +10,7 @@
 installer -pkg "$INSTALLER_PATH" -target /
 
 WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers/"
-WALLPAPER_NAME="Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
+WALLPAPER_PATH="/Users/Shared/sp_wallpapers/Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
 
 # Vérifie que le dossier existe
 if [ ! -d "$WALLPAPER_FOLDER" ]; then
@@ -57,5 +57,5 @@ fi
 echo "Dossier ajouté aux préférences Fond d'écran pour $LOGGED_IN_USER : $WALLPAPER_FOLDER"
 
 /bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
-  /usr/local/bin/desktoppr "$WALLPAPER_NAME" --verbose
+  /usr/local/bin/desktoppr "$WALLPAPER_PATH"
 exit 0
