@@ -1,0 +1,8 @@
+- url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/wallpaper_folder.pkg
+  hash_sha256: c767a893248964726be5d661c786d6b989bfd376322d7bb44589f610ed9e2e46
+  icon:
+    path: ../../all/icon/s_p.png
+  install_script:
+    path: ./install_wallpaper_folder.sh
+  uninstall_script:
+    path: ./uninstall_wallpaper_folder.sh

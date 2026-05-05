@@ -109,7 +109,10 @@ software:
     - path: ../lib/unassigned/software/dark_mode.yml
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/desktoppr_manage.yml
+    - path: ../lib/unassigned/software/desktoppr.yml
+      self_service: true
+      setup_experience: true
+    - path: ../lib/unassigned/software/wallpaper_folder.yml
       self_service: true
       setup_experience: true
 
