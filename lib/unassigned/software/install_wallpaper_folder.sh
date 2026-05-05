@@ -3,7 +3,7 @@
 
 installer -pkg "$INSTALLER_PATH" -target /
 
-WALLPAPER_FOLDER="$HOME/Pictures/SP_Wallpapers"
+WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers"
 
 # Vérifie que le dossier existe
 if [ ! -d "$WALLPAPER_FOLDER" ]; then
