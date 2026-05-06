@@ -105,6 +105,26 @@
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
+		<dict>
+			<key>ClickWidgetBackground</key>
+			<integer>0</integer>
+			<key>EnableStandardClickToShowDesktop</key>
+			<integer>0</integer>
+			<key>HideDesktop</key>
+			<integer>1</integer>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.WindowManager.93BFDDAA-E099-45CA-A3DC-5948C042F0B6</string>
+			<key>PayloadType</key>
+			<string>com.apple.WindowManager</string>
+			<key>PayloadUUID</key>
+			<string>93BFDDAA-E099-45CA-A3DC-5948C042F0B6</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>StandardHideDesktopIcons</key>
+			<integer>0</integer>
+			<key>StandardHideWidgets</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>PayloadDisplayName</key>
 	<string>Settings ••• Preferences - S•P Interne</string>
