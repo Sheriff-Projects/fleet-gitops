@@ -54,7 +54,11 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU10_ULTRA_MOTION.mobileconfig
         labels_include_any:
           - BU10-ULTRA MOTION
- 
+      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU11_PRODUCTION.mobileconfig
+        labels_include_any:
+          - BU11-PRODUCTION
+
+   
   # ----- Sécurité disque -----
   enable_disk_encryption: false
   enable_recovery_lock_password: false
