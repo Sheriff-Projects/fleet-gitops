@@ -22,7 +22,6 @@
 			<key>SSID_STR</key>
 			<string>SHERIFF PROJECTS</string>
 		</dict>
-
 		<dict>
 			<key>EncryptionType</key>
 			<string>WPA2</string>
@@ -41,7 +40,6 @@
 			<key>SSID_STR</key>
 			<string>SHERIFF_GALLERY</string>
 		</dict>
-
 		<dict>
 			<key>PayloadDisplayName</key>
 			<string>Restrictions</string>
@@ -58,7 +56,6 @@
 			<key>ratingRegion</key>
 			<string>fr</string>
 		</dict>
-
 		<dict>
 			<key>AppleShowScrollBars</key>
 			<string>Always</string>
@@ -73,7 +70,6 @@
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
-
 		<dict>
 			<key>DisabledSystemSettings</key>
 			<array>
@@ -91,7 +87,6 @@
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
-
 		<dict>
 			<key>ClickWidgetBackground</key>
 			<integer>0</integer>
@@ -112,52 +107,41 @@
 			<key>StandardHideWidgets</key>
 			<integer>1</integer>
 		</dict>
-
 		<dict>
 			<key>FXDefaultSearchScope</key>
 			<string>SCcf</string>
-
+			<key>FXPreferredViewStyle</key>
+			<string>clmv</string>
+			<key>NewWindowTarget</key>
+			<string>PfHm</string>
 			<key>PayloadIdentifier</key>
 			<string>com.apple.finder.D076B80E-F62C-4D92-AF97-375CE79CF5D5</string>
-
 			<key>PayloadType</key>
 			<string>com.apple.finder</string>
-
 			<key>PayloadUUID</key>
 			<string>D076B80E-F62C-4D92-AF97-375CE79CF5D5</string>
-
 			<key>PayloadVersion</key>
 			<integer>1</integer>
-
-			<!-- Afficher le disque dur sur le bureau -->
 			<key>ShowHardDrivesOnDesktop</key>
 			<integer>1</integer>
-
-			<!-- Afficher la barre de chemin d'accès -->
 			<key>ShowPathbar</key>
 			<integer>1</integer>
-
-			<!-- Afficher la barre d'état -->
+			<key>ShowSidebar</key>
+			<true/>
 			<key>ShowStatusBar</key>
 			<integer>1</integer>
 		</dict>
 	</array>
-
 	<key>PayloadDisplayName</key>
 	<string>Settings ••• Preferences - S•P Interne</string>
-
 	<key>PayloadIdentifier</key>
 	<string>com.sheriffprojects.pref</string>
-
 	<key>PayloadOrganization</key>
 	<string>SHERIFF PROJECTS</string>
-
 	<key>PayloadType</key>
 	<string>Configuration</string>
-
 	<key>PayloadUUID</key>
 	<string>A9AFFFE6-727F-4084-BB8A-4787DF9F8823</string>
-
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
