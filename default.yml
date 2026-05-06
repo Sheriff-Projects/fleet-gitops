@@ -46,6 +46,11 @@ labels:
   label_membership_type: manual
   name: BU53-DRH
 
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU56-COMMUNICATION
+
 org_settings:
   certificate_authorities:
     custom_est_proxy:
