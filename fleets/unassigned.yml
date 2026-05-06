@@ -51,7 +51,10 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU06_ECOM.mobileconfig
         labels_include_any:
           - BU06-ECOM
-
+      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU10_ULTRA_MOTION.mobileconfig
+        labels_include_any:
+          - BU10-ULTRA MOTION
+ 
   # ----- Sécurité disque -----
   enable_disk_encryption: false
   enable_recovery_lock_password: false
