@@ -1,14 +1,17 @@
 agent_options:
 labels:
-- description: Label applied to softwares managed in Primo
+- description: 
   hosts:
   label_membership_type: manual
-  name: __ Software managed in Primo
+  name: BU11 - PRODUCTION
+- description: 
+  hosts:
+  label_membership_type: manual
+  name: BU52 - COMPTABILITÉ
 - description:
   hosts:
   label_membership_type: manual
-  name: B54 - IT
-- description:
+  name: BU51 - ADMINISTRATION
   hosts:
   label_membership_type: manual
   name: BU06 - ECOM
