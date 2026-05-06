@@ -40,7 +40,7 @@
 	<key>PayloadDisplayName</key>
 	<string>Settings ••• BU52 - COMPTABILITE - Google Chrome Token</string>
 	<key>PayloadIdentifier</key>
-	<string>com.sheriffprojects.google-bu53</string>
+	<string>com.sheriffprojects.google-bu52</string>
 	<key>PayloadOrganization</key>
 	<string>SHERIFF PROJECTS</string>
 	<key>PayloadRemovalDisallowed</key>
