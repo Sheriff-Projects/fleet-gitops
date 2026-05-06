@@ -54,6 +54,9 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU10_ULTRA_MOTION.mobileconfig
         labels_include_any:
           - BU10-ULTRA MOTION
+      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU53_DRH.mobileconfig
+        labels_include_any:
+          - BU53-DRH
 
 
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU51_DIRECTION.mobileconfig
@@ -63,9 +66,7 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU52_COMPTABILITE.mobileconfig
         labels_include_any:
           - BU52-COMPTABILITE
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU53_DRH.mobileconfig
-        labels_include_any:
-          - BU53-DR
+
   # ----- Sécurité disque -----
   enable_disk_encryption: false
   enable_recovery_lock_password: false
