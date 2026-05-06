@@ -15,7 +15,7 @@
 							<key>mcx_preference_settings</key>
 							<dict>
 								<key>CloudManagementEnrollmentToken</key>
-								<string>0ac61d9d-0c01-4828-ae34-efaadf140f52</string>
+								<string>b2955476-f03e-457f-a0ab-f02823f4e1db</string>
 							</dict>
 						</dict>
 					</array>
@@ -24,13 +24,13 @@
 			<key>PayloadDisplayName</key>
 			<string>Custom Settings</string>
 			<key>PayloadIdentifier</key>
-			<string>0D2E32E4-E03A-4467-9B04-6C68BE4F95C0</string>
+			<string>1E07B201-1F04-45C7-9998-8C6FDC98D337</string>
 			<key>PayloadOrganization</key>
 			<string>JAMF Software</string>
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>0D2E32E4-E03A-4467-9B04-6C68BE4F95C0</string>
+			<string>1E07B201-1F04-45C7-9998-8C6FDC98D337</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -38,9 +38,9 @@
 	<key>PayloadDescription</key>
 	<string></string>
 	<key>PayloadDisplayName</key>
-	<string>Settings ••• BU54 - DSI - Google Chrome Token</string>
+	<string>Settings ••• BU02 - ATELIER - Google Chrome Token</string>
 	<key>PayloadIdentifier</key>
-	<string>com.sheriffprojects.google-bu54</string>
+	<string>com.sheriffprojects.google-bu02</string>
 	<key>PayloadOrganization</key>
 	<string>SHERIFF PROJECTS</string>
 	<key>PayloadRemovalDisallowed</key>
@@ -50,7 +50,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>81190189-BA1A-419C-9D40-A047B592C046</string>
+	<string>6686943A-4832-4D1E-B325-5EB563243B1F</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
