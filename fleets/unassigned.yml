@@ -39,7 +39,7 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
-        labels_exclude_any:
+        labels_include_any:
           - BU54-DSI
 
   # ----- Sécurité disque -----
