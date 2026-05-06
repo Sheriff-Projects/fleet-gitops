@@ -12,11 +12,11 @@ labels:
   hosts:
   label_membership_type: manual
   name: BU51 - ADMINISTRATION
-  hosts:
-  label_membership_type: manual
-  name: BU06_ECOM
+- description:
   hosts:
       - L33P4P54KK
+  label_membership_type: manual
+  name: BU06_ECOM
 - description:
   hosts:
   label_membership_type: manual
