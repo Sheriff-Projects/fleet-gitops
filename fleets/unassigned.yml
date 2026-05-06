@@ -57,9 +57,6 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU11_PRODUCTION.mobileconfig
         labels_include_any:
           - BU11-PRODUCTION
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU51_DIRECTION.mobileconfig
-        labels_include_any:
-          - BU51-DIRECTION
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU52_COMPTABILITE.mobileconfig
         labels_include_any:
           - BU52-COMPTABILITE
