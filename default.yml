@@ -7,13 +7,11 @@ labels:
 
 - description: 
   hosts:
-      - KQC2HCVJFG 
   label_membership_type: manual
   name: BU52-COMPTABILITE
 
 - description:
   hosts:
-      - JQ61X690D0 # Carl Smith
   label_membership_type: manual
   name: BU51-DIRECTION
 
@@ -32,6 +30,7 @@ labels:
   label_membership_type: manual
   name: BU02-ATELIER
 
+- description:
   hosts:
       - L33P4P54KK
   label_membership_type: manual
