@@ -7,7 +7,7 @@ labels:
 - description: 
   hosts:
   label_membership_type: manual
-  name: BU52 - COMPTABILITÉ
+  name: BU52 - COMPTABILITE
 - description:
   hosts:
   label_membership_type: manual
