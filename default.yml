@@ -14,7 +14,7 @@ labels:
   name: BU51 - ADMINISTRATION
   hosts:
   label_membership_type: manual
-  name: BU06 - ECOM
+  name: BU06_ECOM
   hosts:
       - L33P4P54KK
 - description:

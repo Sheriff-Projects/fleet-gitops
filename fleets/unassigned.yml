@@ -41,7 +41,7 @@ controls:
 
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU06_ECOM.mobileconfig
         labels_exclude_any:
-          - BU06 - ECOM
+          - BU06_ECOM
 
   # ----- Sécurité disque -----
   enable_disk_encryption: false
