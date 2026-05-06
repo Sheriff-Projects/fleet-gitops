@@ -39,6 +39,10 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
 
+      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU06_ECOM.mobileconfig
+        labels_exclude_any:
+          - BU06 - ECOM
+
   # ----- Sécurité disque -----
   enable_disk_encryption: false
   enable_recovery_lock_password: false
