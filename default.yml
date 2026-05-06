@@ -3,24 +3,33 @@ labels:
 - description: 
   hosts:
   label_membership_type: manual
-  name: BU11 - PRODUCTION
+  name: BU11-PRODUCTION
 - description: 
   hosts:
   label_membership_type: manual
-  name: BU52 - COMPTABILITE
+  name: BU52-COMPTABILITE
 - description:
   hosts:
   label_membership_type: manual
-  name: BU51 - ADMINISTRATION
+  name: BU51-ADMINISTRATION
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU06-ECOM
 - description:
   hosts:
       - L33P4P54KK
   label_membership_type: manual
-  name: BU06_ECOM
+  name: BU54-DSI
+- description:
+  hosts:
+      - L33P4P54KK
+  label_membership_type: manual
+  name: BU06-ECOM
 - description:
   hosts:
   label_membership_type: manual
-  name: BU05 - PUB
+  name: BU05-PUB
 org_settings:
   certificate_authorities:
     custom_est_proxy:
