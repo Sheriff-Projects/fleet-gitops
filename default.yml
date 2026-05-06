@@ -16,7 +16,7 @@ labels:
   label_membership_type: manual
   name: BU06 - ECOM
   hosts:
-      - SERIAL_L33P4P54KK
+      - L33P4P54KK
 - description:
   hosts:
   label_membership_type: manual
