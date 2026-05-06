@@ -54,11 +54,11 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU10_ULTRA_MOTION.mobileconfig
         labels_include_any:
           - BU10-ULTRA MOTION
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU11_PRODUCTION.mobileconfig
+
+
+      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU51_DIRECTION.mobileconfig
         labels_include_any:
-          - BU11-PRODUCTION
-
-
+          - BU51-DIRECTION
           
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU52_COMPTABILITE.mobileconfig
         labels_include_any:
