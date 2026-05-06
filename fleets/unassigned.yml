@@ -38,6 +38,7 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_SP_Tools.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
+      - path: ../lib/unassigned/profiles/Settings_Preferences_SP_Interne.mobileconfig
 
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
         labels_include_any:
