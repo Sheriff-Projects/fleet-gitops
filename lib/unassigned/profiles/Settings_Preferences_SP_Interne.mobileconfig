@@ -57,24 +57,6 @@
 			<string>fr</string>
 		</dict>
 		<dict>
-			<key>FXDefaultSearchScope</key>
-			<string>SCcf</string>
-			<key>NewWindowTarget</key>
-			<string>PfHm</string>
-			<key>PayloadDisplayName</key>
-			<string>Finder</string>
-			<key>PayloadIdentifier</key>
-			<string>com.apple.finder.02F0EED7-8E3D-4329-B5B2-4C336C716E8E</string>
-			<key>PayloadType</key>
-			<string>com.apple.finder</string>
-			<key>PayloadUUID</key>
-			<string>02F0EED7-8E3D-4329-B5B2-4C336C716E8E</string>
-			<key>PayloadVersion</key>
-			<integer>1</integer>
-			<key>ShowHardDrivesOnDesktop</key>
-			<true/>
-		</dict>
-		<dict>
 			<key>AppleShowScrollBars</key>
 			<string>Always</string>
 			<key>PayloadDisplayName</key>
@@ -123,6 +105,20 @@
 			<key>StandardHideDesktopIcons</key>
 			<integer>0</integer>
 			<key>StandardHideWidgets</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>FXDefaultSearchScope</key>
+			<string>SCcf</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.finder.D076B80E-F62C-4D92-AF97-375CE79CF5D5</string>
+			<key>PayloadType</key>
+			<string>com.apple.finder</string>
+			<key>PayloadUUID</key>
+			<string>D076B80E-F62C-4D92-AF97-375CE79CF5D5</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>ShowHardDrivesOnDesktop</key>
 			<integer>1</integer>
 		</dict>
 	</array>
