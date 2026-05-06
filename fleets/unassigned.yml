@@ -48,6 +48,9 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU05_PUB.mobileconfig
         labels_include_any:
           - BU05-PUB
+      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU06_ECOM.mobileconfig
+        labels_include_any:
+          - BU06-ECOM
 
   # ----- Sécurité disque -----
   enable_disk_encryption: false
