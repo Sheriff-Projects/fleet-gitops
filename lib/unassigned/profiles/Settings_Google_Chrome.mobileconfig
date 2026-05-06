@@ -73,21 +73,21 @@
 			<array>
 				<dict>
 					<key>AlertType</key>
-					<integer>2</integer>
+					<integer>1</integer>
 					<key>BundleIdentifier</key>
 					<string>com.google.Chrome</string>
 					<key>CriticalAlertEnabled</key>
-					<true/>
+					<false/>
 					<key>NotificationsEnabled</key>
 					<true/>
 				</dict>
 				<dict>
 					<key>AlertType</key>
-					<integer>2</integer>
+					<integer>1</integer>
 					<key>BundleIdentifier</key>
 					<string>com.google.Chrome.framework.AlertNotificationService</string>
 					<key>CriticalAlertEnabled</key>
-					<true/>
+					<false/>
 					<key>NotificationsEnabled</key>
 					<true/>
 				</dict>
