@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/wacom_tablet.pkg
-  hash_sha256: 9a974b807dcb43e96518d556e9380af2b4c32a7abd918dab2379518666203142
+  hash_sha256: c7d503b8343ec9203a466dd7109398ff245e211fa0874c77cabd3db3f6afdd68
   icon:
     path: ../../all/icon/wacom_tablet.png
   install_script:
