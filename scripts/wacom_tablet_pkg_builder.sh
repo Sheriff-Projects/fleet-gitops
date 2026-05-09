@@ -139,7 +139,7 @@ set -euo pipefail
 TARGET_VERSION="$PKG_VERSION"
 DOWNLOAD_URL="$DOWNLOAD_URL"
 EXPECTED_TEAM_ID="$EXPECTED_TEAM_ID"
-APP_PATH="/Applications/Wacom Center.app"
+APP_PATH="/Applications/Tablette Wacom/Wacom Center.app"
 TEMP_DIR=\$(mktemp -d)
 DMG_PATH="\$TEMP_DIR/WacomTablet.dmg"
 MOUNT_POINT="\$TEMP_DIR/WacomTabletMount"
