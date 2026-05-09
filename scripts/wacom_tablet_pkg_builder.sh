@@ -358,7 +358,7 @@ cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
   icon:
-    path: ../../all/icon/wacom.png
+    path: ../../all/icon/wacom_tablet.png
   install_script:
     path: ./install_wacom_tablet.sh
   uninstall_script:
