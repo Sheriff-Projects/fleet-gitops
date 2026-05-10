@@ -75,7 +75,7 @@ set -euo pipefail
 
 TARGET_VERSION="$PKG_VERSION"
 DOWNLOAD_URL="$DOWNLOAD_URL"
-APP_PATH="Applications/Wacom Tablet/Wacom Center.app"
+APP_PATH="/Applications/Wacom Tablet.localized/Wacom Center.app"
 TEMP_DIR=\$(mktemp -d)
 DMG_PATH="\$TEMP_DIR/WacomTablet.dmg"
 MOUNT_POINT="\$TEMP_DIR/WacomTabletMount"
@@ -179,7 +179,7 @@ mkdir -p "$EMPTY_PAYLOAD_ROOT"
 COMPONENT_PKG="$BUILD_DIR/component.pkg"
 pkgbuild \
     --identifier "$PKG_IDENTIFIER" \
-    --version "$PKG_VERSION" \
+    --version "$LATEST_VERSION" \
     --root "$EMPTY_PAYLOAD_ROOT" \
     --install-location "/" \
     --scripts "$SCRIPTS_DIR" \
