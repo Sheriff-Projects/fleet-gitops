@@ -2,13 +2,9 @@
 clear
 set -euo pipefail
 
-# --- Couleurs (auto-désactivées en CI sans tty) ---
+# --- Couleurs ---
 if [ -t 1 ]; then
-    GREEN='\033[0;32m'
-    BLUE='\033[0;34m'
-    YELLOW='\033[1;33m'
-    RED='\033[0;31m'
-    NC='\033[0m'
+    GREEN='\033[0;32m'; BLUE='\033[0;34m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
 else
     GREEN=''; BLUE=''; YELLOW=''; RED=''; NC=''
 fi
@@ -21,11 +17,19 @@ SCRIPTS_DIR="$BUILD_DIR/scripts"
 REPO="souari1974/fleet-gitops"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/wacom_tablet.pkg"
-PKG_IDENTIFIER="com.fleet-gitops.wacom-tablet-wrapper"
+
+# Identifier dans NOTRE namespace pour éviter tout conflit avec celui de Wacom
+PKG_IDENTIFIER="com.fleet-gitops.wacom-tablet-stub"
+
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
 DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/wacom_tablet.pkg"
-YAML_FILE="$REPO_ROOT/lib/unassigned/software/wacom_tablet.yml"
+SOFTWARE_DIR="$REPO_ROOT/lib/unassigned/software"
+YAML_FILE="$SOFTWARE_DIR/wacom_tablet.yml"
+INSTALL_SCRIPT="$SOFTWARE_DIR/install_wacom_tablet.sh"
+UNINSTALL_SCRIPT="$SOFTWARE_DIR/uninstall_wacom_tablet.sh"
+
+APP_PATH="/Applications/Wacom Tablet.localized/Wacom Center.app"
 
 trap 'rm -rf "$BUILD_DIR"' EXIT
 
@@ -35,145 +39,45 @@ echo -e "${BLUE}╚════════════════════�
 echo "Repo root: $REPO_ROOT"
 echo ""
 
-# --- Étape 1 : Fetch version depuis le XML Wacom ---
-
-echo -e "${BLUE}[1/4] Fetching latest Wacom Tablet version...${NC}"
+# --- Étape 1 : Fetch version ---
+echo -e "${BLUE}[1/5] Fetching latest Wacom Tablet version...${NC}"
 
 XML_CONTENT=$(curl -s "$XML_URL")
 MAC_SECTION=$(echo "$XML_CONTENT" | perl -0777 -ne 'print $1 if /<mac type="map">(.*?)<\/mac>/s')
 FILENAME=$(perl -ne 'if (/<file type="string">(.*?\.dmg)<\/file>/) { print $1; exit }' <<< "$MAC_SECTION")
 URL_BASE=$(echo "$MAC_SECTION" | perl -0777 -ne 'if (/<file type="string">'"$FILENAME"'<\/file>\s*<url type="string">(.*?)<\/url>/s) { print $1; exit }')
 DOWNLOAD_URL="${URL_BASE}${FILENAME}"
-
-
-
 LATEST_VERSION=$(echo "$FILENAME" | sed -nE 's/^[A-Za-z_]+_([0-9.]+(-[0-9]+)?)\.dmg$/\1/p')
-
 PKG_VERSION="$LATEST_VERSION"
 
 echo -e "${GREEN}  ✓ DMG filename: $FILENAME${NC}"
 echo -e "${GREEN}  ✓ Full URL:     $DOWNLOAD_URL${NC}"
-echo -e "${GREEN}  ✓ Version raw:  $LATEST_VERSION${NC}"
 echo -e "${GREEN}  ✓ PKG version:  $PKG_VERSION${NC}"
 echo ""
 
+# --- Étape 2 : Stub PKG sans logique réelle ---
+# IMPORTANT : on NE met plus la logique download+install dans un postinstall.
+# macOS interdit les installer imbriqués (verrou installd).
+# Toute la logique réelle est dans install_wacom_tablet.sh (script Fleet),
+# qui est exécuté HORS contexte installer et n'a donc pas le problème.
+echo -e "${BLUE}[2/5] Generating no-op postinstall...${NC}"
+
 mkdir -p "$SCRIPTS_DIR"
-
-
 cat > "$SCRIPTS_DIR/postinstall" << EOF
 #!/bin/bash
-# Wacom Tablet installer (postinstall) — built on $(date '+%Y-%m-%d %H:%M:%S')
-# Target version: $PKG_VERSION
-#
-# Ce postinstall :
-#   1. Télécharge le DMG Wacom
-#   2. Le monte
-#   3. Lance \`installer -pkg\` sur le PKG embarqué
-#   4. Démonte et nettoie
-
-set -euo pipefail
-
-TARGET_VERSION="$PKG_VERSION"
-DOWNLOAD_URL="$DOWNLOAD_URL"
-APP_PATH="/Applications/Wacom Tablet.localized/Wacom Center.app"
-TEMP_DIR=\$(mktemp -d)
-DMG_PATH="\$TEMP_DIR/WacomTablet.dmg"
-MOUNT_POINT="\$TEMP_DIR/WacomTabletMount"
-LOG="/var/log/wacom_tablet_install.log"
-
-log() {
-    echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$1" | tee -a "\$LOG"
-}
-
-cleanup() {
-    hdiutil detach "\$MOUNT_POINT" -force -quiet 2>/dev/null || true
-    rm -rf "\$TEMP_DIR"
-}
-trap cleanup EXIT
-
-log "=== Wacom Tablet install/update started ==="
-log "Target version: \$TARGET_VERSION"
-
-
-# --- Check version installée (via Wacom Center.app) ---
-if [ -d "\$APP_PATH" ]; then
-    INSTALLED_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
-    log "Installed version: \$INSTALLED_VERSION"
-    if [ "\$INSTALLED_VERSION" = "\$TARGET_VERSION" ]; then
-        log "Already up to date. Exiting."
-        exit 0
-    fi
-    log "Upgrading from \$INSTALLED_VERSION to \$TARGET_VERSION..."
-else
-    log "Wacom Center not installed, performing fresh install..."
-fi
-
-# --- Téléchargement du DMG ---
-log "Downloading from \$DOWNLOAD_URL..."
-curl -sSL --fail --max-time 1800 "\$DOWNLOAD_URL" -o "\$DMG_PATH" || {
-    log "[ERROR] Download failed"
-    exit 1
-}
-
-# --- Montage du DMG ---
-log "Mounting DMG..."
-mkdir -p "\$MOUNT_POINT"
-hdiutil attach "\$DMG_PATH" -mountpoint "\$MOUNT_POINT" -nobrowse -quiet || {
-    log "[ERROR] Failed to mount DMG"
-    exit 1
-}
-
-# --- Recherche du PKG dans le DMG ---
-# Le nom du PKG peut varier entre les versions Wacom :
-#   - Install Wacom Tablet.pkg
-#   - Wacom Tablet.pkg
-#   - Install Wacom Drivers.pkg
-# On prend le premier .pkg trouvé dans le DMG.
-SOURCE_PKG=\$(find "\$MOUNT_POINT" -maxdepth 2 -name "*.pkg" -type f 2>/dev/null | head -n 1)
-
-if [ -z "\$SOURCE_PKG" ] || [ ! -f "\$SOURCE_PKG" ]; then
-    log "[ERROR] Aucun .pkg trouvé dans le DMG monté"
-    log "[ERROR] Contenu du DMG :"
-    ls -la "\$MOUNT_POINT" | tee -a "\$LOG"
-    exit 1
-fi
-log "PKG embarqué trouvé : \$SOURCE_PKG"
-
-
-# --- Installation du PKG Wacom ---
-log "Installing PKG..."
-if ! nohup installer -pkg "\$SOURCE_PKG" -target / >> "\$LOG" 2>&1 & disown; then
-    log "[ERROR] installer command failed"
-    exit 1
-fi
-
-# --- Vérification post-install ---
-if [ -d "\$APP_PATH" ]; then
-    NEW_INSTALLED=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
-    log "Installation verified: Wacom Center \$NEW_INSTALLED"
-else
-    log "[WARN] /Applications/Wacom Center.app not found after install — version mismatch possible"
-fi
-
-log "=== Wacom Tablet install/update successful ==="
+# No-op postinstall — la vraie installation est dans install_wacom_tablet.sh
+echo "[\$(date '+%Y-%m-%d %H:%M:%S')] Wacom stub PKG installed (no-op)" >> /var/log/wacom_tablet_install.log
 exit 0
 EOF
-
-
 chmod +x "$SCRIPTS_DIR/postinstall"
-echo -e "${GREEN}  ✓ postinstall embedded with version $PKG_VERSION${NC}"
-echo -e "${GREEN}  ✓ Postinstall will: download → verify → installer -pkg → cleanup${NC}"
+echo -e "${GREEN}  ✓ Stub postinstall created${NC}"
 echo ""
 
 # --- Étape 3 : Build PKG (stub) ---
-echo -e "${BLUE}[3/4] Building PKG (stub)...${NC}"
+echo -e "${BLUE}[3/5] Building stub PKG...${NC}"
 
 mkdir -p "$DOWNLOAD_DIR"
 rm -f "$OUTPUT_PKG"
-
-# Dossier vide qui sert de racine de payload :
-#   - PKG sans fichier à installer (~10 KB)
-#   - mais macOS génère quand même un receipt pour la traçabilité
 mkdir -p "$EMPTY_PAYLOAD_ROOT"
 
 COMPONENT_PKG="$BUILD_DIR/component.pkg"
@@ -185,12 +89,11 @@ pkgbuild \
     --scripts "$SCRIPTS_DIR" \
     "$COMPONENT_PKG" > /dev/null
 
-# Distribution.xml pour le titre dans Installer.app
 DIST_XML="$BUILD_DIR/distribution.xml"
 cat > "$DIST_XML" << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>Wacom Tablet Driver</title>
+    <title>Wacom Tablet (Fleet stub)</title>
     <pkg-ref id="$PKG_IDENTIFIER"/>
     <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
     <choices-outline>
@@ -212,26 +115,198 @@ productbuild \
     "$OUTPUT_PKG" > /dev/null
 
 if [ ! -f "$OUTPUT_PKG" ]; then
-    echo -e "${RED}[ERROR] PKG build failed${NC}"
-    exit 1
+    echo -e "${RED}[ERROR] PKG build failed${NC}"; exit 1
 fi
 
 PKG_SIZE=$(du -h "$OUTPUT_PKG" | awk '{print $1}')
 PKG_HASH=$(shasum -a 256 "$OUTPUT_PKG" | awk '{print $1}')
 
-if [ -z "$PKG_HASH" ] || [ ${#PKG_HASH} -ne 64 ]; then
-    echo -e "${RED}[ERROR] Invalid SHA-256 computed${NC}"
-    exit 1
-fi
-
 echo -e "${GREEN}  ✓ PKG built: $OUTPUT_PKG ($PKG_SIZE)${NC}"
 echo -e "${GREEN}  ✓ SHA256:    $PKG_HASH${NC}"
 echo ""
 
-# --- Étape 4 : Update YAML ---
-echo -e "${BLUE}[4/4] Updating wacom_tablet.yml...${NC}"
+# --- Étape 4 : install_wacom_tablet.sh (LA logique d'install est ici) ---
+echo -e "${BLUE}[4/5] Generating Fleet install script (real install logic)...${NC}"
 
-mkdir -p "$(dirname "$YAML_FILE")"
+mkdir -p "$SOFTWARE_DIR"
+
+cat > "$INSTALL_SCRIPT" << EOF
+#!/bin/bash
+# Install script Wacom Tablet — appelé par Fleet (PAS imbriqué dans un autre installer).
+# Télécharge le DMG officiel Wacom et l'installe.
+
+set -uo pipefail
+
+TARGET_VERSION="$PKG_VERSION"
+DOWNLOAD_URL="$DOWNLOAD_URL"
+APP_PATH="$APP_PATH"
+TEMP_DIR=\$(mktemp -d)
+DMG_PATH="\$TEMP_DIR/WacomTablet.dmg"
+MOUNT_POINT="\$TEMP_DIR/WacomTabletMount"
+LOG="/var/log/wacom_tablet_install.log"
+
+log() { echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$1" | tee -a "\$LOG"; }
+cleanup() {
+    hdiutil detach "\$MOUNT_POINT" -force -quiet 2>/dev/null || true
+    rm -rf "\$TEMP_DIR"
+}
+trap cleanup EXIT
+
+log "=== Wacom Tablet install/update started (Fleet script) ==="
+log "Target version: \$TARGET_VERSION"
+
+if [ -d "\$APP_PATH" ]; then
+    INSTALLED_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
+    log "Installed version: \$INSTALLED_VERSION"
+    if [ "\$INSTALLED_VERSION" = "\$TARGET_VERSION" ]; then
+        log "Already up to date. Exiting."
+        exit 0
+    fi
+    log "Upgrading from \$INSTALLED_VERSION to \$TARGET_VERSION..."
+else
+    log "Wacom Center not installed, performing fresh install..."
+fi
+
+log "Downloading from \$DOWNLOAD_URL..."
+if ! curl -sSL --fail --max-time 1800 "\$DOWNLOAD_URL" -o "\$DMG_PATH"; then
+    log "[ERROR] Download failed"; exit 1
+fi
+
+log "Mounting DMG..."
+mkdir -p "\$MOUNT_POINT"
+if ! hdiutil attach "\$DMG_PATH" -mountpoint "\$MOUNT_POINT" -nobrowse -quiet; then
+    log "[ERROR] Failed to mount DMG"; exit 1
+fi
+
+SOURCE_PKG=\$(find "\$MOUNT_POINT" -maxdepth 2 -name "*.pkg" -type f 2>/dev/null | head -n 1)
+if [ -z "\$SOURCE_PKG" ] || [ ! -f "\$SOURCE_PKG" ]; then
+    log "[ERROR] Aucun .pkg trouvé dans le DMG"
+    ls -la "\$MOUNT_POINT" | tee -a "\$LOG"
+    exit 1
+fi
+log "Embedded PKG: \$SOURCE_PKG"
+
+log "Running installer -pkg ..."
+if ! installer -pkg "\$SOURCE_PKG" -target / >> "\$LOG" 2>&1; then
+    log "[ERROR] installer command failed"
+    exit 1
+fi
+
+if [ -d "\$APP_PATH" ]; then
+    NEW_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
+    log "Installation verified: Wacom Center \$NEW_VERSION"
+else
+    log "[WARN] \$APP_PATH not found after install"
+fi
+
+log "=== Wacom Tablet install/update successful ==="
+exit 0
+EOF
+chmod +x "$INSTALL_SCRIPT"
+echo -e "${GREEN}  ✓ Generated: $INSTALL_SCRIPT${NC}"
+
+cat > "$UNINSTALL_SCRIPT" << EOF
+#!/bin/bash
+# Uninstall script Wacom Tablet
+set -u
+LOG="/var/log/wacom_tablet_uninstall.log"
+log() { echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$1" | tee -a "\$LOG"; }
+log "=== Wacom Tablet uninstall started ==="
+
+REAL_USER="\${SUDO_USER:-\$USER}"
+
+ProgramList=("WacomTabletDriver" "WacomTouchDriver" "TabletDriver" "Wacom Tablet Utility" "Wacom Desktop Center" "Wacom Center" "Wacom Experience Program" "UpgradeHelper")
+for p in "\${ProgramList[@]}"; do
+    PIDS=\$(pgrep -f "\$p" 2>/dev/null || true)
+    for pid in \$PIDS; do log "  kill \$p (\$pid)"; kill -9 "\$pid" 2>/dev/null || true; done
+done
+sleep 1
+
+for a in /Library/LaunchAgents/com.wacom.DataStoreMgr.plist /Library/LaunchAgents/com.wacom.wacomtablet.plist /Library/LaunchAgents/com.wacom.DisplayMgr.plist /Library/LaunchAgents/com.wacom.IOManager.plist; do
+    [ -e "\$a" ] || continue
+    log "  unload agent \$a"
+    if [ -n "\$REAL_USER" ] && [ "\$REAL_USER" != "root" ]; then
+        sudo -u "\$REAL_USER" launchctl unload "\$a" 2>/dev/null || true
+    fi
+done
+
+for d in /Library/LaunchDaemons/com.wacom.DisplayHelper.plist /Library/LaunchDaemons/com.wacom.displayhelper.plist /Library/LaunchDaemons/com.wacom.UpdateHelper.plist /Library/LaunchDaemons/com.wacom.TabletHelper.plist; do
+    [ -e "\$d" ] || continue
+    log "  unload daemon \$d"
+    launchctl unload "\$d" 2>/dev/null || true
+done
+sleep 1
+
+for k in com.Wacom.iokit.TabletDriver com.wacom.kext.wacomtablet com.wacom.kext.ftdi com.wacom.WacomTabletHIDDevice; do
+    /sbin/kextunload -m "\$k" 2>/dev/null || true
+done
+
+FilesToRemove=(
+    /Library/LaunchAgents/com.wacom.DataStoreMgr.plist
+    /Library/LaunchAgents/com.wacom.wacomtablet.plist
+    /Library/LaunchAgents/com.wacom.DisplayMgr.plist
+    /Library/LaunchAgents/com.wacom.IOManager.plist
+    /Library/LaunchDaemons/com.wacom.DisplayHelper.plist
+    /Library/LaunchDaemons/com.wacom.displayhelper.plist
+    /Library/LaunchDaemons/com.wacom.UpdateHelper.plist
+    /Library/LaunchDaemons/com.wacom.TabletHelper.plist
+    "/Applications/Wacom Tablet.localized"
+    /Applications/WacomTablet
+    /Applications/Tablet.localized
+    "/Library/Application Support/Tablet"
+    /Library/PreferencePanes/WacomTablet.prefPane
+    "/Library/PreferencePanes/Wacom Tablet.prefPane"
+    "/Library/PreferencePanes/Pen Tablet.prefPane"
+    /Library/PreferencePanes/Tablet.prefPane
+    /Library/PrivilegedHelperTools/com.wacom.TabletHelper.app
+    /Library/PrivilegedHelperTools/com.wacom.IOmanager.app
+    /Library/Extensions/TabletDriver.kext
+    /Library/Extensions/WacomTablet.kext
+    "/Library/Internet Plug-Ins/WacomTabletPlugin.plugin"
+    "/Library/Internet Plug-Ins/WacomSafari.plugin"
+    /Library/Preferences/Tablet
+)
+for f in "\${FilesToRemove[@]}"; do
+    if [ -e "\$f" ] || [ -L "\$f" ]; then
+        log "  rm \$f"; rm -rf "\$f" 2>/dev/null || log "    (échec)"
+    fi
+done
+
+for userdir in /Users/*; do
+    [ -d "\$userdir" ] || continue
+    [ "\$(basename "\$userdir")" = "Shared" ] && continue
+    for path in \\
+        "\$userdir/Library/Group Containers/EG27766DY7.com.wacom.WacomTabletDriver" \\
+        "\$userdir/Library/Group Containers/group.EG27766DY7.com.wacom.WacomTabletDriver" \\
+        "\$userdir/Library/Group Containers/group.com.wacom.TabletDriver" \\
+        "\$userdir/Library/Containers/com.wacom.wacomtablet" \\
+        "\$userdir/Library/Application Support/Wacom" \\
+        "\$userdir/Library/Preferences/com.wacom.Wacom-Desktop-Center.plist"
+    do
+        if [ -e "\$path" ] || [ -L "\$path" ]; then
+            log "  rm \$path"; rm -rf "\$path" 2>/dev/null || true
+        fi
+    done
+done
+
+WacomPkgs=\$(pkgutil --pkgs | grep -i wacom || true)
+if [ -n "\$WacomPkgs" ]; then
+    while IFS= read -r pkg; do
+        log "  pkgutil --forget \$pkg"
+        pkgutil --forget "\$pkg" 2>/dev/null || true
+    done <<< "\$WacomPkgs"
+fi
+pkgutil --forget "$PKG_IDENTIFIER" 2>/dev/null || true
+
+log "=== Wacom Tablet uninstall finished ==="
+exit 0
+EOF
+chmod +x "$UNINSTALL_SCRIPT"
+echo -e "${GREEN}  ✓ Generated: $UNINSTALL_SCRIPT${NC}"
+echo ""
+
+# --- Étape 5 : YAML ---
+echo -e "${BLUE}[5/5] Updating wacom_tablet.yml...${NC}"
 
 cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
@@ -247,7 +322,6 @@ EOF
 echo -e "${GREEN}  ✓ Updated: $YAML_FILE${NC}"
 echo ""
 
-# --- Sortie compatible GitHub Actions ---
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
     {
         echo "version=$PKG_VERSION"
@@ -255,18 +329,21 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "filename=$FILENAME"
         echo "pkg_path=$OUTPUT_PKG"
         echo "pkg_hash=$PKG_HASH"
+        echo "pkg_size=$PKG_SIZE"
     } >> "$GITHUB_OUTPUT"
 fi
 
-# --- Récap ---
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Build terminé${NC}"
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
-echo "  DMG filename   : $FILENAME"
-echo "  Raw version    : $LATEST_VERSION"
-echo "  PKG version    : $PKG_VERSION"
-echo "  PKG identifier : $PKG_IDENTIFIER"
-echo "  PKG path       : $OUTPUT_PKG"
-echo "  SHA256         : $PKG_HASH"
-
-
+echo "  PKG version      : $PKG_VERSION"
+echo "  PKG identifier   : $PKG_IDENTIFIER"
+echo "  PKG path         : $OUTPUT_PKG"
+echo "  PKG size         : $PKG_SIZE"
+echo "  SHA256           : $PKG_HASH"
+echo "  Install script   : $INSTALL_SCRIPT"
+echo "  Uninstall script : $UNINSTALL_SCRIPT"
+echo ""
+echo "  Note : la logique d'install (download DMG + installer -pkg)"
+echo "  est désormais dans install_wacom_tablet.sh, exécuté par Fleet"
+echo "  HORS d'un postinstall — donc plus de verrou installd."
