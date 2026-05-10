@@ -67,6 +67,11 @@ for f in "${FilesToRemove[@]}"; do
     fi
 done
 
+# Sweep large : tout prefPane qui matche wacom/tablet
+log "Sweeping leftover Wacom prefPanes..."
+find /Library/PreferencePanes -maxdepth 1 -iname "*wacom*" -exec rm -rf {} \; 2>/dev/null || true
+find /Library/PreferencePanes -maxdepth 1 -iname "*tablet*" -exec rm -rf {} \; 2>/dev/null || true
+
 for userdir in /Users/*; do
     [ -d "$userdir" ] || continue
     [ "$(basename "$userdir")" = "Shared" ] && continue
@@ -92,6 +97,27 @@ if [ -n "$WacomPkgs" ]; then
     done <<< "$WacomPkgs"
 fi
 pkgutil --forget "com.wacom.WacomCenter" 2>/dev/null || true
+
+# --- Vider le cache de Réglages Système (icône fantôme) ---
+log "Clearing System Settings cache..."
+killall "System Preferences" 2>/dev/null || true
+killall "System Settings" 2>/dev/null || true
+
+# Le cache de l'utilisateur connecté (CONSOLE_USER déjà détecté en haut du script)
+if [ -n "$CONSOLE_USER" ] && [ "$CONSOLE_USER" != "root" ]; then
+    CONSOLE_HOME=$(eval echo ~"$CONSOLE_USER")
+    rm -rf "$CONSOLE_HOME/Library/Caches/com.apple.preferencepanes.usercache" 2>/dev/null || true
+    rm -rf "$CONSOLE_HOME/Library/Caches/com.apple.systempreferences" 2>/dev/null || true
+    # cfprefsd doit être relancé en tant que l'utilisateur, pas root
+    sudo -u "$CONSOLE_USER" killall cfprefsd 2>/dev/null || true
+fi
+
+# Aussi pour root au cas où
+rm -rf /var/root/Library/Caches/com.apple.preferencepanes.usercache 2>/dev/null || true
+rm -rf /var/root/Library/Caches/com.apple.systempreferences 2>/dev/null || true
+killall cfprefsd 2>/dev/null || true
+
+log "  Cache cleared"
 
 log "=== Wacom Tablet uninstall finished ==="
 exit 0

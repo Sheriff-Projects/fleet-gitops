@@ -18,7 +18,8 @@ REPO="souari1974/fleet-gitops"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/wacom_tablet.pkg"
 
-# Identifier dans NOTRE namespace pour éviter tout conflit avec celui de Wacom
+# Identifier qui matche le bundle ID de Wacom Center.app
+# pour que Fleet détecte la version installée et affiche le bouton Uninstall.
 PKG_IDENTIFIER="com.wacom.WacomCenter"
 
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
@@ -56,10 +57,6 @@ echo -e "${GREEN}  ✓ PKG version:  $PKG_VERSION${NC}"
 echo ""
 
 # --- Étape 2 : Stub PKG sans logique réelle ---
-# IMPORTANT : on NE met plus la logique download+install dans un postinstall.
-# macOS interdit les installer imbriqués (verrou installd).
-# Toute la logique réelle est dans install_wacom_tablet.sh (script Fleet),
-# qui est exécuté HORS contexte installer et n'a donc pas le problème.
 echo -e "${BLUE}[2/5] Generating no-op postinstall...${NC}"
 
 mkdir -p "$SCRIPTS_DIR"
@@ -275,6 +272,11 @@ for f in "\${FilesToRemove[@]}"; do
     fi
 done
 
+# Sweep large : tout prefPane qui matche wacom/tablet
+log "Sweeping leftover Wacom prefPanes..."
+find /Library/PreferencePanes -maxdepth 1 -iname "*wacom*" -exec rm -rf {} \\; 2>/dev/null || true
+find /Library/PreferencePanes -maxdepth 1 -iname "*tablet*" -exec rm -rf {} \\; 2>/dev/null || true
+
 for userdir in /Users/*; do
     [ -d "\$userdir" ] || continue
     [ "\$(basename "\$userdir")" = "Shared" ] && continue
@@ -300,6 +302,27 @@ if [ -n "\$WacomPkgs" ]; then
     done <<< "\$WacomPkgs"
 fi
 pkgutil --forget "$PKG_IDENTIFIER" 2>/dev/null || true
+
+# --- Vider le cache de Réglages Système (icône fantôme) ---
+log "Clearing System Settings cache..."
+killall "System Preferences" 2>/dev/null || true
+killall "System Settings" 2>/dev/null || true
+
+# Le cache de l'utilisateur connecté (CONSOLE_USER déjà détecté en haut du script)
+if [ -n "\$CONSOLE_USER" ] && [ "\$CONSOLE_USER" != "root" ]; then
+    CONSOLE_HOME=\$(eval echo ~"\$CONSOLE_USER")
+    rm -rf "\$CONSOLE_HOME/Library/Caches/com.apple.preferencepanes.usercache" 2>/dev/null || true
+    rm -rf "\$CONSOLE_HOME/Library/Caches/com.apple.systempreferences" 2>/dev/null || true
+    # cfprefsd doit être relancé en tant que l'utilisateur, pas root
+    sudo -u "\$CONSOLE_USER" killall cfprefsd 2>/dev/null || true
+fi
+
+# Aussi pour root au cas où
+rm -rf /var/root/Library/Caches/com.apple.preferencepanes.usercache 2>/dev/null || true
+rm -rf /var/root/Library/Caches/com.apple.systempreferences 2>/dev/null || true
+killall cfprefsd 2>/dev/null || true
+
+log "  Cache cleared"
 
 log "=== Wacom Tablet uninstall finished ==="
 exit 0
