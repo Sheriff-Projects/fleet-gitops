@@ -88,7 +88,7 @@ if [ -n "$WacomPkgs" ]; then
         pkgutil --forget "$pkg" 2>/dev/null || true
     done <<< "$WacomPkgs"
 fi
-pkgutil --forget "com.fleet-gitops.wacom-tablet-stub" 2>/dev/null || true
+pkgutil --forget "com.wacom.WacomCenter" 2>/dev/null || true
 
 log "=== Wacom Tablet uninstall finished ==="
 exit 0

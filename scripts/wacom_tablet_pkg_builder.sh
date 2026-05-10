@@ -19,7 +19,7 @@ REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/wacom_tablet.pkg"
 
 # Identifier dans NOTRE namespace pour éviter tout conflit avec celui de Wacom
-PKG_IDENTIFIER="com.fleet-gitops.wacom-tablet-stub"
+PKG_IDENTIFIER="com.wacom.WacomCenter"
 
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
 DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
@@ -93,7 +93,7 @@ DIST_XML="$BUILD_DIR/distribution.xml"
 cat > "$DIST_XML" << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>Wacom Tablet (Fleet stub)</title>
+    <title>Wacom Tablet Driver</title>
     <pkg-ref id="$PKG_IDENTIFIER"/>
     <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
     <choices-outline>
