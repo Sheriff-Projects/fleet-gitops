@@ -7,28 +7,35 @@ log "=== Wacom Tablet uninstall started ==="
 
 # Détection de l'utilisateur, robuste même quand le script tourne via fleetd
 CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+CONSOLE_UID=$(id -u "$CONSOLE_USER" 2>/dev/null || echo "")
 REAL_USER="${SUDO_USER:-${CONSOLE_USER:-${USER:-root}}}"
 log "Running as REAL_USER=$REAL_USER (CONSOLE_USER=$CONSOLE_USER)"
 
-ProgramList=("WacomTabletDriver" "WacomTouchDriver" "TabletDriver" "Wacom Tablet Utility" "Wacom Desktop Center" "Wacom Center" "Wacom Experience Program" "UpgradeHelper")
+ProgramList=("WacomTabletDriver" "WacomTouchDriver" "TabletDriver" "Wacom Tablet Utility" "Wacom Desktop Center" "Wacom Center" "Wacom Experience Program" "UpgradeHelper" "Wacom_IOManager" "com.wacom.UpdateHelper" "com.wacom.DataStoreMgr")
 for p in "${ProgramList[@]}"; do
     PIDS=$(pgrep -f "$p" 2>/dev/null || true)
     for pid in $PIDS; do log "  kill $p ($pid)"; kill -9 "$pid" 2>/dev/null || true; done
 done
 sleep 1
 
+# Unload des LaunchAgents — préférer bootout dans le domaine GUI de l'utilisateur
 for a in /Library/LaunchAgents/com.wacom.DataStoreMgr.plist /Library/LaunchAgents/com.wacom.wacomtablet.plist /Library/LaunchAgents/com.wacom.DisplayMgr.plist /Library/LaunchAgents/com.wacom.IOManager.plist; do
     [ -e "$a" ] || continue
     log "  unload agent $a"
-    if [ -n "$REAL_USER" ] && [ "$REAL_USER" != "root" ]; then
-        sudo -u "$REAL_USER" launchctl unload "$a" 2>/dev/null || true
+    if [ -n "$CONSOLE_UID" ] && [ "$CONSOLE_UID" != "0" ]; then
+        launchctl bootout "gui/$CONSOLE_UID" "$a" 2>/dev/null \
+            || launchctl asuser "$CONSOLE_UID" launchctl unload "$a" 2>/dev/null \
+            || true
     fi
 done
 
+# Unload des LaunchDaemons
 for d in /Library/LaunchDaemons/com.wacom.DisplayHelper.plist /Library/LaunchDaemons/com.wacom.displayhelper.plist /Library/LaunchDaemons/com.wacom.UpdateHelper.plist /Library/LaunchDaemons/com.wacom.TabletHelper.plist; do
     [ -e "$d" ] || continue
     log "  unload daemon $d"
-    launchctl unload "$d" 2>/dev/null || true
+    launchctl bootout system "$d" 2>/dev/null \
+        || launchctl unload "$d" 2>/dev/null \
+        || true
 done
 sleep 1
 
@@ -55,6 +62,9 @@ FilesToRemove=(
     /Library/PreferencePanes/Tablet.prefPane
     /Library/PrivilegedHelperTools/com.wacom.TabletHelper.app
     /Library/PrivilegedHelperTools/com.wacom.IOmanager.app
+    /Library/PrivilegedHelperTools/com.wacom.UpdateHelper.app
+    /Library/PrivilegedHelperTools/com.wacom.DataStoreMgr.app
+    /Library/PrivilegedHelperTools/Wacom_IOManager.app
     /Library/Extensions/TabletDriver.kext
     /Library/Extensions/WacomTablet.kext
     "/Library/Internet Plug-Ins/WacomTabletPlugin.plugin"
@@ -103,12 +113,11 @@ log "Clearing System Settings cache..."
 killall "System Preferences" 2>/dev/null || true
 killall "System Settings" 2>/dev/null || true
 
-# Le cache de l'utilisateur connecté (CONSOLE_USER déjà détecté en haut du script)
+# Le cache de l'utilisateur connecté (CONSOLE_USER déjà détecté en haut)
 if [ -n "$CONSOLE_USER" ] && [ "$CONSOLE_USER" != "root" ]; then
     CONSOLE_HOME=$(eval echo ~"$CONSOLE_USER")
     rm -rf "$CONSOLE_HOME/Library/Caches/com.apple.preferencepanes.usercache" 2>/dev/null || true
     rm -rf "$CONSOLE_HOME/Library/Caches/com.apple.systempreferences" 2>/dev/null || true
-    # cfprefsd doit être relancé en tant que l'utilisateur, pas root
     sudo -u "$CONSOLE_USER" killall cfprefsd 2>/dev/null || true
 fi
 

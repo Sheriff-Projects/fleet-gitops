@@ -122,7 +122,7 @@ echo -e "${GREEN}  ✓ PKG built: $OUTPUT_PKG ($PKG_SIZE)${NC}"
 echo -e "${GREEN}  ✓ SHA256:    $PKG_HASH${NC}"
 echo ""
 
-# --- Étape 4 : install_wacom_tablet.sh (LA logique d'install est ici) ---
+# --- Étape 4 : install_wacom_tablet.sh ---
 echo -e "${BLUE}[4/5] Generating Fleet install script (real install logic)...${NC}"
 
 mkdir -p "$SOFTWARE_DIR"
@@ -130,7 +130,8 @@ mkdir -p "$SOFTWARE_DIR"
 cat > "$INSTALL_SCRIPT" << EOF
 #!/bin/bash
 # Install script Wacom Tablet — appelé par Fleet (PAS imbriqué dans un autre installer).
-# Télécharge le DMG officiel Wacom et l'installe.
+# Télécharge le DMG officiel Wacom, l'installe, puis charge les LaunchAgents
+# dans la session GUI de l'utilisateur connecté (pour éviter un redémarrage).
 
 set -uo pipefail
 
@@ -189,6 +190,39 @@ if ! installer -pkg "\$SOURCE_PKG" -target / >> "\$LOG" 2>&1; then
     exit 1
 fi
 
+# --- Chargement des LaunchDaemons (root, pas de session requise) ---
+log "Loading Wacom LaunchDaemons..."
+for daemon in /Library/LaunchDaemons/com.wacom.*.plist; do
+    [ -e "\$daemon" ] || continue
+    log "  bootstrap \$daemon"
+    launchctl bootstrap system "\$daemon" 2>/dev/null \\
+        || launchctl load "\$daemon" 2>/dev/null \\
+        || true
+done
+
+# --- Chargement des LaunchAgents dans la session GUI de l'utilisateur connecté ---
+# C'est cette étape qui évite le redémarrage : sans elle, les agents (dont l'icône
+# de la barre de menu) ne se chargeraient qu'au prochain login.
+log "Loading Wacom LaunchAgents in user GUI session..."
+CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+CONSOLE_UID=\$(id -u "\$CONSOLE_USER" 2>/dev/null || echo "")
+
+if [ -n "\$CONSOLE_UID" ] && [ "\$CONSOLE_UID" != "0" ]; then
+    log "  Target user: \$CONSOLE_USER (uid=\$CONSOLE_UID)"
+    for agent in /Library/LaunchAgents/com.wacom.*.plist; do
+        [ -e "\$agent" ] || continue
+        log "  bootstrap \$agent"
+        # bootstrap = la méthode moderne (Big Sur+)
+        # fallback sur asuser+load pour les vieilles versions
+        launchctl bootstrap "gui/\$CONSOLE_UID" "\$agent" 2>/dev/null \\
+            || launchctl asuser "\$CONSOLE_UID" launchctl load "\$agent" 2>/dev/null \\
+            || true
+    done
+else
+    log "  [WARN] Aucun utilisateur connecté en GUI — agents chargés au prochain login"
+fi
+
+# --- Vérification post-install ---
 if [ -d "\$APP_PATH" ]; then
     NEW_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
     log "Installation verified: Wacom Center \$NEW_VERSION"
@@ -212,28 +246,35 @@ log "=== Wacom Tablet uninstall started ==="
 
 # Détection de l'utilisateur, robuste même quand le script tourne via fleetd
 CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+CONSOLE_UID=\$(id -u "\$CONSOLE_USER" 2>/dev/null || echo "")
 REAL_USER="\${SUDO_USER:-\${CONSOLE_USER:-\${USER:-root}}}"
 log "Running as REAL_USER=\$REAL_USER (CONSOLE_USER=\$CONSOLE_USER)"
 
-ProgramList=("WacomTabletDriver" "WacomTouchDriver" "TabletDriver" "Wacom Tablet Utility" "Wacom Desktop Center" "Wacom Center" "Wacom Experience Program" "UpgradeHelper")
+ProgramList=("WacomTabletDriver" "WacomTouchDriver" "TabletDriver" "Wacom Tablet Utility" "Wacom Desktop Center" "Wacom Center" "Wacom Experience Program" "UpgradeHelper" "Wacom_IOManager" "com.wacom.UpdateHelper" "com.wacom.DataStoreMgr")
 for p in "\${ProgramList[@]}"; do
     PIDS=\$(pgrep -f "\$p" 2>/dev/null || true)
     for pid in \$PIDS; do log "  kill \$p (\$pid)"; kill -9 "\$pid" 2>/dev/null || true; done
 done
 sleep 1
 
+# Unload des LaunchAgents — préférer bootout dans le domaine GUI de l'utilisateur
 for a in /Library/LaunchAgents/com.wacom.DataStoreMgr.plist /Library/LaunchAgents/com.wacom.wacomtablet.plist /Library/LaunchAgents/com.wacom.DisplayMgr.plist /Library/LaunchAgents/com.wacom.IOManager.plist; do
     [ -e "\$a" ] || continue
     log "  unload agent \$a"
-    if [ -n "\$REAL_USER" ] && [ "\$REAL_USER" != "root" ]; then
-        sudo -u "\$REAL_USER" launchctl unload "\$a" 2>/dev/null || true
+    if [ -n "\$CONSOLE_UID" ] && [ "\$CONSOLE_UID" != "0" ]; then
+        launchctl bootout "gui/\$CONSOLE_UID" "\$a" 2>/dev/null \\
+            || launchctl asuser "\$CONSOLE_UID" launchctl unload "\$a" 2>/dev/null \\
+            || true
     fi
 done
 
+# Unload des LaunchDaemons
 for d in /Library/LaunchDaemons/com.wacom.DisplayHelper.plist /Library/LaunchDaemons/com.wacom.displayhelper.plist /Library/LaunchDaemons/com.wacom.UpdateHelper.plist /Library/LaunchDaemons/com.wacom.TabletHelper.plist; do
     [ -e "\$d" ] || continue
     log "  unload daemon \$d"
-    launchctl unload "\$d" 2>/dev/null || true
+    launchctl bootout system "\$d" 2>/dev/null \\
+        || launchctl unload "\$d" 2>/dev/null \\
+        || true
 done
 sleep 1
 
@@ -260,6 +301,9 @@ FilesToRemove=(
     /Library/PreferencePanes/Tablet.prefPane
     /Library/PrivilegedHelperTools/com.wacom.TabletHelper.app
     /Library/PrivilegedHelperTools/com.wacom.IOmanager.app
+    /Library/PrivilegedHelperTools/com.wacom.UpdateHelper.app
+    /Library/PrivilegedHelperTools/com.wacom.DataStoreMgr.app
+    /Library/PrivilegedHelperTools/Wacom_IOManager.app
     /Library/Extensions/TabletDriver.kext
     /Library/Extensions/WacomTablet.kext
     "/Library/Internet Plug-Ins/WacomTabletPlugin.plugin"
@@ -308,12 +352,11 @@ log "Clearing System Settings cache..."
 killall "System Preferences" 2>/dev/null || true
 killall "System Settings" 2>/dev/null || true
 
-# Le cache de l'utilisateur connecté (CONSOLE_USER déjà détecté en haut du script)
+# Le cache de l'utilisateur connecté (CONSOLE_USER déjà détecté en haut)
 if [ -n "\$CONSOLE_USER" ] && [ "\$CONSOLE_USER" != "root" ]; then
     CONSOLE_HOME=\$(eval echo ~"\$CONSOLE_USER")
     rm -rf "\$CONSOLE_HOME/Library/Caches/com.apple.preferencepanes.usercache" 2>/dev/null || true
     rm -rf "\$CONSOLE_HOME/Library/Caches/com.apple.systempreferences" 2>/dev/null || true
-    # cfprefsd doit être relancé en tant que l'utilisateur, pas root
     sudo -u "\$CONSOLE_USER" killall cfprefsd 2>/dev/null || true
 fi
 
@@ -370,6 +413,6 @@ echo "  SHA256           : $PKG_HASH"
 echo "  Install script   : $INSTALL_SCRIPT"
 echo "  Uninstall script : $UNINSTALL_SCRIPT"
 echo ""
-echo "  Note : la logique d'install (download DMG + installer -pkg)"
-echo "  est désormais dans install_wacom_tablet.sh, exécuté par Fleet"
-echo "  HORS d'un postinstall — donc plus de verrou installd."
+echo "  Note : après installer -pkg, le script charge les LaunchAgents Wacom"
+echo "  dans la session GUI de l'utilisateur connecté — l'icône de la barre"
+echo "  de menu et Wacom Center démarrent sans redémarrage."

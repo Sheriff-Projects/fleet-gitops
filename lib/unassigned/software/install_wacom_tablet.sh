@@ -1,6 +1,7 @@
 #!/bin/bash
 # Install script Wacom Tablet — appelé par Fleet (PAS imbriqué dans un autre installer).
-# Télécharge le DMG officiel Wacom et l'installe.
+# Télécharge le DMG officiel Wacom, l'installe, puis charge les LaunchAgents
+# dans la session GUI de l'utilisateur connecté (pour éviter un redémarrage).
 
 set -uo pipefail
 
@@ -59,6 +60,39 @@ if ! installer -pkg "$SOURCE_PKG" -target / >> "$LOG" 2>&1; then
     exit 1
 fi
 
+# --- Chargement des LaunchDaemons (root, pas de session requise) ---
+log "Loading Wacom LaunchDaemons..."
+for daemon in /Library/LaunchDaemons/com.wacom.*.plist; do
+    [ -e "$daemon" ] || continue
+    log "  bootstrap $daemon"
+    launchctl bootstrap system "$daemon" 2>/dev/null \
+        || launchctl load "$daemon" 2>/dev/null \
+        || true
+done
+
+# --- Chargement des LaunchAgents dans la session GUI de l'utilisateur connecté ---
+# C'est cette étape qui évite le redémarrage : sans elle, les agents (dont l'icône
+# de la barre de menu) ne se chargeraient qu'au prochain login.
+log "Loading Wacom LaunchAgents in user GUI session..."
+CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+CONSOLE_UID=$(id -u "$CONSOLE_USER" 2>/dev/null || echo "")
+
+if [ -n "$CONSOLE_UID" ] && [ "$CONSOLE_UID" != "0" ]; then
+    log "  Target user: $CONSOLE_USER (uid=$CONSOLE_UID)"
+    for agent in /Library/LaunchAgents/com.wacom.*.plist; do
+        [ -e "$agent" ] || continue
+        log "  bootstrap $agent"
+        # bootstrap = la méthode moderne (Big Sur+)
+        # fallback sur asuser+load pour les vieilles versions
+        launchctl bootstrap "gui/$CONSOLE_UID" "$agent" 2>/dev/null \
+            || launchctl asuser "$CONSOLE_UID" launchctl load "$agent" 2>/dev/null \
+            || true
+    done
+else
+    log "  [WARN] Aucun utilisateur connecté en GUI — agents chargés au prochain login"
+fi
+
+# --- Vérification post-install ---
 if [ -d "$APP_PATH" ]; then
     NEW_VERSION=$(defaults read "$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
     log "Installation verified: Wacom Center $NEW_VERSION"
