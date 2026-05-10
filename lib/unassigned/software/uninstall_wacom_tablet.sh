@@ -1,11 +1,14 @@
 #!/bin/bash
 # Uninstall script Wacom Tablet
-set -u
+set -o pipefail
 LOG="/var/log/wacom_tablet_uninstall.log"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
 log "=== Wacom Tablet uninstall started ==="
 
-REAL_USER="${SUDO_USER:-$USER}"
+# Détection de l'utilisateur, robuste même quand le script tourne via fleetd
+CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+REAL_USER="${SUDO_USER:-${CONSOLE_USER:-${USER:-root}}}"
+log "Running as REAL_USER=$REAL_USER (CONSOLE_USER=$CONSOLE_USER)"
 
 ProgramList=("WacomTabletDriver" "WacomTouchDriver" "TabletDriver" "Wacom Tablet Utility" "Wacom Desktop Center" "Wacom Center" "Wacom Experience Program" "UpgradeHelper")
 for p in "${ProgramList[@]}"; do
