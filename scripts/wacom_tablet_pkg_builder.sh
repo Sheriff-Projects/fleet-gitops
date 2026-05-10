@@ -142,7 +142,7 @@ log "PKG embarqué trouvé : \$SOURCE_PKG"
 
 # --- Installation du PKG Wacom ---
 log "Installing PKG..."
-if ! installer -pkg "\$SOURCE_PKG" -target / >> "\$LOG" 2>&1; then
+if ! nohup installer -pkg "\$SOURCE_PKG" -target / >> "\$LOG" 2>&1 & disown; then
     log "[ERROR] installer command failed"
     exit 1
 fi
@@ -255,7 +255,6 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
         echo "filename=$FILENAME"
         echo "pkg_path=$OUTPUT_PKG"
         echo "pkg_hash=$PKG_HASH"
-        echo "pkg_size=$PKG_SIZE"
     } >> "$GITHUB_OUTPUT"
 fi
 
@@ -268,7 +267,6 @@ echo "  Raw version    : $LATEST_VERSION"
 echo "  PKG version    : $PKG_VERSION"
 echo "  PKG identifier : $PKG_IDENTIFIER"
 echo "  PKG path       : $OUTPUT_PKG"
-echo "  PKG size       : $PKG_SIZE"
 echo "  SHA256         : $PKG_HASH"
 
 
