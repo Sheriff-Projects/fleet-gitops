@@ -34,7 +34,7 @@ labels:
   hosts:
       - L33P4P54KK
   label_membership_type: manual
-  name: BU54-DSI
+  name: BU54-DSIE
 
 - description:
   hosts:
