@@ -6,3 +6,4 @@
     path: ./install_color_navigator.sh
   uninstall_script:
     path: ./uninstall_color_navigator.sh
+    
