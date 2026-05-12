@@ -3,6 +3,6 @@
   icon:
     path: ../../all/icon/eizo_color_navigator.png
   install_script:
-    path: ./install_eizo_color_navigator.sh
+    path: ./install_color_navigator.sh
   uninstall_script:
-    path: ./uninstall_eizo_color_navigator.sh
+    path: ./uninstall_color_navigator.sh
