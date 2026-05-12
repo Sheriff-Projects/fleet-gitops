@@ -129,6 +129,9 @@ software:
     - path: ../lib/unassigned/software/capture_one.yml
       self_service: true
       # setup_experience: true   # ← décommente pour installer pendant le setup
+    - path: ../lib/unassigned/software/color_navigator.yml
+      self_service: true
+      setup_experience: true
     - path: ../lib/unassigned/software/carbon_copy_cloner.yml
       self_service: true
     - path: ../lib/unassigned/software/sp_wallpapers.yml
