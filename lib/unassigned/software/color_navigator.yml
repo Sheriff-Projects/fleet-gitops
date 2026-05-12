@@ -1,0 +1,8 @@
+- url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/color_navigator.pkg
+  hash_sha256: aaca09d518f26b4212b8b7f1e969afff3860e2f22b135bbcd2fc0a390696e11d
+  icon:
+    path: ../../all/icon/eizo_color_navigator.png
+  install_script:
+    path: ./install_eizo_color_navigator.sh
+  uninstall_script:
+    path: ./uninstall_eizo_color_navigator.sh

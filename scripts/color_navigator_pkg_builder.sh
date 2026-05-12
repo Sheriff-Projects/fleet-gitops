@@ -16,7 +16,7 @@ BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
 REPO="souari1974/fleet-gitops"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/eizo_color_navigator.pkg"
+PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/color_navigator.pkg"
 
 # Identifier qui matche le bundle ID de ColorNavigator 7.app
 # pour que Fleet détecte la version installée et affiche le bouton Uninstall.
