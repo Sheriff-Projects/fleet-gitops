@@ -76,9 +76,9 @@ org_settings:
   mdm:
     apple_business_manager:
     - organization_name: SHERIFF
-      macos_team: "💻 Workstations"
-      ios_team: "📱🔐 Personal mobile devices"
-      ipados_team: "📱🔐 Personal mobile devices"
+      macos_team: "Unassigned"
+      ios_team: "Unassigned"
+      ipados_team: "Unassigned"
     apple_server_url:
     end_user_authentication:
       entity_id:
