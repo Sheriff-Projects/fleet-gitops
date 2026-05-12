@@ -24,7 +24,7 @@ PKG_IDENTIFIER="jp.co.eizo.ColorNavigator7"
 
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
 DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
-OUTPUT_PKG="$DOWNLOAD_DIR/eizo_color_navigator.pkg"
+OUTPUT_PKG="$DOWNLOAD_DIR/color_navigator.pkg"
 SOFTWARE_DIR="$REPO_ROOT/lib/unassigned/software"
 YAML_FILE="$SOFTWARE_DIR/color_navigator.yml"
 INSTALL_SCRIPT="$SOFTWARE_DIR/install_color_navigator.sh"
@@ -369,11 +369,11 @@ cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
   icon:
-    path: ../../all/icon/eizo_color_navigator.png
+    path: ../../all/icon/color_navigator.png
   install_script:
-    path: ./install_eizo_color_navigator.sh
+    path: ./install_color_navigator.sh
   uninstall_script:
-    path: ./uninstall_eizo_color_navigator.sh
+    path: ./uninstall_color_navigator.sh
 EOF
 
 echo -e "${GREEN}  ✓ Updated: $YAML_FILE${NC}"
