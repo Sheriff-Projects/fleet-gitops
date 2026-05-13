@@ -4,7 +4,7 @@
 
 set -uo pipefail
 
-TARGET_VERSION="7.2.7.3"
+TARGET_VERSION="7.2.7"
 DOWNLOAD_URL="https://www.eizoglobal.com/support/db/files/software/software/graphics/colornavigator7/ColorNavigator727.pkg"
 APP_PATH="/Applications/ColorNavigator 7.app"
 TEMP_DIR=$(mktemp -d)

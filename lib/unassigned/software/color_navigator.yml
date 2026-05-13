@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/color_navigator.pkg
-  hash_sha256: a913cb621ecfd2eaf77c6b04d1c3ce03da18782654a41b9c26ce24f3896dba72
+  hash_sha256: 4dc024b07d3b6d0618c6dd7fbf78569bc667e5e6369373fcb6f562ab72465e03
   icon:
     path: ../../all/icon/color_navigator.png
   install_script:

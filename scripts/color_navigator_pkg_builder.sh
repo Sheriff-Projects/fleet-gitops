@@ -58,22 +58,30 @@ fi
 
 # Parse JSON : Root -> application -> mac -> url & version
 DOWNLOAD_URL=$(echo "$JSON_CONTENT" | jq -r '.application.mac.url')
-LATEST_VERSION=$(echo "$JSON_CONTENT" | jq -r '.application.mac.version')
+RAW_VERSION=$(echo "$JSON_CONTENT" | jq -r '.application.mac.version')
 FILENAME=$(basename "$DOWNLOAD_URL")
-PKG_VERSION="$LATEST_VERSION"
 
 if [ -z "$DOWNLOAD_URL" ] || [ "$DOWNLOAD_URL" = "null" ]; then
     echo -e "${RED}[ERROR] URL non trouvée dans le JSON${NC}"
     exit 1
 fi
-if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then
+if [ -z "$RAW_VERSION" ] || [ "$RAW_VERSION" = "null" ]; then
     echo -e "${RED}[ERROR] Version non trouvée dans le JSON${NC}"
     exit 1
 fi
 
+# Le JSON EIZO retourne la version au format X.Y.Z.W (ex. 7.2.7.3),
+# où le 4e segment est le build number interne EIZO. L'app installée,
+# elle, expose seulement X.Y.Z dans son CFBundleShortVersionString.
+# On tronque pour que la comparaison de version dans install_script
+# fonctionne correctement (sinon réinstall systématique à chaque run).
+LATEST_VERSION=$(echo "$RAW_VERSION" | awk -F. '{print $1"."$2"."$3}')
+PKG_VERSION="$LATEST_VERSION"
+
 echo -e "${GREEN}  ✓ PKG filename: $FILENAME${NC}"
 echo -e "${GREEN}  ✓ Full URL:     $DOWNLOAD_URL${NC}"
-echo -e "${GREEN}  ✓ PKG version:  $PKG_VERSION${NC}"
+echo -e "${GREEN}  ✓ Raw version:  $RAW_VERSION (full, from JSON)${NC}"
+echo -e "${GREEN}  ✓ PKG version:  $PKG_VERSION (truncated, matches CFBundleShortVersionString)${NC}"
 echo ""
 
 # --- Étape 2 : Stub PKG sans logique réelle ---
@@ -142,7 +150,7 @@ echo -e "${GREEN}  ✓ PKG built: $OUTPUT_PKG ($PKG_SIZE)${NC}"
 echo -e "${GREEN}  ✓ SHA256:    $PKG_HASH${NC}"
 echo ""
 
-# --- Étape 4 : install_eizo_color_navigator.sh ---
+# --- Étape 4 : install_color_navigator.sh ---
 echo -e "${BLUE}[4/5] Generating Fleet install script...${NC}"
 
 mkdir -p "$SOFTWARE_DIR"
@@ -364,7 +372,7 @@ echo -e "${GREEN}  ✓ Generated: $UNINSTALL_SCRIPT${NC}"
 echo ""
 
 # --- Étape 5 : YAML ---
-echo -e "${BLUE}[5/5] Updating eizo_color_navigator.yml...${NC}"
+echo -e "${BLUE}[5/5] Updating color_navigator.yml...${NC}"
 
 cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
@@ -383,6 +391,7 @@ echo ""
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
     {
         echo "version=$PKG_VERSION"
+        echo "raw_version=$RAW_VERSION"
         echo "filename=$FILENAME"
         echo "pkg_path=$OUTPUT_PKG"
         echo "pkg_hash=$PKG_HASH"
@@ -393,7 +402,8 @@ fi
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Build terminé${NC}"
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
-echo "  PKG version      : $PKG_VERSION"
+echo "  Raw version      : $RAW_VERSION (from JSON)"
+echo "  PKG version      : $PKG_VERSION (truncated for CFBundleShortVersionString match)"
 echo "  PKG identifier   : $PKG_IDENTIFIER"
 echo "  PKG path         : $OUTPUT_PKG"
 echo "  PKG size         : $PKG_SIZE"
