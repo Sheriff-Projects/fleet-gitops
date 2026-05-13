@@ -89,7 +89,7 @@ if [ -n "$EizoPkgs" ]; then
         pkgutil --forget "$pkg" 2>/dev/null || true
     done <<< "$EizoPkgs"
 fi
-pkgutil --forget "jp.co.eizo.ColorNavigator7" 2>/dev/null || true
+pkgutil --forget "com.eizo.pkg.ColorNavigator7" 2>/dev/null || true
 
 # --- 7. Vider le cache de Réglages Système ---
 log "Clearing System Settings cache..."
