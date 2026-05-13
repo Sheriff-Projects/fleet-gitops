@@ -21,7 +21,7 @@ PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/
 
 # Identifier qui matche le bundle ID de ColorNavigator 7.app
 # pour que Fleet détecte la version installée et affiche le bouton Uninstall.
-PKG_IDENTIFIER="jp.co.eizo.ColorNavigator7"
+PKG_IDENTIFIER="com.eizo.pkg.ColorNavigator7"
 
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
 DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
