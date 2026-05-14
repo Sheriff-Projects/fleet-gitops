@@ -1,6 +1,5 @@
 #!/bin/bash
 # Uninstall script FortiClient VPN
-# Suppression complète de tous les composants Fortinet macOS.
 set -o pipefail
 LOG="/var/log/forticlient_uninstall.log"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
@@ -11,7 +10,6 @@ CONSOLE_UID=$(id -u "$CONSOLE_USER" 2>/dev/null || echo "")
 REAL_USER="${SUDO_USER:-${CONSOLE_USER:-${USER:-root}}}"
 log "Running as REAL_USER=$REAL_USER (CONSOLE_USER=$CONSOLE_USER)"
 
-# --- 1. Quit / kill des processus FortiClient ---
 ProgramList=("FortiClient" "FortiTray" "FortiClientAgent" "FortiClientNetworkAccessControl" "fctclient" "FortiSSLVPNXdaemon" "FortiClientInstaller")
 for p in "${ProgramList[@]}"; do
     PIDS=$(pgrep -f "$p" 2>/dev/null || true)
@@ -22,7 +20,6 @@ for p in "${ProgramList[@]}"; do
 done
 sleep 1
 
-# --- 2. Unload des LaunchAgents Fortinet ---
 for a in /Library/LaunchAgents/com.fortinet.*.plist; do
     [ -e "$a" ] || continue
     log "  unload agent $a"
@@ -33,7 +30,6 @@ for a in /Library/LaunchAgents/com.fortinet.*.plist; do
     fi
 done
 
-# --- 3. Unload des LaunchDaemons Fortinet ---
 for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
     [ -e "$d" ] || continue
     log "  unload daemon $d"
@@ -43,7 +39,6 @@ for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
 done
 sleep 1
 
-# --- 4. Suppression des fichiers système ---
 FilesToRemove=(
     /Applications/FortiClient.app
     /Applications/FortiClientUninstaller.app
@@ -65,18 +60,15 @@ for f in "${FilesToRemove[@]}"; do
     fi
 done
 
-# Sweep large : tout fichier Fortinet restant
 log "Sweeping leftover Fortinet files..."
 find /Library/LaunchAgents -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
 find /Library/LaunchDaemons -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
 find /Library/PrivilegedHelperTools -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
 find /Library/Preferences -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
 
-# Cleanup des artefacts laissés par l'online installer dans /var/folders
 log "Cleaning up online installer cache (fctupdate)..."
 find /var/folders -type d -name "fctupdate" -exec rm -rf {} \; 2>/dev/null || true
 
-# --- 5. Cleanup ~/Library de tous les utilisateurs ---
 for userdir in /Users/*; do
     [ -d "$userdir" ] || continue
     [ "$(basename "$userdir")" = "Shared" ] && continue
@@ -94,7 +86,6 @@ for userdir in /Users/*; do
     done
 done
 
-# --- 6. Forget pkg receipts ---
 FortiPkgs=$(pkgutil --pkgs | grep -iE "fortinet|forticlient" || true)
 if [ -n "$FortiPkgs" ]; then
     while IFS= read -r pkg; do
@@ -104,7 +95,6 @@ if [ -n "$FortiPkgs" ]; then
 fi
 pkgutil --forget "com.fortinet.FortiClient" 2>/dev/null || true
 
-# --- 7. Vider le cache de Réglages Système ---
 log "Clearing System Settings cache..."
 killall "System Preferences" 2>/dev/null || true
 killall "System Settings" 2>/dev/null || true

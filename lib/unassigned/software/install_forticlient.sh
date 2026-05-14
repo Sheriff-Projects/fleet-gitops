@@ -1,21 +1,8 @@
 #!/bin/bash
 # Install script FortiClient VPN — appelé par Fleet (PAS imbriqué dans un autre installer).
 #
-# Built on 2026-05-14 14:20:38 (build-time snapshot: 7.4.3.4323)
+# Built on 2026-05-14 16:22:37 (build-time snapshot: 7.4.3.4323)
 # Expected Bundle ID: com.fortinet.FortiClient
-#
-# La version cible est résolue DYNAMIQUEMENT à chaque exécution via le redirect
-# Fortinet, donc pas besoin de rebuilder le PKG à chaque release Fortinet.
-#
-# Workflow Fortinet en deux étapes :
-#   1. Résoudre l'URL effective (redirect) → version + filename
-#   2. Télécharger l'online installer DMG (~5 Mo)
-#   3. Le monter, lancer FortiClientInstaller EN ARRIÈRE-PLAN
-#      (sa GUI ne se termine jamais toute seule — elle attend le clic "Install")
-#   4. Poller /var/folders pour détecter l'apparition du FortiClient.dmg
-#   5. Tuer le process GUI, démonter l'online DMG
-#   6. Monter FortiClient.dmg, lancer installer -pkg
-#   7. Nettoyer le FortiClient.dmg téléchargé (~400 Mo) pour pas saturer le disque
 
 set -uo pipefail
 
@@ -96,10 +83,7 @@ if pgrep -x "FortiClient" > /dev/null; then
     fi
 fi
 
-# --- 4. Nettoyage préventif des FortiClient.dmg orphelins d'anciens runs ---
-# Si un précédent run a échoué avant le cleanup final, des dossiers fctupdate/
-# peuvent traîner. On supprime ceux modifiés il y a plus d'1 heure pour éviter
-# de réutiliser un DMG potentiellement corrompu.
+# --- 4. Nettoyage préventif des FortiClient.dmg orphelins (>1h) ---
 log "Cleaning up stale fctupdate caches (>1h old)..."
 find /var/folders -type f -name "FortiClient.dmg" -path "*/fctupdate/*" -mmin +60 -delete 2>/dev/null || true
 find /var/folders -type d -name "fctupdate" -mmin +60 -empty -delete 2>/dev/null || true
@@ -136,40 +120,77 @@ log "Launching FortiClientInstaller in background..."
 INSTALLER_PID=$!
 log "  Background PID: $INSTALLER_PID"
 
-# --- 8. Polling : attendre l'apparition du FortiClient.dmg téléchargé ---
-# On filtre sur les fichiers récents (-mmin -30) pour ignorer d'éventuels
-# DMG orphelins qu'on n'aurait pas réussi à nettoyer à l'étape 4.
-log "Waiting for FortiClient.dmg to appear (download can take several minutes)..."
+# --- 8. Polling : attendre que FortiClient.dmg soit téléchargé ET COMPLET ---
+#
+# IMPORTANT : FortiClientInstaller crée le fichier dès le début du download et
+# le remplit progressivement. On ne peut PAS se contenter de détecter sa simple
+# présence — un essai de mount sur un DMG partiel échoue avec :
+#   "Failed to mount FortiClient.dmg"
+#
+# Deux niveaux de sécurité :
+#   a) Stabilité de taille : 2 mesures consécutives à 5s d'intervalle identiques
+#   b) Validation hdiutil imageinfo : lit la structure interne, échoue si tronqué
+log "Waiting for FortiClient.dmg to be fully downloaded..."
+
 WAITED=0
 MAX_WAIT=900   # 15 min de timeout de sécurité
-LOG_INTERVAL=30  # On logge la progression toutes les 30s
+LOG_INTERVAL=30
+MIN_SIZE=100000000   # 100 Mo minimum (le DMG complet fait ~400 Mo)
 
 while [ -z "$FINAL_DMG_PATH" ]; do
-    FINAL_DMG_PATH=$(find /var/folders -type f -name "FortiClient.dmg" -path "*/fctupdate/*" -mmin -30 2>/dev/null | head -n 1)
-    if [ -n "$FINAL_DMG_PATH" ] && [ -f "$FINAL_DMG_PATH" ]; then
-        break
-    fi
-    sleep 2
-    WAITED=$((WAITED + 2))
+    # Cherche un FortiClient.dmg récent
+    CANDIDATE=$(find /var/folders -type f -name "FortiClient.dmg" -path "*/fctupdate/*" -mmin -30 2>/dev/null | head -n 1)
 
-    if [ $((WAITED % LOG_INTERVAL)) -eq 0 ]; then
-        log "  Still waiting... (${WAITED}s elapsed, max ${MAX_WAIT}s)"
+    if [ -n "$CANDIDATE" ] && [ -f "$CANDIDATE" ]; then
+        # Mesure 1 de la taille
+        SIZE1=$(stat -f%z "$CANDIDATE" 2>/dev/null || echo 0)
+        sleep 5
+        # Mesure 2 après 5s
+        SIZE2=$(stat -f%z "$CANDIDATE" 2>/dev/null || echo 0)
+
+        if [ "$SIZE1" = "$SIZE2" ] && [ "$SIZE1" -ge "$MIN_SIZE" ]; then
+            # Taille stable et minimum atteint → on valide l'intégrité du DMG
+            SIZE_MB=$((SIZE1 / 1024 / 1024))
+            log "  Size stable at ${SIZE_MB} MB — verifying DMG integrity..."
+
+            if hdiutil imageinfo "$CANDIDATE" >/dev/null 2>&1; then
+                # DMG complet et structurellement valide
+                FINAL_DMG_PATH="$CANDIDATE"
+                log "  ✓ DMG integrity OK"
+                break
+            else
+                log "  ⚠ DMG not yet valid (still being written?) — continuing to wait"
+            fi
+        else
+            # Taille encore en évolution → download en cours
+            SIZE_MB=$((SIZE2 / 1024 / 1024))
+            log "  Download in progress: ${SIZE_MB} MB ($SIZE1 → $SIZE2 bytes)"
+        fi
+        WAITED=$((WAITED + 5))
+    else
+        # Pas encore de fichier détecté
+        sleep 2
+        WAITED=$((WAITED + 2))
+        if [ $((WAITED % LOG_INTERVAL)) -eq 0 ]; then
+            log "  Still waiting for file to appear... (${WAITED}s elapsed, max ${MAX_WAIT}s)"
+        fi
     fi
 
+    # Sécurité : l'installer a-t-il crashé ?
     if ! kill -0 "$INSTALLER_PID" 2>/dev/null; then
-        log "[ERROR] FortiClientInstaller a quitté avant d'avoir produit le DMG"
+        log "[ERROR] FortiClientInstaller a quitté avant d'avoir produit un DMG complet"
         exit 1
     fi
 
+    # Timeout global
     if [ "$WAITED" -ge "$MAX_WAIT" ]; then
-        log "[ERROR] Timeout : FortiClient.dmg pas apparu après ${MAX_WAIT}s"
+        log "[ERROR] Timeout : FortiClient.dmg pas complet après ${MAX_WAIT}s"
         exit 1
     fi
 done
 
-log "FortiClient.dmg detected: $FINAL_DMG_PATH (${WAITED}s elapsed)"
-FC_DMG_SIZE=$(du -h "$FINAL_DMG_PATH" | awk '{print $1}')
-log "Size: $FC_DMG_SIZE"
+FINAL_SIZE=$(du -h "$FINAL_DMG_PATH" | awk '{print $1}')
+log "FortiClient.dmg ready: $FINAL_DMG_PATH ($FINAL_SIZE, ${WAITED}s elapsed)"
 
 # --- 9. Tuer l'installer GUI (court-circuite le bouton "Install") ---
 log "Killing FortiClientInstaller GUI (PID $INSTALLER_PID)..."
@@ -208,14 +229,10 @@ hdiutil detach "$FC_MOUNT" -force -quiet 2>/dev/null || true
 log "FortiClient.dmg unmounted."
 
 # --- 14. Cleanup du FortiClient.dmg téléchargé (~400 Mo) ---
-# On fait ce nettoyage seulement APRÈS un installer -pkg réussi.
-# En cas d'erreur plus haut, on garde le fichier pour debug.
 log "Cleaning up downloaded FortiClient.dmg cache..."
 if [ -n "$FINAL_DMG_PATH" ] && [ -f "$FINAL_DMG_PATH" ]; then
     rm -f "$FINAL_DMG_PATH" 2>/dev/null || true
     log "  Removed $FINAL_DMG_PATH"
-    # rmdir = supprime le dossier fctupdate seulement s'il est vide (protection
-    # au cas où Fortinet y aurait laissé d'autres fichiers)
     FCTUPDATE_DIR=$(dirname "$FINAL_DMG_PATH")
     if [ -d "$FCTUPDATE_DIR" ]; then
         if rmdir "$FCTUPDATE_DIR" 2>/dev/null; then
