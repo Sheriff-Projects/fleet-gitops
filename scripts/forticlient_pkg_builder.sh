@@ -11,7 +11,9 @@
 #   4. On valide l'intégrité du DMG avec hdiutil imageinfo
 #   5. On kill le process GUI, on démonte l'online installer
 #   6. On monte FortiClient.dmg, on lance installer -pkg Install.mpkg
-#   7. On efface FortiClient.dmg + le dossier fctupdate/ (économise ~400 Mo)
+#   7. On charge les LaunchDaemons (root) et LaunchAgents (session GUI utilisateur)
+#      pour que l'icône de barre de menu apparaisse sans logout/login
+#   8. On efface FortiClient.dmg + le dossier fctupdate/ (économise ~400 Mo)
 
 set -euo pipefail
 
@@ -296,12 +298,8 @@ log "  Background PID: \$INSTALLER_PID"
 
 # --- 8. Polling : attendre que FortiClient.dmg soit téléchargé ET COMPLET ---
 #
-# IMPORTANT : FortiClientInstaller crée le fichier dès le début du download et
-# le remplit progressivement. On ne peut PAS se contenter de détecter sa simple
-# présence — un essai de mount sur un DMG partiel échoue avec :
-#   "Failed to mount FortiClient.dmg"
-#
-# Deux niveaux de sécurité :
+# FortiClientInstaller crée le fichier dès le début du download et le remplit
+# progressivement. Deux niveaux de sécurité avant de tenter le mount :
 #   a) Stabilité de taille : 2 mesures consécutives à 5s d'intervalle identiques
 #   b) Validation hdiutil imageinfo : lit la structure interne, échoue si tronqué
 log "Waiting for FortiClient.dmg to be fully downloaded..."
@@ -312,23 +310,18 @@ LOG_INTERVAL=30
 MIN_SIZE=100000000   # 100 Mo minimum (le DMG complet fait ~400 Mo)
 
 while [ -z "\$FINAL_DMG_PATH" ]; do
-    # Cherche un FortiClient.dmg récent
     CANDIDATE=\$(find /var/folders -type f -name "FortiClient.dmg" -path "*/fctupdate/*" -mmin -30 2>/dev/null | head -n 1)
 
     if [ -n "\$CANDIDATE" ] && [ -f "\$CANDIDATE" ]; then
-        # Mesure 1 de la taille
         SIZE1=\$(stat -f%z "\$CANDIDATE" 2>/dev/null || echo 0)
         sleep 5
-        # Mesure 2 après 5s
         SIZE2=\$(stat -f%z "\$CANDIDATE" 2>/dev/null || echo 0)
 
         if [ "\$SIZE1" = "\$SIZE2" ] && [ "\$SIZE1" -ge "\$MIN_SIZE" ]; then
-            # Taille stable et minimum atteint → on valide l'intégrité du DMG
             SIZE_MB=\$((SIZE1 / 1024 / 1024))
             log "  Size stable at \${SIZE_MB} MB — verifying DMG integrity..."
 
             if hdiutil imageinfo "\$CANDIDATE" >/dev/null 2>&1; then
-                # DMG complet et structurellement valide
                 FINAL_DMG_PATH="\$CANDIDATE"
                 log "  ✓ DMG integrity OK"
                 break
@@ -336,13 +329,11 @@ while [ -z "\$FINAL_DMG_PATH" ]; do
                 log "  ⚠ DMG not yet valid (still being written?) — continuing to wait"
             fi
         else
-            # Taille encore en évolution → download en cours
             SIZE_MB=\$((SIZE2 / 1024 / 1024))
             log "  Download in progress: \${SIZE_MB} MB (\$SIZE1 → \$SIZE2 bytes)"
         fi
         WAITED=\$((WAITED + 5))
     else
-        # Pas encore de fichier détecté
         sleep 2
         WAITED=\$((WAITED + 2))
         if [ \$((WAITED % LOG_INTERVAL)) -eq 0 ]; then
@@ -350,13 +341,11 @@ while [ -z "\$FINAL_DMG_PATH" ]; do
         fi
     fi
 
-    # Sécurité : l'installer a-t-il crashé ?
     if ! kill -0 "\$INSTALLER_PID" 2>/dev/null; then
         log "[ERROR] FortiClientInstaller a quitté avant d'avoir produit un DMG complet"
         exit 1
     fi
 
-    # Timeout global
     if [ "\$WAITED" -ge "\$MAX_WAIT" ]; then
         log "[ERROR] Timeout : FortiClient.dmg pas complet après \${MAX_WAIT}s"
         exit 1
@@ -398,11 +387,41 @@ if ! installer -pkg "\$INSTALL_MPKG" -target / >> "\$LOG" 2>&1; then
     exit 1
 fi
 
-# --- 13. Démonter FortiClient.dmg avant cleanup ---
+# --- 13. Charger les LaunchDaemons FortiClient (root, pas de session requise) ---
+log "Loading Fortinet LaunchDaemons..."
+for daemon in /Library/LaunchDaemons/com.fortinet.*.plist; do
+    [ -e "\$daemon" ] || continue
+    log "  bootstrap \$daemon"
+    launchctl bootstrap system "\$daemon" 2>/dev/null \\
+        || launchctl load "\$daemon" 2>/dev/null \\
+        || true
+done
+
+# --- 14. Charger les LaunchAgents FortiClient dans la session GUI ---
+# C'est cette étape qui fait apparaître l'icône dans la barre de menu
+# sans attendre que l'utilisateur se déconnecte/reconnecte.
+log "Loading Fortinet LaunchAgents in user GUI session..."
+CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+CONSOLE_UID=\$(id -u "\$CONSOLE_USER" 2>/dev/null || echo "")
+
+if [ -n "\$CONSOLE_UID" ] && [ "\$CONSOLE_UID" != "0" ]; then
+    log "  Target user: \$CONSOLE_USER (uid=\$CONSOLE_UID)"
+    for agent in /Library/LaunchAgents/com.fortinet.*.plist; do
+        [ -e "\$agent" ] || continue
+        log "  bootstrap \$agent"
+        launchctl bootstrap "gui/\$CONSOLE_UID" "\$agent" 2>/dev/null \\
+            || launchctl asuser "\$CONSOLE_UID" launchctl load "\$agent" 2>/dev/null \\
+            || true
+    done
+else
+    log "  [WARN] Aucun utilisateur connecté en GUI — agents chargés au prochain login"
+fi
+
+# --- 15. Démonter FortiClient.dmg avant cleanup ---
 hdiutil detach "\$FC_MOUNT" -force -quiet 2>/dev/null || true
 log "FortiClient.dmg unmounted."
 
-# --- 14. Cleanup du FortiClient.dmg téléchargé (~400 Mo) ---
+# --- 16. Cleanup du FortiClient.dmg téléchargé (~400 Mo) ---
 log "Cleaning up downloaded FortiClient.dmg cache..."
 if [ -n "\$FINAL_DMG_PATH" ] && [ -f "\$FINAL_DMG_PATH" ]; then
     rm -f "\$FINAL_DMG_PATH" 2>/dev/null || true
@@ -417,7 +436,7 @@ if [ -n "\$FINAL_DMG_PATH" ] && [ -f "\$FINAL_DMG_PATH" ]; then
     fi
 fi
 
-# --- 15. Vérification post-install ---
+# --- 17. Vérification post-install ---
 if [ -d "\$APP_PATH" ]; then
     NEW_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
     log "Installation verified: FortiClient \$NEW_VERSION"
@@ -591,8 +610,8 @@ echo "  SHA256           : $PKG_HASH"
 echo "  Install script   : $INSTALL_SCRIPT"
 echo "  Uninstall script : $UNINSTALL_SCRIPT"
 echo ""
-echo "  Polling install  : taille stable (2 mesures à 5s) + min 100 MB"
-echo "                     + validation hdiutil imageinfo"
+echo "  Polling install  : taille stable (2 mesures à 5s) + min 100 MB + hdiutil imageinfo"
+echo "  Bootstrap agents : LaunchDaemons (root) + LaunchAgents (gui/UID utilisateur)"
 echo "  Cleanup initial  : fctupdate caches >1h old (orphelins de runs ratés)"
 echo "  Cleanup final    : suppression du FortiClient.dmg après installer -pkg OK"
 echo "  Timeout sécurité : 15 min (modifiable via MAX_WAIT)"
