@@ -12,12 +12,6 @@
 #   5. On kill le process GUI, on démonte l'online installer
 #   6. On monte FortiClient.dmg, on lance installer -pkg Install.mpkg
 #   7. On efface FortiClient.dmg + le dossier fctupdate/ (économise ~400 Mo)
-#
-# Bonus : si lib/unassigned/conf/vpn.plist existe, il est embarqué directement
-# dans le payload du PKG stub. Il sera posé par installer(8) à l'emplacement
-# /Library/Application Support/Fortinet/FortiClient/conf/vpn.plist AVANT
-# l'install Fortinet, donc les agents Fortinet le liront au premier démarrage
-# (pas besoin de tuer/redémarrer quoi que ce soit).
 
 set -euo pipefail
 
@@ -112,36 +106,6 @@ exit 0
 EOF
 chmod +x "$SCRIPTS_DIR/postinstall"
 echo -e "${GREEN}  ✓ Stub postinstall created${NC}"
-echo ""
-
-# --- Étape 2.5 : Inclusion de la config VPN partagée dans le payload du PKG ---
-# Si lib/unassigned/conf/vpn.plist existe dans le repo, on le place dans
-# $EMPTY_PAYLOAD_ROOT à son chemin de destination final. pkgbuild l'embarquera
-# automatiquement dans le PKG stub. Quand Fleet exécutera ce PKG sur les Macs,
-# installer(8) posera le fichier à /Library/Application Support/Fortinet/
-# FortiClient/conf/vpn.plist en root:wheel 0644 — avant même que le vrai PKG
-# Fortinet ne soit installé. Donc les agents Fortinet le liront dès leur
-# premier démarrage, sans qu'on ait à les tuer/redémarrer.
-VPN_PLIST_SOURCE="$REPO_ROOT/lib/unassigned/conf/vpn.plist"
-VPN_PLIST_TARGET_RELATIVE="Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
-
-echo -e "${BLUE}[2.5/5] Embedding shared VPN config into PKG payload...${NC}"
-mkdir -p "$EMPTY_PAYLOAD_ROOT"
-if [ -f "$VPN_PLIST_SOURCE" ]; then
-    if ! plutil -lint "$VPN_PLIST_SOURCE" >/dev/null 2>&1; then
-        echo -e "${YELLOW}  ⚠ $VPN_PLIST_SOURCE n'est pas un plist valide — sera embarqué tel quel${NC}"
-    fi
-    VPN_TARGET_DIR="$EMPTY_PAYLOAD_ROOT/$(dirname "$VPN_PLIST_TARGET_RELATIVE")"
-    mkdir -p "$VPN_TARGET_DIR"
-    cp "$VPN_PLIST_SOURCE" "$VPN_TARGET_DIR/vpn.plist"
-    chmod 0644 "$VPN_TARGET_DIR/vpn.plist"
-    VPN_SRC_SIZE=$(wc -c < "$VPN_PLIST_SOURCE" | tr -d ' ')
-    echo -e "${GREEN}  ✓ vpn.plist embedded: $VPN_SRC_SIZE bytes${NC}"
-    echo -e "${GREEN}  ✓ Target on Mac:     /$VPN_PLIST_TARGET_RELATIVE${NC}"
-else
-    echo -e "${YELLOW}  ⚠ $VPN_PLIST_SOURCE introuvable — le PKG ne contiendra PAS de config VPN${NC}"
-    echo -e "${YELLOW}    Pour pousser une config partagée, place ton vpn.plist à cet emplacement et relance.${NC}"
-fi
 echo ""
 
 # --- Étape 3 : Build PKG (stub) ---
@@ -627,11 +591,6 @@ echo "  PKG size         : $PKG_SIZE"
 echo "  SHA256           : $PKG_HASH"
 echo "  Install script   : $INSTALL_SCRIPT"
 echo "  Uninstall script : $UNINSTALL_SCRIPT"
-if [ -f "$VPN_PLIST_SOURCE" ]; then
-    echo "  VPN config       : embedded in PKG payload ($VPN_SRC_SIZE bytes)"
-else
-    echo "  VPN config       : NOT included (lib/unassigned/conf/vpn.plist absent)"
-fi
 echo ""
 echo "  Polling install  : taille stable (2 mesures à 5s) + min 100 MB"
 echo "                     + validation hdiutil imageinfo"
