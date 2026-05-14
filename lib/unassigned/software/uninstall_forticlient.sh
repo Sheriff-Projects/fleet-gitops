@@ -73,7 +73,7 @@ find /Library/PrivilegedHelperTools -maxdepth 1 -iname "com.fortinet.*" -exec rm
 find /Library/Preferences -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
 
 # Cleanup des artefacts laissés par l'online installer dans /var/folders
-log "Cleaning up online installer cache..."
+log "Cleaning up online installer cache (fctupdate)..."
 find /var/folders -type d -name "fctupdate" -exec rm -rf {} \; 2>/dev/null || true
 
 # --- 5. Cleanup ~/Library de tous les utilisateurs ---
