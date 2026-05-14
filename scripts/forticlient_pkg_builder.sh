@@ -11,9 +11,13 @@
 #   4. On valide l'intégrité du DMG avec hdiutil imageinfo
 #   5. On kill le process GUI, on démonte l'online installer
 #   6. On monte FortiClient.dmg, on lance installer -pkg Install.mpkg
-#   7. On injecte la config VPN partagée (lib/unassigned/conf/vpn.plist) et on
-#      redémarre les agents Fortinet pour qu'ils la lisent
-#   8. On efface FortiClient.dmg + le dossier fctupdate/ (économise ~400 Mo)
+#   7. On efface FortiClient.dmg + le dossier fctupdate/ (économise ~400 Mo)
+#
+# Bonus : si lib/unassigned/conf/vpn.plist existe, il est embarqué directement
+# dans le payload du PKG stub. Il sera posé par installer(8) à l'emplacement
+# /Library/Application Support/Fortinet/FortiClient/conf/vpn.plist AVANT
+# l'install Fortinet, donc les agents Fortinet le liront au premier démarrage
+# (pas besoin de tuer/redémarrer quoi que ce soit).
 
 set -euo pipefail
 
@@ -110,6 +114,36 @@ chmod +x "$SCRIPTS_DIR/postinstall"
 echo -e "${GREEN}  ✓ Stub postinstall created${NC}"
 echo ""
 
+# --- Étape 2.5 : Inclusion de la config VPN partagée dans le payload du PKG ---
+# Si lib/unassigned/conf/vpn.plist existe dans le repo, on le place dans
+# $EMPTY_PAYLOAD_ROOT à son chemin de destination final. pkgbuild l'embarquera
+# automatiquement dans le PKG stub. Quand Fleet exécutera ce PKG sur les Macs,
+# installer(8) posera le fichier à /Library/Application Support/Fortinet/
+# FortiClient/conf/vpn.plist en root:wheel 0644 — avant même que le vrai PKG
+# Fortinet ne soit installé. Donc les agents Fortinet le liront dès leur
+# premier démarrage, sans qu'on ait à les tuer/redémarrer.
+VPN_PLIST_SOURCE="$REPO_ROOT/lib/unassigned/conf/vpn.plist"
+VPN_PLIST_TARGET_RELATIVE="Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
+
+echo -e "${BLUE}[2.5/5] Embedding shared VPN config into PKG payload...${NC}"
+mkdir -p "$EMPTY_PAYLOAD_ROOT"
+if [ -f "$VPN_PLIST_SOURCE" ]; then
+    if ! plutil -lint "$VPN_PLIST_SOURCE" >/dev/null 2>&1; then
+        echo -e "${YELLOW}  ⚠ $VPN_PLIST_SOURCE n'est pas un plist valide — sera embarqué tel quel${NC}"
+    fi
+    VPN_TARGET_DIR="$EMPTY_PAYLOAD_ROOT/$(dirname "$VPN_PLIST_TARGET_RELATIVE")"
+    mkdir -p "$VPN_TARGET_DIR"
+    cp "$VPN_PLIST_SOURCE" "$VPN_TARGET_DIR/vpn.plist"
+    chmod 0644 "$VPN_TARGET_DIR/vpn.plist"
+    VPN_SRC_SIZE=$(wc -c < "$VPN_PLIST_SOURCE" | tr -d ' ')
+    echo -e "${GREEN}  ✓ vpn.plist embedded: $VPN_SRC_SIZE bytes${NC}"
+    echo -e "${GREEN}  ✓ Target on Mac:     /$VPN_PLIST_TARGET_RELATIVE${NC}"
+else
+    echo -e "${YELLOW}  ⚠ $VPN_PLIST_SOURCE introuvable — le PKG ne contiendra PAS de config VPN${NC}"
+    echo -e "${YELLOW}    Pour pousser une config partagée, place ton vpn.plist à cet emplacement et relance.${NC}"
+fi
+echo ""
+
 # --- Étape 3 : Build PKG (stub) ---
 echo -e "${BLUE}[3/5] Building stub PKG...${NC}"
 
@@ -168,29 +202,6 @@ echo -e "${GREEN}  ✓ PKG built: $OUTPUT_PKG ($PKG_SIZE)${NC}"
 echo -e "${GREEN}  ✓ SHA256:    $PKG_HASH${NC}"
 echo ""
 
-# --- Chargement & encodage de la config VPN partagée (vpn.plist) ---
-# Le fichier source est dans le repo (versionné), il sera injecté en base64
-# dans install_forticlient.sh pour être posé à l'install sur chaque Mac.
-VPN_PLIST_SOURCE="$REPO_ROOT/lib/unassigned/conf/vpn.plist"
-VPN_PLIST_B64=""
-
-echo -e "${BLUE}[3.5/5] Loading shared VPN config...${NC}"
-if [ -f "$VPN_PLIST_SOURCE" ]; then
-    # Validation rapide du plist source
-    if ! plutil -lint "$VPN_PLIST_SOURCE" >/dev/null 2>&1; then
-        echo -e "${YELLOW}  ⚠ $VPN_PLIST_SOURCE n'est pas un plist valide — il sera quand même intégré tel quel${NC}"
-    fi
-    # base64 sans newlines (compatible macOS + Linux runner CI)
-    VPN_PLIST_B64=$(base64 < "$VPN_PLIST_SOURCE" | tr -d '\n')
-    VPN_SRC_SIZE=$(wc -c < "$VPN_PLIST_SOURCE" | tr -d ' ')
-    echo -e "${GREEN}  ✓ vpn.plist loaded: $VPN_SRC_SIZE bytes → ${#VPN_PLIST_B64} chars base64${NC}"
-else
-    echo -e "${YELLOW}  ⚠ $VPN_PLIST_SOURCE introuvable${NC}"
-    echo -e "${YELLOW}    Le script d'install sera généré sans config VPN — l'utilisateur devra la configurer manuellement.${NC}"
-    echo -e "${YELLOW}    Pour pousser une config VPN partagée, place ton vpn.plist à cet emplacement et relance.${NC}"
-fi
-echo ""
-
 # --- Étape 4 : Génération des scripts Fleet (install + uninstall) ---
 echo -e "${BLUE}[4/5] Generating Fleet install/uninstall scripts...${NC}"
 
@@ -212,11 +223,6 @@ ONLINE_DMG="\$TEMP_DIR/FortiClientVPN_OnlineInstaller.dmg"
 ONLINE_MOUNT="\$TEMP_DIR/online_mount"
 FC_MOUNT="\$TEMP_DIR/fc_mount"
 LOG="/var/log/forticlient_install.log"
-
-# Config VPN partagée — figée par le builder depuis lib/unassigned/conf/vpn.plist
-# Vide si aucun vpn.plist n'était présent au moment du build.
-VPN_PLIST_B64="$VPN_PLIST_B64"
-VPN_CONF_PATH="/Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
 
 INSTALLER_PID=""
 FINAL_DMG_PATH=""
@@ -428,71 +434,11 @@ if ! installer -pkg "\$INSTALL_MPKG" -target / >> "\$LOG" 2>&1; then
     exit 1
 fi
 
-# --- 13. Injection de la config VPN partagée ---
-# Le postinstall Fortinet vient de lancer FortiTray + FortiClientAgent. Il faut
-# les arrêter avant d'écrire vpn.plist, sinon ils tiendraient l'ancienne config
-# (vide) en mémoire et ne reliraient pas le fichier qu'on pose.
-if [ -n "\$VPN_PLIST_B64" ]; then
-    log "Injecting shared VPN config..."
-
-    # Stoppe les agents userspace + le service root pour libérer toute lecture en cours
-    log "  Stopping Fortinet processes to safely write VPN config..."
-    pkill -9 -i -f "FortiTray|FortiClientAgent|FctMiscAgent|CredentialStore|FortiClient\\.app/Contents/MacOS/FortiClient" 2>/dev/null || true
-    sleep 2
-
-    # Crée le dossier de config (devrait déjà exister mais sécurité)
-    mkdir -p "\$(dirname "\$VPN_CONF_PATH")"
-
-    # Décode le base64 et écrit le fichier
-    if echo "\$VPN_PLIST_B64" | base64 -D > "\$VPN_CONF_PATH" 2>/dev/null; then
-        chown root:wheel "\$VPN_CONF_PATH"
-        chmod 0644 "\$VPN_CONF_PATH"
-        VPN_BYTES=\$(stat -f%z "\$VPN_CONF_PATH" 2>/dev/null || echo "?")
-        log "  ✓ Wrote \$VPN_CONF_PATH (\${VPN_BYTES} bytes, root:wheel 0644)"
-
-        # Vérifie que c'est un plist valide
-        if plutil -lint "\$VPN_CONF_PATH" >/dev/null 2>&1; then
-            log "  ✓ Plist syntax valid"
-        else
-            log "  [WARN] Plist syntax check failed — config may not load properly"
-        fi
-    else
-        log "  [ERROR] Failed to decode VPN config from base64"
-    fi
-
-    # Redémarre les agents Fortinet pour qu'ils relisent la nouvelle config
-    log "  Restarting Fortinet daemons (system domain)..."
-    for daemon in /Library/LaunchDaemons/com.fortinet.*.plist; do
-        [ -e "\$daemon" ] || continue
-        launchctl bootout system "\$daemon" 2>/dev/null || true
-        launchctl bootstrap system "\$daemon" 2>/dev/null \\
-            || launchctl load "\$daemon" 2>/dev/null \\
-            || true
-    done
-
-    log "  Restarting Fortinet agents (user GUI session)..."
-    VPN_CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
-    VPN_CONSOLE_UID=\$(id -u "\$VPN_CONSOLE_USER" 2>/dev/null || echo "")
-    if [ -n "\$VPN_CONSOLE_UID" ] && [ "\$VPN_CONSOLE_UID" != "0" ]; then
-        for agent in /Library/LaunchAgents/com.fortinet.*.plist; do
-            [ -e "\$agent" ] || continue
-            launchctl bootout "gui/\$VPN_CONSOLE_UID" "\$agent" 2>/dev/null || true
-            launchctl bootstrap "gui/\$VPN_CONSOLE_UID" "\$agent" 2>/dev/null \\
-                || launchctl asuser "\$VPN_CONSOLE_UID" launchctl load "\$agent" 2>/dev/null \\
-                || true
-        done
-    else
-        log "  [WARN] No user logged in GUI — agents will load at next login with the new config"
-    fi
-else
-    log "No shared VPN config to inject (vpn.plist was absent at build time)."
-fi
-
-# --- 14. Démonter FortiClient.dmg avant cleanup ---
+# --- 13. Démonter FortiClient.dmg avant cleanup ---
 hdiutil detach "\$FC_MOUNT" -force -quiet 2>/dev/null || true
 log "FortiClient.dmg unmounted."
 
-# --- 15. Cleanup du FortiClient.dmg téléchargé (~400 Mo) ---
+# --- 14. Cleanup du FortiClient.dmg téléchargé (~400 Mo) ---
 log "Cleaning up downloaded FortiClient.dmg cache..."
 if [ -n "\$FINAL_DMG_PATH" ] && [ -f "\$FINAL_DMG_PATH" ]; then
     rm -f "\$FINAL_DMG_PATH" 2>/dev/null || true
@@ -507,7 +453,7 @@ if [ -n "\$FINAL_DMG_PATH" ] && [ -f "\$FINAL_DMG_PATH" ]; then
     fi
 fi
 
-# --- 16. Vérification post-install ---
+# --- 15. Vérification post-install ---
 if [ -d "\$APP_PATH" ]; then
     NEW_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
     log "Installation verified: FortiClient \$NEW_VERSION"
@@ -681,6 +627,11 @@ echo "  PKG size         : $PKG_SIZE"
 echo "  SHA256           : $PKG_HASH"
 echo "  Install script   : $INSTALL_SCRIPT"
 echo "  Uninstall script : $UNINSTALL_SCRIPT"
+if [ -f "$VPN_PLIST_SOURCE" ]; then
+    echo "  VPN config       : embedded in PKG payload ($VPN_SRC_SIZE bytes)"
+else
+    echo "  VPN config       : NOT included (lib/unassigned/conf/vpn.plist absent)"
+fi
 echo ""
 echo "  Polling install  : taille stable (2 mesures à 5s) + min 100 MB"
 echo "                     + validation hdiutil imageinfo"
