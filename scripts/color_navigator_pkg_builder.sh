@@ -118,7 +118,7 @@ DIST_XML="$BUILD_DIR/distribution.xml"
 cat > "$DIST_XML" << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>EIZO ColorNavigator 7</title>
+    <title>ColorNavigator 7</title>
     <pkg-ref id="$PKG_IDENTIFIER"/>
     <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
     <choices-outline>
