@@ -131,7 +131,7 @@ software:
       self_service: true
       # setup_experience: true   # ← décommente pour installer pendant le setup
     - path: ../lib/unassigned/software/color_navigator.yml
-      display_name: ColorNavigator
+      display_name: ColorNavigator 7
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/carbon_copy_cloner.yml
@@ -150,7 +150,7 @@ software:
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/forticlient.yml
-      display_name: FortiClient
+      display_name: FortiClient 7
       self_service: true      
       setup_experience: true
     - path: ../lib/unassigned/software/wallpaper_folder.yml
