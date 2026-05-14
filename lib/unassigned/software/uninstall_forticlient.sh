@@ -6,14 +6,13 @@ LOG="/var/log/forticlient_uninstall.log"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
 log "=== FortiClient uninstall started ==="
 
-# Détection de l'utilisateur (robuste sous fleetd)
 CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
 CONSOLE_UID=$(id -u "$CONSOLE_USER" 2>/dev/null || echo "")
 REAL_USER="${SUDO_USER:-${CONSOLE_USER:-${USER:-root}}}"
 log "Running as REAL_USER=$REAL_USER (CONSOLE_USER=$CONSOLE_USER)"
 
 # --- 1. Quit / kill des processus FortiClient ---
-ProgramList=("FortiClient" "FortiTray" "FortiClientAgent" "FortiClientNetworkAccessControl" "fctclient" "FortiSSLVPNXdaemon")
+ProgramList=("FortiClient" "FortiTray" "FortiClientAgent" "FortiClientNetworkAccessControl" "fctclient" "FortiSSLVPNXdaemon" "FortiClientInstaller")
 for p in "${ProgramList[@]}"; do
     PIDS=$(pgrep -f "$p" 2>/dev/null || true)
     for pid in $PIDS; do
@@ -72,6 +71,10 @@ find /Library/LaunchAgents -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \
 find /Library/LaunchDaemons -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
 find /Library/PrivilegedHelperTools -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
 find /Library/Preferences -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \; 2>/dev/null || true
+
+# Cleanup des artefacts laissés par l'online installer dans /var/folders
+log "Cleaning up online installer cache..."
+find /var/folders -type d -name "fctupdate" -exec rm -rf {} \; 2>/dev/null || true
 
 # --- 5. Cleanup ~/Library de tous les utilisateurs ---
 for userdir in /Users/*; do
