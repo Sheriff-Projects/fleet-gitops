@@ -86,6 +86,18 @@
 						<key>StaticCode</key>
 						<false/>
 					</dict>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>identifier fctservctl and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = AH4XFXJ7DK</string>
+						<key>Identifier</key>
+						<string>/Library/Application Support/Fortinet/FortiClient/bin/fctservctl</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
 				</array>
 			</dict>
 		</dict>
@@ -122,7 +134,7 @@
 				<key>ProviderBundleIdentifier</key>
 				<string>com.fortinet.forticlient.macos.vpn</string>
 				<key>ProviderDesignatedRequirement</key>
-				<string></string>
+				<string>anchor apple generic and identifier "com.fortinet.forticlient.macos.vpn" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = AH4XFXJ7DK)</string>
 				<key>ProviderType</key>
 				<string>packet-tunnel</string>
 				<key>RemoteAddress</key>
@@ -198,6 +210,31 @@
 					</dict>
 				</array>
 			</dict>
+		</dict>
+		<dict>
+			<key>PayloadDescription</key>
+			<string>Pre-approves Fortinet Background Items (LaunchAgents and LaunchDaemons) so the user cannot disable them in System Settings &gt; General &gt; Login Items. Required on macOS 13+ for the FortiClient menu bar icon to appear automatically after install.</string>
+			<key>PayloadDisplayName</key>
+			<string>Service Management ••• Fortinet - Forticlient •••</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.servicemanagement.7B3D2578-F939-4021-988F-FDC2032FCA40</string>
+			<key>PayloadOrganization</key>
+			<string>SHERIFF PROJECTS</string>
+			<key>PayloadType</key>
+			<string>com.apple.servicemanagement.managed</string>
+			<key>PayloadUUID</key>
+			<string>7B3D2578-F939-4021-988F-FDC2032FCA40</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>Rules</key>
+			<array>
+				<dict>
+					<key>RuleType</key>
+					<string>TeamIdentifier</string>
+					<key>RuleValue</key>
+					<string>AH4XFXJ7DK</string>
+				</dict>
+			</array>
 		</dict>
 	</array>
 	<key>PayloadDescription</key>

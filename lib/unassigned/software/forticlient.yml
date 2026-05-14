@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/forticlient.pkg
-  hash_sha256: 43341ca69ad7055eb8892cefee893e6ad925d64fa9bc8b797feaedd4293c8a70
+  hash_sha256: 9c780854a19addce3f58c374ed31764b7b767530db09e51c212ee0e2bb6f684a
   icon:
     path: ../../all/icon/forticlient.png
   install_script:
