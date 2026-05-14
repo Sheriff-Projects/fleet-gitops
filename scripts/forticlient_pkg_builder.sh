@@ -2,12 +2,13 @@
 # Build le PKG stub FortiClient.
 # Le PKG est versionné dans Git, URL fixe via raw.githubusercontent.com.
 #
-# Particularité FortiClient : double étape de téléchargement.
+# Particularité FortiClient : double étape de téléchargement, GUI bloquante.
 #   1. On télécharge le "online installer" (~5 Mo, FortiClientVPN_x.y.z.dmg)
 #   2. On le monte, on lance FortiClientInstaller.app/Contents/MacOS/FortiClientInstaller
-#   3. Cet exécutable télécharge le vrai installer dans /var/folders/.../FortiClient.dmg
-#   4. On parse sa sortie pour trouver ce chemin, on monte ce 2e DMG
-#   5. On lance installer -pkg Install.mpkg
+#      EN ARRIÈRE-PLAN (ne se termine jamais tout seul : attend le clic "Install")
+#   3. On poll /var/folders pour détecter l'apparition de FortiClient.dmg
+#   4. On kill le process GUI, on démonte l'online installer
+#   5. On monte FortiClient.dmg, on lance installer -pkg Install.mpkg
 #
 # La version cible (TARGET_VERSION) est résolue DYNAMIQUEMENT à l'exécution
 # du script install_forticlient.sh sur le Mac client, via le même mécanisme
@@ -181,9 +182,6 @@ echo ""
 # IMPORTANT sur l'échappement dans le heredoc :
 #   $VAR    → expansé MAINTENANT (build time), valeur figée dans le script
 #   \$VAR   → expansé À L'EXÉCUTION du script (sur le Mac client, runtime)
-#
-# Pour la version cible, on veut runtime → \$TARGET_VERSION, résolue à chaque
-# exécution Fleet via curl sur l'URL Fortinet.
 echo -e "${BLUE}[4/5] Generating Fleet install/uninstall scripts...${NC}"
 
 mkdir -p "$SOFTWARE_DIR"
@@ -201,10 +199,11 @@ cat > "$INSTALL_SCRIPT" << EOF
 # Workflow Fortinet en deux étapes :
 #   1. Résoudre l'URL effective (redirect) → version + filename
 #   2. Télécharger l'online installer DMG (~5 Mo)
-#   3. Le monter, lancer FortiClientInstaller (qui télécharge le vrai installer)
-#   4. Parser la sortie pour trouver le path du FortiClient.dmg téléchargé
-#   5. Monter ce 2e DMG
-#   6. Installer le PKG du second DMG
+#   3. Le monter, lancer FortiClientInstaller EN ARRIÈRE-PLAN
+#      (sa GUI ne se termine jamais toute seule — elle attend le clic "Install")
+#   4. Poller /var/folders pour détecter l'apparition du FortiClient.dmg
+#   5. Tuer le process GUI, démonter l'online DMG
+#   6. Monter FortiClient.dmg, lancer installer -pkg
 
 set -uo pipefail
 
@@ -214,12 +213,18 @@ TEMP_DIR=\$(mktemp -d)
 ONLINE_DMG="\$TEMP_DIR/FortiClientVPN_OnlineInstaller.dmg"
 ONLINE_MOUNT="\$TEMP_DIR/online_mount"
 FC_MOUNT="\$TEMP_DIR/fc_mount"
-INSTALLER_LOG="\$TEMP_DIR/forticlient_installer.log"
 LOG="/var/log/forticlient_install.log"
+
+# Garde la trace du PID de l'installer GUI pour pouvoir le tuer proprement
+INSTALLER_PID=""
 
 log() { echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$1" | tee -a "\$LOG"; }
 
 cleanup() {
+    # Si l'installer GUI tourne encore, le tuer
+    if [ -n "\$INSTALLER_PID" ] && kill -0 "\$INSTALLER_PID" 2>/dev/null; then
+        kill -9 "\$INSTALLER_PID" 2>/dev/null || true
+    fi
     hdiutil detach "\$FC_MOUNT" -force -quiet 2>/dev/null || true
     hdiutil detach "\$ONLINE_MOUNT" -force -quiet 2>/dev/null || true
     [ -d "/Volumes/FortiClientInstaller" ] && hdiutil detach "/Volumes/FortiClientInstaller" -force -quiet 2>/dev/null || true
@@ -241,7 +246,6 @@ if [ -z "\$EFFECTIVE_URL" ] || [ "\$EFFECTIVE_URL" = "\$DOWNLOAD_URL" ]; then
 fi
 
 DMG_FILENAME=\$(echo "\$EFFECTIVE_URL" | sed 's#.*/##' | sed 's#?.*##')
-# Format : FortiClientVPN_7.4.3.4323_OnlineInstaller.dmg → 7.4.3.4323
 TARGET_VERSION=\$(echo "\$DMG_FILENAME" | sed -E 's/^FortiClientVPN_([0-9.]+)_OnlineInstaller\\.dmg\$/\\1/')
 if [ "\$TARGET_VERSION" = "\$DMG_FILENAME" ] || [ -z "\$TARGET_VERSION" ]; then
     log "[ERROR] Could not extract version from filename: \$DMG_FILENAME"
@@ -282,8 +286,6 @@ if pgrep -x "FortiClient" > /dev/null; then
 fi
 
 # --- 4. Télécharger l'online installer DMG ---
-# On utilise \$EFFECTIVE_URL directement plutôt que \$DOWNLOAD_URL pour éviter
-# une 2e résolution de redirect.
 log "Downloading online installer..."
 if ! curl -sSL --fail --max-time 600 "\$EFFECTIVE_URL" -o "\$ONLINE_DMG"; then
     log "[ERROR] Download failed"
@@ -309,39 +311,71 @@ if [ ! -x "\$INSTALLER_BIN" ]; then
     exit 1
 fi
 
-# --- 6. Lancer FortiClientInstaller (téléchargement du vrai installer ~400 Mo) ---
-log "Running FortiClientInstaller (will download the full installer, may take several minutes)..."
-"\$INSTALLER_BIN" 2>&1 | tee "\$INSTALLER_LOG" | tee -a "\$LOG" || {
-    INSTALLER_EXIT=\$?
-    log "[WARN] FortiClientInstaller exited with code \$INSTALLER_EXIT (continuing anyway, will check for DMG)"
-}
+# --- 6. Lancer FortiClientInstaller EN ARRIÈRE-PLAN ---
+# La GUI de l'installer ne se termine JAMAIS toute seule : elle télécharge
+# le DMG puis attend que l'utilisateur clique sur "Install". On contourne ça
+# en lançant en background et en pollant l'apparition du fichier sur disque.
+log "Launching FortiClientInstaller in background..."
+"\$INSTALLER_BIN" > /dev/null 2>&1 &
+INSTALLER_PID=\$!
+log "  Background PID: \$INSTALLER_PID"
 
-# --- 7. Extraire le chemin du FortiClient.dmg depuis la sortie ---
-FC_DMG=\$(grep -oE '/var/folders/[^ ]*/FortiClient\\.dmg' "\$INSTALLER_LOG" | tail -n 1)
-if [ -z "\$FC_DMG" ] || [ ! -f "\$FC_DMG" ]; then
-    # Fallback : chercher dans les emplacements standard fctupdate
-    FC_DMG=\$(find /var/folders -type f -name "FortiClient.dmg" -path "*/fctupdate/*" 2>/dev/null | head -n 1)
-fi
-if [ -z "\$FC_DMG" ] || [ ! -f "\$FC_DMG" ]; then
-    log "[ERROR] Could not find FortiClient.dmg downloaded by online installer"
-    log "[ERROR] Installer output (last 50 lines):"
-    tail -n 50 "\$INSTALLER_LOG" | tee -a "\$LOG"
-    exit 1
-fi
-log "Found FortiClient.dmg at: \$FC_DMG"
+# --- 7. Polling : attendre l'apparition du FortiClient.dmg téléchargé ---
+log "Waiting for FortiClient.dmg to appear (download can take several minutes)..."
+FINAL_DMG_PATH=""
+WAITED=0
+MAX_WAIT=900   # 15 min de timeout de sécurité
+LOG_INTERVAL=30  # On logge la progression toutes les 30s
 
-# Démonter l'online installer (plus besoin)
+while [ -z "\$FINAL_DMG_PATH" ]; do
+    # Cherche le fichier — peut apparaître dans /var/folders/.../fctupdate/FortiClient.dmg
+    FINAL_DMG_PATH=\$(find /var/folders -type f -name "FortiClient.dmg" 2>/dev/null | head -n 1)
+    if [ -n "\$FINAL_DMG_PATH" ] && [ -f "\$FINAL_DMG_PATH" ]; then
+        break
+    fi
+    sleep 2
+    WAITED=\$((WAITED + 2))
+
+    # Log de progression périodique (utile pour debug dans Fleet)
+    if [ \$((WAITED % LOG_INTERVAL)) -eq 0 ]; then
+        log "  Still waiting... (\${WAITED}s elapsed, max \${MAX_WAIT}s)"
+    fi
+
+    # Sécurité : si l'installer a crashé, ne pas attendre éternellement
+    if ! kill -0 "\$INSTALLER_PID" 2>/dev/null; then
+        log "[ERROR] FortiClientInstaller a quitté avant d'avoir produit le DMG"
+        exit 1
+    fi
+
+    # Timeout global
+    if [ "\$WAITED" -ge "\$MAX_WAIT" ]; then
+        log "[ERROR] Timeout : FortiClient.dmg pas apparu après \${MAX_WAIT}s"
+        exit 1
+    fi
+done
+
+log "FortiClient.dmg detected: \$FINAL_DMG_PATH (\${WAITED}s elapsed)"
+FC_DMG_SIZE=\$(du -h "\$FINAL_DMG_PATH" | awk '{print \$1}')
+log "Size: \$FC_DMG_SIZE"
+
+# --- 8. Tuer l'installer GUI (court-circuite le bouton "Install") ---
+log "Killing FortiClientInstaller GUI (PID \$INSTALLER_PID)..."
+kill -9 "\$INSTALLER_PID" 2>/dev/null || true
+INSTALLER_PID=""  # vidé pour que le cleanup trap ne retente pas
+
+# --- 9. Démonter l'online installer ---
 hdiutil detach "\$ONLINE_MOUNT" -force -quiet 2>/dev/null || true
+log "Online installer unmounted."
 
-# --- 8. Monter le vrai FortiClient.dmg ---
+# --- 10. Monter le vrai FortiClient.dmg ---
 log "Mounting FortiClient.dmg..."
 mkdir -p "\$FC_MOUNT"
-if ! hdiutil attach "\$FC_DMG" -mountpoint "\$FC_MOUNT" -nobrowse -quiet; then
+if ! hdiutil attach "\$FINAL_DMG_PATH" -mountpoint "\$FC_MOUNT" -nobrowse -quiet; then
     log "[ERROR] Failed to mount FortiClient.dmg"
     exit 1
 fi
 
-# --- 9. Trouver et installer Install.mpkg ---
+# --- 11. Trouver et installer Install.mpkg ---
 INSTALL_MPKG=\$(find "\$FC_MOUNT" -maxdepth 2 \\( -name "*.mpkg" -o -name "*.pkg" \\) 2>/dev/null | head -n 1)
 if [ -z "\$INSTALL_MPKG" ] || [ ! -e "\$INSTALL_MPKG" ]; then
     log "[ERROR] No .mpkg/.pkg found in FortiClient.dmg"
@@ -356,7 +390,7 @@ if ! installer -pkg "\$INSTALL_MPKG" -target / >> "\$LOG" 2>&1; then
     exit 1
 fi
 
-# --- 10. Vérification post-install ---
+# --- 12. Vérification post-install ---
 if [ -d "\$APP_PATH" ]; then
     NEW_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
     log "Installation verified: FortiClient \$NEW_VERSION"
@@ -379,14 +413,13 @@ LOG="/var/log/forticlient_uninstall.log"
 log() { echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$1" | tee -a "\$LOG"; }
 log "=== FortiClient uninstall started ==="
 
-# Détection de l'utilisateur (robuste sous fleetd)
 CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
 CONSOLE_UID=\$(id -u "\$CONSOLE_USER" 2>/dev/null || echo "")
 REAL_USER="\${SUDO_USER:-\${CONSOLE_USER:-\${USER:-root}}}"
 log "Running as REAL_USER=\$REAL_USER (CONSOLE_USER=\$CONSOLE_USER)"
 
 # --- 1. Quit / kill des processus FortiClient ---
-ProgramList=("FortiClient" "FortiTray" "FortiClientAgent" "FortiClientNetworkAccessControl" "fctclient" "FortiSSLVPNXdaemon")
+ProgramList=("FortiClient" "FortiTray" "FortiClientAgent" "FortiClientNetworkAccessControl" "fctclient" "FortiSSLVPNXdaemon" "FortiClientInstaller")
 for p in "\${ProgramList[@]}"; do
     PIDS=\$(pgrep -f "\$p" 2>/dev/null || true)
     for pid in \$PIDS; do
@@ -445,6 +478,10 @@ find /Library/LaunchAgents -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \
 find /Library/LaunchDaemons -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \\; 2>/dev/null || true
 find /Library/PrivilegedHelperTools -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \\; 2>/dev/null || true
 find /Library/Preferences -maxdepth 1 -iname "com.fortinet.*" -exec rm -rf {} \\; 2>/dev/null || true
+
+# Cleanup des artefacts laissés par l'online installer dans /var/folders
+log "Cleaning up online installer cache..."
+find /var/folders -type d -name "fctupdate" -exec rm -rf {} \\; 2>/dev/null || true
 
 # --- 5. Cleanup ~/Library de tous les utilisateurs ---
 for userdir in /Users/*; do
@@ -540,6 +577,6 @@ echo "  SHA256           : $PKG_HASH"
 echo "  Install script   : $INSTALL_SCRIPT"
 echo "  Uninstall script : $UNINSTALL_SCRIPT"
 echo ""
-echo "  Note : la version cible (TARGET_VERSION) est résolue DYNAMIQUEMENT"
-echo "  à chaque exécution du script sur le Mac client, donc pas besoin de"
-echo "  rebuilder le PKG à chaque release Fortinet."
+echo "  Workflow install : background process + polling sur FortiClient.dmg"
+echo "  Timeout sécurité : 15 min (modifiable dans le script via MAX_WAIT)"
+echo "  Log progression  : toutes les 30s dans /var/log/forticlient_install.log"
