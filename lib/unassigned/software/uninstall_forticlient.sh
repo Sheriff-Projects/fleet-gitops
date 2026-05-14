@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Uninstall script FortiClient VPN
 set -o pipefail
 LOG="/var/log/forticlient_uninstall.log"
