@@ -3,8 +3,8 @@
 # Le PKG contient le vpn.plist dans son payload et un postinstall qui redémarre
 # les agents FortiClient. Pas de logique métier ici.
 #
-# Built on 2026-05-15 02:12:17
-# PKG version: 2026.05.15.021217
+# Built on 2026-05-15 18:09:41
+# PKG version: 2026.05.15.180941
 
 set -uo pipefail
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 OldUnInstaller="/Applications/FortiClientUninstaller.app/Contents/MacOS/Uninstall"
 UnInstaller="/Applications/FortiClientUninstaller.app/Contents/Library/LaunchServices/com.fortinet.forticlient.uninstall_helper"
@@ -11,3 +11,5 @@ else
     echo "$(date) - Error: Uninstaller not found."
     exit 1
 fi
+log "=== FortiClient uninstall finished ==="
+exit 0
