@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install script FortiClient VPN — appelé par Fleet (PAS imbriqué dans un autre installer).
 #
-# Built on 2026-05-15 03:37:19 (build-time snapshot: 7.4.3.4323)
+# Built on 2026-05-15 03:49:36 (build-time snapshot: 7.4.3.4323)
 # Expected Bundle ID: com.fortinet.FortiClient
 
 set -uo pipefail
@@ -66,21 +66,6 @@ if [ -d "$APP_PATH" ]; then
     log "Upgrading from $INSTALLED_VERSION to $TARGET_VERSION..."
 else
     log "FortiClient not installed, performing fresh install..."
-fi
-
-# --- 3. Quit FortiClient s'il tourne ---
-if pgrep -x "FortiClient" > /dev/null; then
-    log "FortiClient is running — quitting gracefully..."
-    osascript -e 'tell application "FortiClient" to quit' 2>/dev/null || true
-    for i in 1 2 3 4 5 6 7 8 9 10; do
-        pgrep -x "FortiClient" > /dev/null || break
-        sleep 2
-    done
-    if pgrep -x "FortiClient" > /dev/null; then
-        log "[WARN] FortiClient did not quit gracefully — force killing"
-        pkill -9 -x "FortiClient" 2>/dev/null || true
-        sleep 2
-    fi
 fi
 
 # --- 4. Nettoyage préventif des FortiClient.dmg orphelins (>1h) ---

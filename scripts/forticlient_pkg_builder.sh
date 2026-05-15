@@ -279,21 +279,6 @@ else
     log "FortiClient not installed, performing fresh install..."
 fi
 
-# --- 3. Quit FortiClient s'il tourne ---
-if pgrep -x "FortiClient" > /dev/null; then
-    log "FortiClient is running — quitting gracefully..."
-    osascript -e 'tell application "FortiClient" to quit' 2>/dev/null || true
-    for i in 1 2 3 4 5 6 7 8 9 10; do
-        pgrep -x "FortiClient" > /dev/null || break
-        sleep 2
-    done
-    if pgrep -x "FortiClient" > /dev/null; then
-        log "[WARN] FortiClient did not quit gracefully — force killing"
-        pkill -9 -x "FortiClient" 2>/dev/null || true
-        sleep 2
-    fi
-fi
-
 # --- 4. Nettoyage préventif des FortiClient.dmg orphelins (>1h) ---
 log "Cleaning up stale fctupdate caches (>1h old)..."
 find /var/folders -type f -name "FortiClient.dmg" -path "*/fctupdate/*" -mmin +60 -delete 2>/dev/null || true
