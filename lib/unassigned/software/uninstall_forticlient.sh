@@ -77,7 +77,6 @@ robust_remove() {
     # 4. Reprendre l'ownership si l'app a été installée drag-and-drop
     chown -R root:wheel "$target" 2>/dev/null || true
 
-
     # 5. Tentative directe
     if rm -rf "$target" 2>>"$LOG"; then
         log "  ✓ rm $target"
