@@ -30,7 +30,7 @@
 	<integer>0</integer>
 	<key>Profiles</key>
 	<dict>
-		<key>Amandiers - SP VPN</key>
+		<key>SP VPN - Amandiers</key>
 		<dict>
 			<key>AllowAutoConnect</key>
 			<integer>0</integer>
@@ -71,7 +71,7 @@
 			<key>KeepRunningMaxRetry</key>
 			<integer>0</integer>
 			<key>Name</key>
-			<string>S•P VPN - Amandiers</string>
+			<string>SP VPN - Amandiers</string>
 			<key>OnConnectScript</key>
 			<string>$null</string>
 			<key>OnDisconnectScript</key>

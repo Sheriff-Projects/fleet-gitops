@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/forticlient_vpn_config.pkg
-  hash_sha256: 13fe9a2de1f5262573c8d562ef04d9d53347d386250946071bff7b0a336edbd9
+  hash_sha256: e1bf913bd736bd4b2c68c2a190c3f81f0167c52a680c93331cbcc68f41f46c23
   install_script:
     path: ./install_forticlient_vpn_config.sh
   uninstall_script:
