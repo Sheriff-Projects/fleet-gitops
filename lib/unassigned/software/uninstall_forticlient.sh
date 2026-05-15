@@ -31,6 +31,8 @@ for a in /Library/LaunchAgents/com.fortinet.*.plist; do
     fi
 done
 
+
+
 for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
     [ -e "$d" ] || continue
     log "  unload daemon $d"
