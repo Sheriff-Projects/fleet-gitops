@@ -12,6 +12,13 @@
 #   5. On kill le process GUI, on démonte l'online installer
 #   6. On monte FortiClient.dmg, on lance installer -pkg Install.mpkg
 #   7. On efface FortiClient.dmg + le dossier fctupdate/ (économise ~400 Mo)
+#
+# Bonus : si lib/unassigned/conf/vpn.plist existe, il est embarqué directement
+# dans le payload du PKG stub. Il sera posé par installer(8) à l'emplacement
+# /Library/Application Support/Fortinet/FortiClient/conf/vpn.plist AVANT
+# l'install Fortinet. Le script d'install fait ensuite une sauvegarde du fichier
+# en mémoire (TEMP_DIR), lance l'install Fortinet, puis restaure le vpn.plist
+# si Fortinet l'a écrasé (et redémarre les agents pour qu'ils le relisent).
 
 set -euo pipefail
 
@@ -108,6 +115,36 @@ chmod +x "$SCRIPTS_DIR/postinstall"
 echo -e "${GREEN}  ✓ Stub postinstall created${NC}"
 echo ""
 
+# --- Étape 2.5 : Inclusion de la config VPN partagée dans le payload du PKG ---
+# Si lib/unassigned/conf/vpn.plist existe dans le repo, on le place dans
+# $EMPTY_PAYLOAD_ROOT à son chemin de destination final. pkgbuild l'embarquera
+# automatiquement dans le PKG stub. Quand Fleet exécutera ce PKG sur les Macs,
+# installer(8) posera le fichier à /Library/Application Support/Fortinet/
+# FortiClient/conf/vpn.plist en root:wheel 0644.
+VPN_PLIST_SOURCE="$REPO_ROOT/lib/unassigned/conf/vpn.plist"
+VPN_PLIST_TARGET_RELATIVE="Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
+
+echo -e "${BLUE}[2.5/5] Embedding shared VPN config into PKG payload...${NC}"
+mkdir -p "$EMPTY_PAYLOAD_ROOT"
+if [ -f "$VPN_PLIST_SOURCE" ]; then
+    if ! plutil -lint "$VPN_PLIST_SOURCE" >/dev/null 2>&1; then
+        echo -e "${RED}[ERROR] $VPN_PLIST_SOURCE n'est pas un plist valide${NC}"
+        plutil -lint "$VPN_PLIST_SOURCE"
+        exit 1
+    fi
+    VPN_TARGET_DIR="$EMPTY_PAYLOAD_ROOT/$(dirname "$VPN_PLIST_TARGET_RELATIVE")"
+    mkdir -p "$VPN_TARGET_DIR"
+    cp "$VPN_PLIST_SOURCE" "$VPN_TARGET_DIR/vpn.plist"
+    chmod 0644 "$VPN_TARGET_DIR/vpn.plist"
+    VPN_SRC_SIZE=$(wc -c < "$VPN_PLIST_SOURCE" | tr -d ' ')
+    echo -e "${GREEN}  ✓ vpn.plist embedded: $VPN_SRC_SIZE bytes${NC}"
+    echo -e "${GREEN}  ✓ Target on Mac:     /$VPN_PLIST_TARGET_RELATIVE${NC}"
+else
+    echo -e "${YELLOW}  ⚠ $VPN_PLIST_SOURCE introuvable — le PKG ne contiendra PAS de config VPN${NC}"
+    echo -e "${YELLOW}    Pour pousser une config partagée, place ton vpn.plist à cet emplacement.${NC}"
+fi
+echo ""
+
 # --- Étape 3 : Build PKG (stub) ---
 echo -e "${BLUE}[3/5] Building stub PKG...${NC}"
 
@@ -128,7 +165,7 @@ DIST_XML="$BUILD_DIR/distribution.xml"
 cat > "$DIST_XML" << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>FortiClient 7</title>
+    <title>FortiClient VPN</title>
     <pkg-ref id="$PKG_IDENTIFIER"/>
     <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
     <choices-outline>
@@ -393,9 +430,76 @@ if [ -z "\$INSTALL_MPKG" ] || [ ! -e "\$INSTALL_MPKG" ]; then
 fi
 log "Installing from: \$INSTALL_MPKG"
 
+# --- 12.5 Sauvegarde du vpn.plist (posé par notre PKG stub) avant l'install Fortinet ---
+# Fortinet pourrait écraser ce fichier durant son installation. On le copie dans
+# \$TEMP_DIR pour pouvoir le restaurer si besoin.
+VPN_CONF_PATH="/Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
+SAVED_VPN_PATH="\$TEMP_DIR/saved_vpn.plist"
+if [ -f "\$VPN_CONF_PATH" ]; then
+    cp "\$VPN_CONF_PATH" "\$SAVED_VPN_PATH"
+    SAVED_SIZE=\$(wc -c < "\$SAVED_VPN_PATH" | tr -d ' ')
+    log "Backed up existing VPN config (\${SAVED_SIZE} bytes) before Fortinet install"
+fi
+
 if ! installer -pkg "\$INSTALL_MPKG" -target / >> "\$LOG" 2>&1; then
     log "[ERROR] installer command failed"
     exit 1
+fi
+
+# --- 12.6 Restauration du vpn.plist si Fortinet l'a écrasé ---
+# On compare le fichier actuel (post-install Fortinet) avec notre sauvegarde.
+# Si différent ou disparu, on restaure et on redémarre les agents pour qu'ils
+# relisent la config.
+if [ -f "\$SAVED_VPN_PATH" ]; then
+    if [ ! -f "\$VPN_CONF_PATH" ] || ! cmp -s "\$SAVED_VPN_PATH" "\$VPN_CONF_PATH"; then
+        log "VPN config was overwritten or removed by Fortinet — restoring..."
+        mkdir -p "\$(dirname "\$VPN_CONF_PATH")"
+        cp "\$SAVED_VPN_PATH" "\$VPN_CONF_PATH"
+        chown root:wheel "\$VPN_CONF_PATH"
+        chmod 0644 "\$VPN_CONF_PATH"
+        RESTORED_SIZE=\$(wc -c < "\$VPN_CONF_PATH" | tr -d ' ')
+        log "  ✓ Restored \$VPN_CONF_PATH (\${RESTORED_SIZE} bytes, root:wheel 0644)"
+
+        # Vérifie que le plist est valide
+        if plutil -lint "\$VPN_CONF_PATH" >/dev/null 2>&1; then
+            log "  ✓ Plist syntax valid"
+        else
+            log "  [WARN] Restored plist failed syntax check"
+        fi
+
+        # Les agents Fortinet ont été démarrés par le postinstall avec l'ancienne
+        # (vide) config en mémoire. On les redémarre pour qu'ils relisent.
+        log "  Restarting Fortinet agents to reload restored VPN config..."
+        pkill -9 -i -f "FortiTray|FortiClientAgent|FctMiscAgent|CredentialStore|FortiClient\\.app/Contents/MacOS/FortiClient" 2>/dev/null || true
+        sleep 2
+
+        VPN_CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+        VPN_CONSOLE_UID=\$(id -u "\$VPN_CONSOLE_USER" 2>/dev/null || echo "")
+
+        # LaunchDaemons (system domain)
+        for daemon in /Library/LaunchDaemons/com.fortinet.*.plist; do
+            [ -e "\$daemon" ] || continue
+            launchctl bootout system "\$daemon" 2>/dev/null || true
+            launchctl bootstrap system "\$daemon" 2>/dev/null \\
+                || launchctl load "\$daemon" 2>/dev/null \\
+                || true
+        done
+
+        # LaunchAgents (session GUI utilisateur)
+        if [ -n "\$VPN_CONSOLE_UID" ] && [ "\$VPN_CONSOLE_UID" != "0" ]; then
+            for agent in /Library/LaunchAgents/com.fortinet.*.plist; do
+                [ -e "\$agent" ] || continue
+                launchctl bootout "gui/\$VPN_CONSOLE_UID" "\$agent" 2>/dev/null || true
+                launchctl bootstrap "gui/\$VPN_CONSOLE_UID" "\$agent" 2>/dev/null \\
+                    || launchctl asuser "\$VPN_CONSOLE_UID" launchctl load "\$agent" 2>/dev/null \\
+                    || true
+            done
+        else
+            log "  [WARN] No user in GUI — agents will load with restored config at next login"
+        fi
+    else
+        log "VPN config preserved by Fortinet install — no restoration needed"
+    fi
 fi
 
 # --- 13. Démonter FortiClient.dmg avant cleanup ---
@@ -474,6 +578,62 @@ for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
 done
 sleep 1
 
+# --- Désactivation des System Extensions Fortinet ---
+# Tant que la NetworkExtension VPN est active, macOS refuse de supprimer l'app
+# qui la fournit (FortiClient.app). On la désactive avant le rm.
+log "Deactivating Fortinet System Extensions..."
+SYSEXT_LIST=\$(systemextensionsctl list 2>/dev/null | grep -i "fortinet\\|forticlient" || true)
+if [ -n "\$SYSEXT_LIST" ]; then
+    log "  Found system extensions to uninstall:"
+    echo "\$SYSEXT_LIST" | tee -a "\$LOG"
+    # Le team ID Fortinet est AH4XFXJ7DK pour toutes les extensions
+    for ext_id in \$(echo "\$SYSEXT_LIST" | awk '{for(i=1;i<=NF;i++) if(\$i ~ /^com\\.fortinet/) print \$i}' | sort -u); do
+        log "  uninstall \$ext_id"
+        systemextensionsctl uninstall AH4XFXJ7DK "\$ext_id" 2>>"\$LOG" || true
+    done
+    sleep 2
+else
+    log "  No Fortinet system extensions found"
+fi
+
+# Helper de suppression robuste — gère les obstacles fréquents qui font échouer rm -rf :
+#   - xattr com.apple.macl (protection TCC)
+#   - flags système (schg, uchg)
+#   - permissions restrictives
+#   - ownership non-root (install drag-and-drop)
+# Si rm échoue malgré tout, fallback mv→/tmp puis rm.
+robust_remove() {
+    local target="\$1"
+    [ -e "\$target" ] || [ -L "\$target" ] || return 0
+
+    # 1. Effacer toutes les xattrs (notamment com.apple.macl posée par TCC)
+    xattr -cr "\$target" 2>/dev/null || true
+    # 2. Effacer les flags système d'immutabilité (schg, uchg, appnd)
+    chflags -R noschg,nouchg,noappnd "\$target" 2>/dev/null || true
+    # 3. S'assurer que root a les droits d'écriture
+    chmod -R u+w "\$target" 2>/dev/null || true
+    # 4. Reprendre l'ownership si l'app a été installée drag-and-drop
+    chown -R root:wheel "\$target" 2>/dev/null || true
+
+    # 5. Tentative directe
+    if rm -rf "\$target" 2>>"\$LOG"; then
+        log "  ✓ rm \$target"
+        return 0
+    fi
+
+    # 6. Fallback : mv vers /tmp puis rm depuis là (contourne certaines protections
+    #    quand le parent dir bloque la suppression directe)
+    local trash="/tmp/.forticlient_trash_\$\$_\$(date +%s)"
+    if mv "\$target" "\$trash" 2>>"\$LOG"; then
+        rm -rf "\$trash" 2>/dev/null || true
+        log "  ✓ rm (via mv→/tmp) \$target"
+        return 0
+    fi
+
+    log "  ✗ Could not remove \$target — kept on disk (Operation not permitted?)"
+    return 1
+}
+
 FilesToRemove=(
     /Applications/FortiClient.app
     /Applications/FortiClientUninstaller.app
@@ -489,10 +649,7 @@ FilesToRemove=(
     /Library/Preferences/com.fortinet.forticlient.fortishield.plist
 )
 for f in "\${FilesToRemove[@]}"; do
-    if [ -e "\$f" ] || [ -L "\$f" ]; then
-        log "  rm \$f"
-        rm -rf "\$f" 2>/dev/null || log "    (échec)"
-    fi
+    robust_remove "\$f"
 done
 
 log "Sweeping leftover Fortinet files..."
@@ -591,6 +748,11 @@ echo "  PKG size         : $PKG_SIZE"
 echo "  SHA256           : $PKG_HASH"
 echo "  Install script   : $INSTALL_SCRIPT"
 echo "  Uninstall script : $UNINSTALL_SCRIPT"
+if [ -f "$VPN_PLIST_SOURCE" ]; then
+    echo "  VPN config       : embedded in PKG payload ($VPN_SRC_SIZE bytes)"
+else
+    echo "  VPN config       : NOT included (lib/unassigned/conf/vpn.plist absent)"
+fi
 echo ""
 echo "  Polling install  : taille stable (2 mesures à 5s) + min 100 MB"
 echo "                     + validation hdiutil imageinfo"

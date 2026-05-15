@@ -47,8 +47,6 @@
 					<dict>
 						<key>Allowed</key>
 						<true/>
-						<key>Authorization</key>
-						<string>Allow</string>
 						<key>CodeRequirement</key>
 						<string>identifier "com.fleetdm.orbit" and anchor apple generic</string>
 						<key>Identifier</key>
