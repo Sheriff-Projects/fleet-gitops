@@ -415,54 +415,18 @@ if [ -z "\$INSTALL_MPKG" ] || [ ! -e "\$INSTALL_MPKG" ]; then
 fi
 log "Installing from: \$INSTALL_MPKG"
 
-# --- 12.5 Sauvegarde du vpn.plist (posé par notre PKG stub) avant l'install Fortinet ---
-# Fortinet pourrait écraser ce fichier durant son installation. On le copie dans
-# \$TEMP_DIR pour pouvoir le restaurer si besoin.
-VPN_CONF_PATH="/Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
-SAVED_VPN_PATH="\$TEMP_DIR/saved_vpn.plist"
-if [ -f "\$VPN_CONF_PATH" ]; then
-    cp "\$VPN_CONF_PATH" "\$SAVED_VPN_PATH"
-    SAVED_SIZE=\$(wc -c < "\$SAVED_VPN_PATH" | tr -d ' ')
-    log "Backed up existing VPN config (\${SAVED_SIZE} bytes) before Fortinet install"
-fi
+
 
 if ! installer -pkg "\$INSTALL_MPKG" -target / >> "\$LOG" 2>&1; then
     log "[ERROR] installer command failed"
     exit 1
 fi
+installer -pkg "\$INSTALLER_PATH" -target /
 
-# --- 12.6 Restauration du vpn.plist SI Fortinet l'a écrasé ---
-# Cas normal (vpn.plist valide, sans caractère interdit) : Fortinet n'y touche
-# pas. On entre dans la branche "preserved" → on NE FAIT RIEN. Le postinstall
-# Fortinet a démarré les agents avec le vpn.plist en place → l'icône s'affiche.
-#
-# Cas dégradé : Fortinet écrase le fichier. On le restaure ET on doit redémarrer
-# les agents (qui avaient lu la mauvaise config). Le pkill est ESSENTIEL avant
-# le bootout, sinon les processus en mémoire restent et bloquent le rechargement.
-if [ -f "\$SAVED_VPN_PATH" ]; then
-    if [ ! -f "\$VPN_CONF_PATH" ] || ! cmp -s "\$SAVED_VPN_PATH" "\$VPN_CONF_PATH"; then
-        log "VPN config was overwritten or removed by Fortinet — restoring..."
-        mkdir -p "\$(dirname "\$VPN_CONF_PATH")"
-        cp "\$SAVED_VPN_PATH" "\$VPN_CONF_PATH"
-        chown root:wheel "\$VPN_CONF_PATH"
-        chmod 0644 "\$VPN_CONF_PATH"
-        RESTORED_SIZE=\$(wc -c < "\$VPN_CONF_PATH" | tr -d ' ')
-        log "  ✓ Restored \$VPN_CONF_PATH (\${RESTORED_SIZE} bytes, root:wheel 0644)"
+        VPN_CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+        VPN_CONSOLE_UID=\$(id -u "\$VPN_CONSOLE_USER" 2>/dev/null || echo "")
 
-        if plutil -lint "\$VPN_CONF_PATH" >/dev/null 2>&1; then
-            log "  ✓ Plist syntax valid"
-        else
-            log "  [WARN] Restored plist failed syntax check"
-        fi
-
-        # ESSENTIEL : tuer les processus EN MÉMOIRE avant le bootout, sinon les
-        # agents continueraient de tourner avec l'ancienne config et le bootstrap
-        # tomberait sur un état incohérent.
-        log "  Killing in-memory Fortinet processes..."
-        pkill -9 -i -f "FortiTray|FortiClientAgent|FctMiscAgent|CredentialStore|FortiClient\\.app/Contents/MacOS/FortiClient" 2>/dev/null || true
-        sleep 2
-
-        log "  Restarting Fortinet daemons (system domain)..."
+        # LaunchDaemons (system domain)
         for daemon in /Library/LaunchDaemons/com.fortinet.*.plist; do
             [ -e "\$daemon" ] || continue
             launchctl bootout system "\$daemon" 2>/dev/null || true
@@ -471,9 +435,7 @@ if [ -f "\$SAVED_VPN_PATH" ]; then
                 || true
         done
 
-        log "  Restarting Fortinet agents (user GUI session)..."
-        VPN_CONSOLE_USER=\$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
-        VPN_CONSOLE_UID=\$(id -u "\$VPN_CONSOLE_USER" 2>/dev/null || echo "")
+        # LaunchAgents (session GUI utilisateur)
         if [ -n "\$VPN_CONSOLE_UID" ] && [ "\$VPN_CONSOLE_UID" != "0" ]; then
             for agent in /Library/LaunchAgents/com.fortinet.*.plist; do
                 [ -e "\$agent" ] || continue
@@ -486,7 +448,7 @@ if [ -f "\$SAVED_VPN_PATH" ]; then
             log "  [WARN] No user in GUI — agents will load with restored config at next login"
         fi
     else
-        log "VPN config preserved by Fortinet install — no restoration needed (agents already loaded by Fortinet postinstall)"
+        log "VPN config preserved by Fortinet install — no restoration needed"
     fi
 fi
 
@@ -537,6 +499,57 @@ CONSOLE_UID=\$(id -u "\$CONSOLE_USER" 2>/dev/null || echo "")
 REAL_USER="\${SUDO_USER:-\${CONSOLE_USER:-\${USER:-root}}}"
 log "Running as REAL_USER=\$REAL_USER (CONSOLE_USER=\$CONSOLE_USER)"
 
+# --- 0. Tentative via l'uninstaller officiel Fortinet ---
+# Fortinet fournit un script shell CLI qui sait désactiver proprement la
+# System Extension (impossible à faire en daemon root sans cet outil).
+# S'il existe et fonctionne, il fait quasi tout le travail : kill agents,
+# uninstall SysExt, suppression des binaires.
+FORTINET_UNINSTALL_SH="/Applications/FortiClientUninstaller.app/Contents/Resources/uninstall.sh"
+if [ -x "\$FORTINET_UNINSTALL_SH" ]; then
+    log "Running official Fortinet uninstaller: \$FORTINET_UNINSTALL_SH"
+    # On le lance avec un timeout via background + wait, pour ne pas bloquer
+    # indéfiniment si l'outil attend une interaction GUI.
+    "\$FORTINET_UNINSTALL_SH" >> "\$LOG" 2>&1 &
+    UNINSTALL_OFFICIAL_PID=\$!
+    WAIT=0
+    while kill -0 "\$UNINSTALL_OFFICIAL_PID" 2>/dev/null && [ \$WAIT -lt 120 ]; do
+        sleep 3
+        WAIT=\$((WAIT + 3))
+    done
+    if kill -0 "\$UNINSTALL_OFFICIAL_PID" 2>/dev/null; then
+        log "  [WARN] Official uninstaller still running after 120s — killing it"
+        kill -9 "\$UNINSTALL_OFFICIAL_PID" 2>/dev/null || true
+    else
+        log "  Official uninstaller finished (took \${WAIT}s)"
+    fi
+    sleep 2
+else
+    log "Official Fortinet uninstaller not found — falling back to manual cleanup"
+fi
+
+# --- 0bis. Tuer nesessionmanager (maintient les SysExt VPN actives en mémoire) ---
+# Sans ça, la SysExt FortiClient peut rester "activated enabled" même après son
+# uninstall demandée, parce que le NetworkExtension Session Manager la tient.
+log "Stopping nesessionmanager to release any active SysExt..."
+killall -9 nesessionmanager 2>/dev/null || true
+sleep 1
+
+# --- 0ter. Désactivation explicite de la SysExt FortiClient ---
+log "Deactivating Fortinet System Extensions (explicit pass)..."
+SYSEXT_LIST=\$(systemextensionsctl list 2>/dev/null | grep -i "fortinet\\|forticlient" || true)
+if [ -n "\$SYSEXT_LIST" ]; then
+    log "  SysExt still listed:"
+    echo "\$SYSEXT_LIST" | tee -a "\$LOG"
+    # Désactive aussi via pluginkit (autre voie macOS pour décharger une extension)
+    for ext_id in \$(echo "\$SYSEXT_LIST" | awk '{for(i=1;i<=NF;i++) if(\$i ~ /^com\\.fortinet/) print \$i}' | sort -u); do
+        log "  pluginkit -e ignore \$ext_id"
+        pluginkit -e ignore -i "\$ext_id" 2>>"\$LOG" || true
+        log "  systemextensionsctl uninstall \$ext_id"
+        systemextensionsctl uninstall AH4XFXJ7DK "\$ext_id" 2>>"\$LOG" || true
+    done
+    sleep 3
+fi
+
 ProgramList=("FortiClient" "FortiTray" "FortiClientAgent" "FortiClientNetworkAccessControl" "fctclient" "FortiSSLVPNXdaemon" "FortiClientInstaller")
 for p in "\${ProgramList[@]}"; do
     PIDS=\$(pgrep -f "\$p" 2>/dev/null || true)
@@ -566,22 +579,23 @@ for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
 done
 sleep 1
 
-# --- Désactivation des System Extensions Fortinet ---
-# Tant que la NetworkExtension VPN est active, macOS refuse de supprimer l'app
-# qui la fournit (FortiClient.app). On la désactive avant le rm.
-log "Deactivating Fortinet System Extensions..."
-SYSEXT_LIST=\$(systemextensionsctl list 2>/dev/null | grep -i "fortinet\\|forticlient" || true)
-if [ -n "\$SYSEXT_LIST" ]; then
-    log "  Found system extensions to uninstall:"
-    echo "\$SYSEXT_LIST" | tee -a "\$LOG"
-    # Le team ID Fortinet est AH4XFXJ7DK pour toutes les extensions
-    for ext_id in \$(echo "\$SYSEXT_LIST" | awk '{for(i=1;i<=NF;i++) if(\$i ~ /^com\\.fortinet/) print \$i}' | sort -u); do
-        log "  uninstall \$ext_id"
+# --- Vérification finale de la désactivation de la SysExt ---
+# Le travail principal a été fait à l'étape 0ter (et idéalement par l'uninstaller
+# officiel Fortinet à l'étape 0). Ici on log juste l'état final pour debug.
+log "Final check on Fortinet System Extensions state..."
+SYSEXT_CHECK=\$(systemextensionsctl list 2>/dev/null | grep -i "fortinet\\|forticlient" || true)
+if [ -n "\$SYSEXT_CHECK" ]; then
+    log "  [WARN] SysExt still present after uninstall attempts:"
+    echo "\$SYSEXT_CHECK" | tee -a "\$LOG"
+    log "  Attempting one more pass + force-killing nesessionmanager..."
+    killall -9 nesessionmanager 2>/dev/null || true
+    sleep 1
+    for ext_id in \$(echo "\$SYSEXT_CHECK" | awk '{for(i=1;i<=NF;i++) if(\$i ~ /^com\\.fortinet/) print \$i}' | sort -u); do
         systemextensionsctl uninstall AH4XFXJ7DK "\$ext_id" 2>>"\$LOG" || true
     done
     sleep 2
 else
-    log "  No Fortinet system extensions found"
+    log "  ✓ No Fortinet SysExt remaining"
 fi
 
 # Helper de suppression robuste — gère les obstacles fréquents qui font échouer rm -rf :

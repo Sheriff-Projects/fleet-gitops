@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install script FortiClient VPN — appelé par Fleet (PAS imbriqué dans un autre installer).
 #
-# Built on 2026-05-15 04:26:00 (build-time snapshot: 7.4.3.4323)
+# Built on 2026-05-15 04:41:49 (build-time snapshot: 7.4.3.4323)
 # Expected Bundle ID: com.fortinet.FortiClient
 
 set -uo pipefail
@@ -204,54 +204,18 @@ if [ -z "$INSTALL_MPKG" ] || [ ! -e "$INSTALL_MPKG" ]; then
 fi
 log "Installing from: $INSTALL_MPKG"
 
-# --- 12.5 Sauvegarde du vpn.plist (posé par notre PKG stub) avant l'install Fortinet ---
-# Fortinet pourrait écraser ce fichier durant son installation. On le copie dans
-# $TEMP_DIR pour pouvoir le restaurer si besoin.
-VPN_CONF_PATH="/Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
-SAVED_VPN_PATH="$TEMP_DIR/saved_vpn.plist"
-if [ -f "$VPN_CONF_PATH" ]; then
-    cp "$VPN_CONF_PATH" "$SAVED_VPN_PATH"
-    SAVED_SIZE=$(wc -c < "$SAVED_VPN_PATH" | tr -d ' ')
-    log "Backed up existing VPN config (${SAVED_SIZE} bytes) before Fortinet install"
-fi
+
 
 if ! installer -pkg "$INSTALL_MPKG" -target / >> "$LOG" 2>&1; then
     log "[ERROR] installer command failed"
     exit 1
 fi
+installer -pkg "$INSTALLER_PATH" -target /
 
-# --- 12.6 Restauration du vpn.plist SI Fortinet l'a écrasé ---
-# Cas normal (vpn.plist valide, sans caractère interdit) : Fortinet n'y touche
-# pas. On entre dans la branche "preserved" → on NE FAIT RIEN. Le postinstall
-# Fortinet a démarré les agents avec le vpn.plist en place → l'icône s'affiche.
-#
-# Cas dégradé : Fortinet écrase le fichier. On le restaure ET on doit redémarrer
-# les agents (qui avaient lu la mauvaise config). Le pkill est ESSENTIEL avant
-# le bootout, sinon les processus en mémoire restent et bloquent le rechargement.
-if [ -f "$SAVED_VPN_PATH" ]; then
-    if [ ! -f "$VPN_CONF_PATH" ] || ! cmp -s "$SAVED_VPN_PATH" "$VPN_CONF_PATH"; then
-        log "VPN config was overwritten or removed by Fortinet — restoring..."
-        mkdir -p "$(dirname "$VPN_CONF_PATH")"
-        cp "$SAVED_VPN_PATH" "$VPN_CONF_PATH"
-        chown root:wheel "$VPN_CONF_PATH"
-        chmod 0644 "$VPN_CONF_PATH"
-        RESTORED_SIZE=$(wc -c < "$VPN_CONF_PATH" | tr -d ' ')
-        log "  ✓ Restored $VPN_CONF_PATH (${RESTORED_SIZE} bytes, root:wheel 0644)"
+        VPN_CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+        VPN_CONSOLE_UID=$(id -u "$VPN_CONSOLE_USER" 2>/dev/null || echo "")
 
-        if plutil -lint "$VPN_CONF_PATH" >/dev/null 2>&1; then
-            log "  ✓ Plist syntax valid"
-        else
-            log "  [WARN] Restored plist failed syntax check"
-        fi
-
-        # ESSENTIEL : tuer les processus EN MÉMOIRE avant le bootout, sinon les
-        # agents continueraient de tourner avec l'ancienne config et le bootstrap
-        # tomberait sur un état incohérent.
-        log "  Killing in-memory Fortinet processes..."
-        pkill -9 -i -f "FortiTray|FortiClientAgent|FctMiscAgent|CredentialStore|FortiClient\.app/Contents/MacOS/FortiClient" 2>/dev/null || true
-        sleep 2
-
-        log "  Restarting Fortinet daemons (system domain)..."
+        # LaunchDaemons (system domain)
         for daemon in /Library/LaunchDaemons/com.fortinet.*.plist; do
             [ -e "$daemon" ] || continue
             launchctl bootout system "$daemon" 2>/dev/null || true
@@ -260,9 +224,7 @@ if [ -f "$SAVED_VPN_PATH" ]; then
                 || true
         done
 
-        log "  Restarting Fortinet agents (user GUI session)..."
-        VPN_CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
-        VPN_CONSOLE_UID=$(id -u "$VPN_CONSOLE_USER" 2>/dev/null || echo "")
+        # LaunchAgents (session GUI utilisateur)
         if [ -n "$VPN_CONSOLE_UID" ] && [ "$VPN_CONSOLE_UID" != "0" ]; then
             for agent in /Library/LaunchAgents/com.fortinet.*.plist; do
                 [ -e "$agent" ] || continue
@@ -275,7 +237,7 @@ if [ -f "$SAVED_VPN_PATH" ]; then
             log "  [WARN] No user in GUI — agents will load with restored config at next login"
         fi
     else
-        log "VPN config preserved by Fortinet install — no restoration needed (agents already loaded by Fortinet postinstall)"
+        log "VPN config preserved by Fortinet install — no restoration needed"
     fi
 fi
 
