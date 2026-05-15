@@ -82,7 +82,7 @@ org_settings:
     volume_purchasing_program:
       - location: SHERIFF
         fleets:
-          - "All fleets"
+          - "Unassigned"
     apple_server_url:
     end_user_authentication:
       entity_id:
