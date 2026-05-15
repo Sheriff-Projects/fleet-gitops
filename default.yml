@@ -1,4 +1,56 @@
 agent_options:
+labels:
+- description: 
+  hosts:
+  label_membership_type: manual
+  name: BU11-PRODUCTION
+
+- description: 
+  hosts:
+  label_membership_type: manual
+  name: BU52-COMPTABILITE
+
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU51-DIRECTION
+
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU06-ECOM
+
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU10-ULTRA MOTION
+
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU02-ATELIER
+
+- description:
+  hosts:
+      - L33P4P54KK
+  label_membership_type: manual
+  name: BU54-DSI
+
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU05-PUB
+
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU53-DRH
+
+- description:
+  hosts:
+  label_membership_type: manual
+  name: BU56-COMMUNICATION
+
 org_settings:
   certificate_authorities:
     custom_est_proxy:
