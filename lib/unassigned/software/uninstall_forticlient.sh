@@ -1,33 +1,5 @@
 #!/bin/bash
-
-# Uninstall script FortiClient VPN
-set -o pipefail
-LOG="/var/log/forticlient_uninstall.log"
-log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
-log "=== FortiClient uninstall started ==="
-
-CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
-CONSOLE_UID=$(id -u "$CONSOLE_USER" 2>/dev/null || echo "")
-REAL_USER="${SUDO_USER:-${CONSOLE_USER:-${USER:-root}}}"
-log "Running as REAL_USER=$REAL_USER (CONSOLE_USER=$CONSOLE_USER)"
-
-ProgramList=("FortiClient" "FortiTray" "FortiClientAgent" "FortiClientNetworkAccessControl" "fctclient" "FortiSSLVPNXdaemon" "FortiClientInstaller")
-for p in "${ProgramList[@]}"; do
-    PIDS=$(pgrep -f "$p" 2>/dev/null || true)
-    for pid in $PIDS; do
-        log "  kill $p ($pid)"
-        kill -9 "$pid" 2>/dev/null || true
-    done
-done
-sleep 1
-
-for a in /Library/LaunchAgents/com.fortinet.*.plist; do
-    [ -e "$a" ] || continue
-    log "  unload agent $a"
-    if [ -n "$CONSOLE_UID" ] && [ "$CONSOLE_UID" != "0" ]; then
-        launchctl bootout "gui/$CONSOLE_UID" "$a" 2>/dev/null \
-            || launchctl asuser "$CONSOLE_UID" launchctl unload "$a" 2>/dev/null \
-            || true
+           || true
     fi
 done
 
@@ -40,10 +12,10 @@ for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
 done
 sleep 1
 
+rm -Rfv "/Applications/FortiClient.app"
+rm -Rfv "/Applications/FortiClientUninstaller.app"
+
 FilesToRemove=(
-    /Applications/FortiClient.app
-    /Applications/FortiClientUninstaller.app
-    /Applications/FortiClientUpdate.app
     "/Library/Application Support/Fortinet"
     "/Library/Application Support/FortiClient"
     /Library/Frameworks/FortiVPN.framework
