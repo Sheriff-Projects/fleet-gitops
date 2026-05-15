@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install script FortiClient VPN — appelé par Fleet (PAS imbriqué dans un autre installer).
 #
-# Built on 2026-05-15 04:05:30 (build-time snapshot: 7.4.3.4323)
+# Built on 2026-05-15 04:26:00 (build-time snapshot: 7.4.3.4323)
 # Expected Bundle ID: com.fortinet.FortiClient
 
 set -uo pipefail
