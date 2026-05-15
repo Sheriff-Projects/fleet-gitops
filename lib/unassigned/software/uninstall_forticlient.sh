@@ -31,8 +31,6 @@ for a in /Library/LaunchAgents/com.fortinet.*.plist; do
     fi
 done
 
-
-
 for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
     [ -e "$d" ] || continue
     log "  unload daemon $d"
@@ -41,62 +39,6 @@ for d in /Library/LaunchDaemons/com.fortinet.*.plist; do
         || true
 done
 sleep 1
-
-# --- Désactivation des System Extensions Fortinet ---
-# Tant que la NetworkExtension VPN est active, macOS refuse de supprimer l'app
-# qui la fournit (FortiClient.app). On la désactive avant le rm.
-log "Deactivating Fortinet System Extensions..."
-SYSEXT_LIST=$(systemextensionsctl list 2>/dev/null | grep -i "fortinet\|forticlient" || true)
-if [ -n "$SYSEXT_LIST" ]; then
-    log "  Found system extensions to uninstall:"
-    echo "$SYSEXT_LIST" | tee -a "$LOG"
-    # Le team ID Fortinet est AH4XFXJ7DK pour toutes les extensions
-    for ext_id in $(echo "$SYSEXT_LIST" | awk '{for(i=1;i<=NF;i++) if($i ~ /^com\.fortinet/) print $i}' | sort -u); do
-        log "  uninstall $ext_id"
-        systemextensionsctl uninstall AH4XFXJ7DK "$ext_id" 2>>"$LOG" || true
-    done
-    sleep 2
-else
-    log "  No Fortinet system extensions found"
-fi
-
-# Helper de suppression robuste — gère les obstacles fréquents qui font échouer rm -rf :
-#   - xattr com.apple.macl (protection TCC)
-#   - flags système (schg, uchg)
-#   - permissions restrictives
-#   - ownership non-root (install drag-and-drop)
-# Si rm échoue malgré tout, fallback mv→/tmp puis rm.
-robust_remove() {
-    local target="$1"
-    [ -e "$target" ] || [ -L "$target" ] || return 0
-
-    # 1. Effacer toutes les xattrs (notamment com.apple.macl posée par TCC)
-    xattr -cr "$target" 2>/dev/null || true
-    # 2. Effacer les flags système d'immutabilité (schg, uchg, appnd)
-    chflags -R noschg,nouchg,noappnd "$target" 2>/dev/null || true
-    # 3. S'assurer que root a les droits d'écriture
-    chmod -R u+w "$target" 2>/dev/null || true
-    # 4. Reprendre l'ownership si l'app a été installée drag-and-drop
-    chown -R root:wheel "$target" 2>/dev/null || true
-
-    # 5. Tentative directe
-    if rm -rf "$target" 2>>"$LOG"; then
-        log "  ✓ rm $target"
-        return 0
-    fi
-
-    # 6. Fallback : mv vers /tmp puis rm depuis là (contourne certaines protections
-    #    quand le parent dir bloque la suppression directe)
-    local trash="/tmp/.forticlient_trash_$$_$(date +%s)"
-    if mv "$target" "$trash" 2>>"$LOG"; then
-        rm -rf "$trash" 2>/dev/null || true
-        log "  ✓ rm (via mv→/tmp) $target"
-        return 0
-    fi
-
-    log "  ✗ Could not remove $target — kept on disk (Operation not permitted?)"
-    return 1
-}
 
 FilesToRemove=(
     /Applications/FortiClient.app
@@ -113,7 +55,10 @@ FilesToRemove=(
     /Library/Preferences/com.fortinet.forticlient.fortishield.plist
 )
 for f in "${FilesToRemove[@]}"; do
-    robust_remove "$f"
+    if [ -e "$f" ] || [ -L "$f" ]; then
+        log "  rm $f"
+        rm -rf "$f" 2>/dev/null || log "    (échec)"
+    fi
 done
 
 log "Sweeping leftover Fortinet files..."

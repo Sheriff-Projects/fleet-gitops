@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install script FortiClient VPN — appelé par Fleet (PAS imbriqué dans un autre installer).
 #
-# Built on 2026-05-15 10:16:45 (build-time snapshot: 7.4.3.4323)
+# Built on 2026-05-15 11:13:14 (build-time snapshot: 7.4.3.4323)
 # Expected Bundle ID: com.fortinet.FortiClient
 
 set -uo pipefail
@@ -66,6 +66,21 @@ if [ -d "$APP_PATH" ]; then
     log "Upgrading from $INSTALLED_VERSION to $TARGET_VERSION..."
 else
     log "FortiClient not installed, performing fresh install..."
+fi
+
+# --- 3. Quit FortiClient s'il tourne ---
+if pgrep -x "FortiClient" > /dev/null; then
+    log "FortiClient is running — quitting gracefully..."
+    osascript -e 'tell application "FortiClient" to quit' 2>/dev/null || true
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        pgrep -x "FortiClient" > /dev/null || break
+        sleep 2
+    done
+    if pgrep -x "FortiClient" > /dev/null; then
+        log "[WARN] FortiClient did not quit gracefully — force killing"
+        pkill -9 -x "FortiClient" 2>/dev/null || true
+        sleep 2
+    fi
 fi
 
 # --- 4. Nettoyage préventif des FortiClient.dmg orphelins (>1h) ---
@@ -204,41 +219,9 @@ if [ -z "$INSTALL_MPKG" ] || [ ! -e "$INSTALL_MPKG" ]; then
 fi
 log "Installing from: $INSTALL_MPKG"
 
-
-
 if ! installer -pkg "$INSTALL_MPKG" -target / >> "$LOG" 2>&1; then
     log "[ERROR] installer command failed"
     exit 1
-fi
-installer -pkg "$INSTALLER_PATH" -target /
-
-        VPN_CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
-        VPN_CONSOLE_UID=$(id -u "$VPN_CONSOLE_USER" 2>/dev/null || echo "")
-
-        # LaunchDaemons (system domain)
-        for daemon in /Library/LaunchDaemons/com.fortinet.*.plist; do
-            [ -e "$daemon" ] || continue
-            launchctl bootout system "$daemon" 2>/dev/null || true
-            launchctl bootstrap system "$daemon" 2>/dev/null \
-                || launchctl load "$daemon" 2>/dev/null \
-                || true
-        done
-
-        # LaunchAgents (session GUI utilisateur)
-        if [ -n "$VPN_CONSOLE_UID" ] && [ "$VPN_CONSOLE_UID" != "0" ]; then
-            for agent in /Library/LaunchAgents/com.fortinet.*.plist; do
-                [ -e "$agent" ] || continue
-                launchctl bootout "gui/$VPN_CONSOLE_UID" "$agent" 2>/dev/null || true
-                launchctl bootstrap "gui/$VPN_CONSOLE_UID" "$agent" 2>/dev/null \
-                    || launchctl asuser "$VPN_CONSOLE_UID" launchctl load "$agent" 2>/dev/null \
-                    || true
-            done
-        else
-            log "  [WARN] No user in GUI — agents will load with restored config at next login"
-        fi
-    else
-        log "VPN config preserved by Fortinet install — no restoration needed"
-    fi
 fi
 
 # --- 13. Démonter FortiClient.dmg avant cleanup ---
