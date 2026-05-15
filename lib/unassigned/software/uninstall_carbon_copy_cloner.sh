@@ -6,6 +6,10 @@
 #   - Des fichiers de support utilisateur et système
 #   - Des preferences
 
+
+
+
+
 set -uo pipefail
 
 LOG="/var/log/carbon_copy_cloner_uninstall.log"
