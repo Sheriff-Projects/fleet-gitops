@@ -75,12 +75,12 @@ org_settings:
     zendesk:
   mdm:
     apple_business_manager:
-    - organization_name: "SHERIFF"
+    - organization_name: SHERIFF
       macos_team: "💻 Workstations"
       ios_team: "📱🔐 Personal mobile devices"
       ipados_team: "📱🔐 Personal mobile devices"
     volume_purchasing_program:
-      - location: "SHERIFF"
+      - location: SHERIFF
         fleets:
           - "All fleets"
     apple_server_url:
