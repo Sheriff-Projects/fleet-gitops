@@ -19,7 +19,7 @@ settings:
 controls:
 
   # ----- Profils de configuration MDM (.mobileconfig) -----
-  macos_settings:
+  apple_settings:
     custom_settings:
       - path: ../lib/unassigned/profiles/Install_Maxitype_Signs_Font.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Apple_Osascript.mobileconfig

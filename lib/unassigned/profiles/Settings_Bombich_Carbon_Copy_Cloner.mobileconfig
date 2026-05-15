@@ -100,6 +100,32 @@
 			<string>BD113360-6E58-4D86-A5FB-4BA2FDB23F08</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
+			<key>PayloadContent</key>
+			<dict>
+				<key>com.bombich.ccc</key>
+				<dict>
+					<key>Forced</key>
+					<array>
+						<dict>
+							<key>mcx_preference_settings</key>
+							<dict>
+								<key>ProductTourID</key>
+								<integer>0</integer>
+								<key>RegistrationCode</key>
+								<string>GAWQE-FAMRB-EUV6M-3YSL5-XVE5J-HQD5N-HAHG4-VEJAC-CUA9F-4QRCY-2F63K-BSR99-9GP5F-ES7G6-YSTBG-Q</string>
+								<key>RegistrationEmail</key>
+								<string>licence@sheriffparis.com</string>
+								<key>RegistrationName</key>
+								<string>SHERIFF PROJECTS</string>
+								<key>RegistrationProductName</key>
+								<string>Carbon Copy Cloner 7</string>
+								<key>SUCheckAtStartup</key>
+								<false/>
+							</dict>
+						</dict>
+					</array>
+				</dict>
+			</dict>
 		</dict>
 	</array>
 	<key>PayloadDisplayName</key>
