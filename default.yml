@@ -91,7 +91,6 @@ org_settings:
       metadata:
       metadata_url:
     end_user_license_agreement:
-
   org_info:
     contact_url: https://docs.getprimo.com
     org_logo_url:
