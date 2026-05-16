@@ -12,6 +12,7 @@ org_settings:
   fleet_desktop:
     alternative_browser_host:
     transparency_url: https://www.sheriffprojects.com
+  host_expiry_settings:
     host_expiry_enabled: true
     host_expiry_window: 30
   integrations:
@@ -26,6 +27,8 @@ org_settings:
       ios_fleet: "📱🔐 Personal mobile devices"
       ipados_fleet: "📱🔐 Personal mobile devices"
     apple_server_url:
+    # NB: bug Fleet 4.84.x — la nouvelle terminologie n'est pas reconnue ici.
+    # On doit écrire "No team" et non "Unassigned" (ni "All fleets" — utiliser "All teams").
     volume_purchasing_program:
     - location: SHERIFF
       fleets:
@@ -41,7 +44,7 @@ org_settings:
     contact_url: https://docs.getprimo.com
     org_logo_url:
     org_logo_url_light_background:
-    org_name: Fleet
+    org_name: Sheriff Projects
   secrets:
   - secret: "$FLEET_GLOBAL_ENROLL_SECRET"
   server_settings:
@@ -56,7 +59,7 @@ org_settings:
   sso_settings:
   webhook_settings:
     activities_webhook:
-      destination_url: https://webhooks.getprimo.com/processFleetActivityEvent?companyId=6880bdb90a71bce529867530&apikey=5ai4OOgbvmwmpLveN61kU7nn1fFL39P7wsqXmj4A9dgndHbq11yn865smDDD6kxjXZdnea5u29XIV9SuSdWiLjAzFjp9V4CqToAKfkJwFWHODAxFeQNURJlzvWloos75
+      destination_url: https://webhooks.getprimo.com/processFleetActivityEvent?companyId=6880bdb90a71bce529867530&apikey=$FLEET_PRIMO_WEBHOOK_KEY
       enable_activities_webhook: false
     failing_policies_webhook:
       destination_url:
