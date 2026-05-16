@@ -163,7 +163,7 @@ software:
 
   # ----- Apple App Store apps (VPP) -----
   app_store_apps:
-   - app_store_id: 361285480  # Keynote
+   - app_store_id: "361285480"  # Keynote
      platform: darwin
      self_service: true
      categories:
