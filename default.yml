@@ -75,7 +75,7 @@ org_settings:
     zendesk:
   mdm:
     apple_business_manager:
-    - organization_name: "SHERIFF"
+    - organization_name: "No team"
       macos_fleet: "💻-workstations"
       ios_fleet: "📱🔐 Personal mobile devices"
       ipados_fleet: "📱🔐 Personal mobile devices"
