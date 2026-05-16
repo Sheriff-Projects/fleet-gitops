@@ -81,8 +81,8 @@ org_settings:
       ipados_fleet: "📱🔐 Personal mobile devices"
     apple_server_url:
     volume_purchasing_program:
-      - location: SHERIFF
-        fleets: "Unassigned"
+    - location: SHERIFF
+      fleets: "All fleets"
     end_user_authentication:
       entity_id:
       idp_name:
