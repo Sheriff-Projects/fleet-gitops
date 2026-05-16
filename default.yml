@@ -83,7 +83,7 @@ org_settings:
     volume_purchasing_program:
     - location: SHERIFF
       fleets:
-      - "Unassigned"
+      - "All fleets"
     end_user_authentication:
       entity_id:
       idp_name:
