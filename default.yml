@@ -76,9 +76,9 @@ org_settings:
   mdm:
     apple_business_manager:
     - organization_name: SHERIFF
-      macos_team: "💻 Workstations"
-      ios_team: "📱🔐 Personal mobile devices"
-      ipados_team: "📱🔐 Personal mobile devices"
+      macos_fleet: "💻 Workstations"
+      ios_fleet: "📱🔐 Personal mobile devices"
+      ipados_fleet: "📱🔐 Personal mobile devices"
     apple_server_url:
     volume_purchasing_program:
       - location: "SHERIFF"
