@@ -18,7 +18,7 @@ settings:
 # ---------------------------------------------------------------------------
 controls:
 
-  # ----- Profils de configuration MDM (.mobileconfig) ------
+  # ----- Profils de configuration MDM (.mobileconfig) -----
   apple_settings:
     configuration_profiles:
       - path: ../lib/unassigned/profiles/Install_Maxitype_Signs_Font.mobileconfig
@@ -43,31 +43,31 @@ controls:
 
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU54 - DSI"
+          - BU54 - DSI
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU02_ATELIER.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU02 - ATELIER"
+          - BU02 - ATELIER
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU05_PUB.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU05 - PUB"
+          - BU05 - PUB
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU06_ECOM.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU06 - ECOM"
+          - BU06 - ECOM
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU10_ULTRA_MOTION.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU10 - ULTRA MOTION"
+          - BU10 - ULTRA MOTION
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU53_DRH.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU53 - DRH"
+          - BU53 - DRH
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU51_DIRECTION.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU51 - DIRECTION"
+          - BU51 - DIRECTION
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU52_COMPTABILITE.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU52 - COMPTABILITE"
+          - BU52 - COMPTABILITE
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU11_PRODUCTION.mobileconfig
         labels_include_any:
-          - "Primo Device Group - BU11 - PRODUCTION"
+          - BU11 - PRODUCTION
 
   # ----- Sécurité disque -----
   enable_disk_encryption: false
@@ -90,7 +90,7 @@ controls:
     deadline_days:
     grace_period_days:
 
-  # ----- Migration MDM -----_
+  # ----- Migration MDM -----
   macos_migration:
     enable: false
     mode:
