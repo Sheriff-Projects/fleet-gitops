@@ -18,7 +18,7 @@ settings:
 # ---------------------------------------------------------------------------
 controls:
 
-  # ----- Profils de configuration MDM (.mobileconfig) -----
+  # ----- Profils de configuration MDM (.mobileconfig) ------
   apple_settings:
     configuration_profiles:
       - path: ../lib/unassigned/profiles/Install_Maxitype_Signs_Font.mobileconfig
