@@ -90,7 +90,7 @@ controls:
     deadline_days:
     grace_period_days:
 
-  # ----- Migration MDM -----
+  # ----- Migration MDM -----_
   macos_migration:
     enable: false
     mode:
