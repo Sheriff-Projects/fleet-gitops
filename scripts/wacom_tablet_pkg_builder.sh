@@ -21,7 +21,6 @@ PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/
 # Identifier qui matche le bundle ID de Wacom Center.app
 # pour que Fleet détecte la version installée et affiche le bouton Uninstall.
 PKG_IDENTIFIER="com.wacom.WacomCenter"
-
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
 DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/wacom_tablet.pkg"
