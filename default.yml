@@ -26,8 +26,8 @@ org_settings:
       macos_fleet: "No team"
       ios_fleet: "📱🔐 Personal mobile devices"
       ipados_fleet: "📱🔐 Personal mobile devices"
-    apple_server_url: 
-    # NB: bug Fleet 4.84.x — la nouvelle terminologie n'est pas reconnue ici..
+    apple_server_url:
+    # NB: bug Fleet 4.84.x — la nouvelle terminologie n'est pas reconnue ici.
     # On doit écrire "No team" et non "Unassigned" (ni "All fleets" — utiliser "All teams").
     volume_purchasing_program:
     - location: SHERIFF
@@ -60,6 +60,8 @@ org_settings:
   webhook_settings:
     activities_webhook:
       destination_url: https://webhooks.getprimo.com/processFleetActivityEvent?companyId=6880bdb90a71bce529867530&apikey=$FLEET_PRIMO_WEBHOOK_KEY
+      enable_activities_webhook: false
+    failing_policies_webhook:
       destination_url:
       enable_failing_policies_webhook: false
       host_batch_size: 0
