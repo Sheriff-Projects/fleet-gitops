@@ -28,7 +28,7 @@ labels:
 - name: BU11 - PRODUCTION
   hosts:
   label_membership_type: manual
-- name: BU51 - DIRECTION``
+- name: BU51 - DIRECTION
   hosts:
   label_membership_type: manual
 - name: BU52 - COMPTABILITE
