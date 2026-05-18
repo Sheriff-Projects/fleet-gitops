@@ -103,7 +103,7 @@ controls:
   scripts:
     # - path: ../lib/unassigned/scripts/uninstall_captureone.sh
 
-  # ----- SETUP EXPERIENCE (à ajouter si tu veux personnaliser le 1er démarrage) -----
+  # ----- SETUP EXPERIENCE (à ajouter si tu veux personnaliser le 1er démarrage) ------
   # ⚠️ Le setup experience ne s'applique qu'aux machines enrôlées via ABM (ADE).
   #    Il ne fonctionne PAS pour le pseudo-team "No team" — il faut un vrai team
   #    (ce qui est ton cas ici puisque "Unassigned" est un team nommé).
