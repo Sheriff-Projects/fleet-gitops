@@ -1,3 +1,39 @@
+# ---------------------------------------------------------------------------
+# LABELS
+# ---------------------------------------------------------------------------
+# Les labels sont déclarés ici uniquement pour que fleetctl accepte le YAML
+# (bug 4.84.x : ne respecte pas le flag exceptions.labels du serveur, et
+# exige la présence de la clé `labels:` dans default.yml malgré l'exception).
+#
+# IMPORTANT : la clé `hosts:` est volontairement OMISE pour chaque label.
+# Selon la doc Fleet (https://fleetdm.com/docs/configuration/yaml-files#labels) :
+#   "If [hosts is] omitted, existing host membership is preserved (no changes)."
+# Donc la membership manuelle gérée dans l'UI Fleet n'est PAS écrasée à chaque
+# run GitOps. C'est exactement le comportement voulu : UI = source de vérité
+# pour les assignations de devices aux BU.
+# ---------------------------------------------------------------------------
+labels:
+- name: BU02 - ATELIER
+  label_membership_type: manual
+- name: BU05 - PUB
+  label_membership_type: manual
+- name: BU06 - ECOM
+  label_membership_type: manual
+- name: BU10 - ULTRA MOTION
+  label_membership_type: manual
+- name: BU11 - PRODUCTION
+  label_membership_type: manual
+- name: BU51 - DIRECTION
+  label_membership_type: manual
+- name: BU52 - COMPTABILITE
+  label_membership_type: manual
+- name: BU53 - DRH
+  label_membership_type: manual
+- name: BU54 - DSI
+  label_membership_type: manual
+- name: BU56 - COMMUNICATION
+  label_membership_type: manual
+
 org_settings:
   certificate_authorities:
     custom_est_proxy:
