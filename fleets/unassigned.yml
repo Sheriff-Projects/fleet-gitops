@@ -43,7 +43,7 @@ controls:
 
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
         labels_include_any:
-          - "TEST"
+          - "BU54 - DSI"
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU02_ATELIER.mobileconfig
         labels_include_any:
           - "BU02 - ATELIER"
