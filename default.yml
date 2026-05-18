@@ -13,25 +13,25 @@
 # pour les assignations de devices aux BU.
 # ---------------------------------------------------------------------------
 labels:
-- name: BU02-ATELIER
+- name: BU02 - ATELIER
   label_membership_type: manual
-- name: BU05-PUB
+- name: BU05 - PUB
   label_membership_type: manual
-- name: BU06-ECOM
+- name: BU06 - ECOM
   label_membership_type: manual
-- name: BU10-ULTRA MOTION
+- name: BU10 - ULTRA MOTION
   label_membership_type: manual
-- name: BU11-PRODUCTION
+- name: BU11 - PRODUCTION
   label_membership_type: manual
-- name: BU51-DIRECTION
+- name: BU51 - DIRECTION
   label_membership_type: manual
-- name: BU52-COMPTABILITE
+- name: BU52 - COMPTABILITE
   label_membership_type: manual
-- name: BU53-DRH
+- name: BU53 - DRH
   label_membership_type: manual
-- name: BU54-DSI
+- name: BU54 - DSI
   label_membership_type: manual
-- name: BU56-COMMUNICATION
+- name: BU56 - COMMUNICATION
   label_membership_type: manual
 
 org_settings:
