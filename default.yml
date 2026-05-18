@@ -12,8 +12,7 @@
 # run GitOps. C'est exactement le comportement voulu : UI = source de vérité
 # pour les assignations de devices aux BU.
 # ---------------------------------------------------------------------------
-
-
+agent_options:
 org_settings:
   certificate_authorities:
     custom_est_proxy:
@@ -61,8 +60,6 @@ org_settings:
     org_logo_url:
     org_logo_url_light_background:
     org_name: Sheriff Projects
-  secrets:
-  - secret: "$FLEET_GLOBAL_ENROLL_SECRET"
   server_settings:
     ai_features_disabled: false
     deferred_save_host: false
