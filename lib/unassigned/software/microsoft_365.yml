@@ -1,6 +1,6 @@
 url: https://go.microsoft.com/fwlink/?linkid=525133
 icon:
-  path: ../../all/icon/s_p.png
+  path: ../../all/icon/microsoft_365.png
 install_script:
   path: ./install_microsoft_365.sh
 uninstall_script:
