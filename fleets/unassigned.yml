@@ -211,7 +211,7 @@ software:
 # ---------------------------------------------------------------------------
 
 policies:
-  - path: ../lib/unassigned/policies/user-picture-applied.yml
+  - path: ../lib/unassigned/policies/user_picture_applied.yml
 
 # ---------------------------------------------------------------------------
 # QUERIES (vide pour l'instant)
