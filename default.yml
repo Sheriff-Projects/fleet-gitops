@@ -12,7 +12,6 @@
 # run GitOps. C'est exactement le comportement voulu : UI = source de vérité
 # pour les assignations de devices aux BU.
 # ---------------------------------------------------------------------------
-agent_options:
 org_settings:
   certificate_authorities:
     custom_est_proxy:
