@@ -1,0 +1,16 @@
+- name: User picture applied
+  description: Vérifie que la photo de profil Sheriff Projects a été appliquée pour l'utilisateur console.
+  resolution: Le script set-user-picture.sh sera relancé automatiquement par Fleet.
+  platform: darwin
+  query: |
+    SELECT 1
+    FROM users u
+    WHERE u.directory LIKE '/Users/%'
+      AND u.uid >= 501
+      AND u.username NOT IN ('_mbsetupuser', 'nobody')
+      AND EXISTS (
+        SELECT 1 FROM file
+        WHERE path = '/var/db/sheriffprojects/.photo_applied_' || u.username
+      );
+  run_script:
+    path: ../scripts/set_user_picture.sh

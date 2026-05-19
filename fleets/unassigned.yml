@@ -1,5 +1,16 @@
 name: Unassigned
 
+agent_options:
+  config:
+    options:
+      pack_delimiter: /
+      logger_tls_period: 10
+      distributed_plugin: tls
+      disable_distributed: false
+      logger_tls_endpoint: /api/osquery/log
+      distributed_interval: 10
+      distributed_tls_max_attempts: 3
+
 # ---------------------------------------------------------------------------
 # TEAM SETTINGS — paramètres généraux du team
 # ---------------------------------------------------------------------------
@@ -17,6 +28,9 @@ settings:
 # CONTROLS — profils MDM, chiffrement, mises à jour OS, setup experience
 # ---------------------------------------------------------------------------
 controls:
+  scripts:
+    - path: ../lib/unassigned/scripts/set_user_picture.sh
+
 
   # ----- Profils de configuration MDM (.mobileconfig) -----
   apple_settings:
@@ -195,7 +209,9 @@ software:
 # ---------------------------------------------------------------------------
 # POLICIES (vide pour l'instant)
 # ---------------------------------------------------------------------------
+
 policies:
+  - path: ../lib/unassigned/policies/user-picture-applied.yml
 
 # ---------------------------------------------------------------------------
 # QUERIES (vide pour l'instant)
