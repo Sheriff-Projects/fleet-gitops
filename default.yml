@@ -12,6 +12,7 @@
 # run GitOps. C'est exactement le comportement voulu : UI = source de vérité
 # pour les assignations de devices aux BU.
 # ---------------------------------------------------------------------------
+agent_options:
 labels:
 - name: BU02 - ATELIER
   label_membership_type: manual
@@ -33,7 +34,6 @@ labels:
   label_membership_type: manual
 - name: BU56 - COMMUNICATION
   label_membership_type: manual
-
 org_settings:
   certificate_authorities:
     custom_est_proxy:
