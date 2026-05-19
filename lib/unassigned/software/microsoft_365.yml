@@ -8,7 +8,7 @@ pre_install_query:
   path: ../queries/microsoft_365_installed.yml
 
 install_script:
-  path: ../scripts/install_microsoft_365.sh
+  path: ./install_microsoft_365.sh
 
 uninstall_script:
-  path: ../scripts/uninstall_microsoft_365.sh
+  path: ./uninstall_microsoft_365.sh
