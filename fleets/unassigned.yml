@@ -28,8 +28,7 @@ settings:
 # CONTROLS — profils MDM, chiffrement, mises à jour OS, setup experience
 # ---------------------------------------------------------------------------
 controls:
-  scripts:
-    - path: ../lib/unassigned/scripts/set_user_picture.sh
+
 
 
   # ----- Profils de configuration MDM (.mobileconfig) -----
@@ -116,6 +115,7 @@ controls:
 
   # ----- Scripts globaux (lancés à la demande, pas au setup) -----
   scripts:
+    - path: ../lib/unassigned/scripts/set_user_picture.sh
     # - path: ../lib/unassigned/scripts/uninstall_captureone.sh
 
   # ----- SETUP EXPERIENCE (à ajouter si tu veux personnaliser le 1er démarrage) ------
