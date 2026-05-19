@@ -13,4 +13,4 @@
         WHERE path = '/var/db/sheriffprojects/.photo_applied_' || u.username
       );
   run_script:
-    path: ../scripts/set_user_picture.sh
+    path: ../lib/unassigned/scripts/set_user_picture.sh
