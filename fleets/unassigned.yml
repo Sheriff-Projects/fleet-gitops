@@ -162,8 +162,11 @@ software:
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/microsoft_365.yml
+      display_name: "Microsoft 365 Apps" 
       self_service: true
       setup_experience: true
+      categories:
+        - Productivity
 
   # ----- Apple App Store apps (VPP) -----
   app_store_apps:
