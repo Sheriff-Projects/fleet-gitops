@@ -1,14 +1,7 @@
-# Microsoft 365 Apps for Business / Enterprise — suite Mac complète
-# (Word, Excel, PowerPoint, Outlook, OneNote, OneDrive, Teams, Microsoft AutoUpdate)
-# CDN officiel Microsoft : redirige vers le dernier .pkg signé
-# Référence : https://learn.microsoft.com/en-us/officeupdates/update-history-office-for-mac
 url: https://go.microsoft.com/fwlink/?linkid=525133
-
-pre_install_query:
-  path: ../queries/microsoft_365_installed.yml
-
+icon:
+  path: ../../all/icon/s_p.png
 install_script:
-  path: ./install_microsoft_365.sh
-
+  path: ../scripts/install_microsoft_365.sh
 uninstall_script:
-  path: ./uninstall_microsoft_365.sh
+  path: ../scripts/uninstall_microsoft_365.sh
