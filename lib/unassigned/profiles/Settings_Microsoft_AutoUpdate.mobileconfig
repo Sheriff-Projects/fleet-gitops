@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>AcknowledgedDataCollectionPolicy</key>
+			<string>RequiredDataOnly</string>
+			<key>ChannelName</key>
+			<string>Current</string>
+			<key>DisableInsiderCheckbox</key>
+			<true/>
+			<key>EnableCheckForUpdatesButton</key>
+			<true/>
+			<key>HowToCheck</key>
+			<string>AutomaticDownload</string>
+			<key>IgnoreUIOpenAfterInstall</key>
+			<true/>
+			<key>PayloadDisplayName</key>
+			<string>Microsoft AutoUpdate Preferences</string>
+			<key>PayloadIdentifier</key>
+			<string>com.sheriffprojects.mdm.microsoft.autoupdate2.8f5ca426-c93e-4680-9a9f-827235996732</string>
+			<key>PayloadType</key>
+			<string>com.microsoft.autoupdate2</string>
+			<key>PayloadUUID</key>
+			<string>8f5ca426-c93e-4680-9a9f-827235996732</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>SendAllTelemetryEnabled</key>
+			<false/>
+			<key>StartDaemonOnAppLaunch</key>
+			<true/>
+			<key>UpdateCheckFrequency</key>
+			<integer>720</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Configure Microsoft AutoUpdate pour installer automatiquement les mises à jour Office en arrière-plan, sans interaction utilisateur. Canal Current, check toutes les 12h.</string>
+	<key>PayloadDisplayName</key>
+	<string>Settings ••• Microsoft AutoUpdate •••</string>
+	<key>PayloadIdentifier</key>
+	<string>com.sheriffprojects.microsoft.autoupdate</string>
+	<key>PayloadOrganization</key>
+	<string>Sheriff Projects</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>7f6c65bc-902b-4125-b732-f7d01c6f9ad3</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
