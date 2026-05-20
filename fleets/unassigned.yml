@@ -118,14 +118,13 @@ controls:
 
   # ----- SETUP EXPERIENCE (à ajouter si tu veux personnaliser le 1er démarrage) ------
 
-  setup_experience:
-    macos_setup:
-      bootstrap_package: ""  # ou votre bootstrap si vous en avez un
-      enable_release_device_manually: false
-      macos_setup_assistant:
-        path: ../lib/unassigned/dep_profile.json
-      macos_script:
-        path: ../lib/unassigned/scripts/create_users.sh
+  macos_setup:
+    bootstrap_package: ""  # ou votre bootstrap si vous en avez un
+    enable_release_device_manually: false
+    apple_setup_assistant:
+      path: ../lib/unassigned/dep_profile.json
+    macos_script:
+      path: ../lib/unassigned/scripts/create_users.sh
   
 # ---------------------------------------------------------------------------
 # SOFTWARE — apps disponibles pour ce team
