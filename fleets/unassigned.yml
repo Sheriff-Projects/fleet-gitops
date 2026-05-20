@@ -91,7 +91,7 @@ controls:
 
   scripts:
     - path: ../lib/unassigned/scripts/set_user_picture.sh
-    
+
   setup_experience:
     macos_bootstrap_package: ""
     apple_enable_release_device_manually: false
