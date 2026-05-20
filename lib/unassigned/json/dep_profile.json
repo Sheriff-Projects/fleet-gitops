@@ -2,7 +2,6 @@
   "profile_name": "Sheriff Projects - macOS Setup",
   "allow_pairing": true,
   "auto_advance_setup": false,
-  "await_device_configured": true,
   "is_supervised": true,
   "is_multi_user": false,
   "is_mandatory": true,
