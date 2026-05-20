@@ -3,7 +3,7 @@ set -euo pipefail
 
 FLAG_DIR="/var/db/sheriffprojects"
 username=$(stat -f%Su /dev/console)
-userPicture="/Users/Shared/Wallpapers_SP/sheriff_projects.jpg"
+userPicture="/Users/Shared/sp_wallpapers/sheriff_projects.jpg"
 
 # Sortie propre si pas de user console valide -> Fleet relancera plus tard
 if [ "$username" = "root" ] || [ "$username" = "_mbsetupuser" ] || [ "$username" = "loginwindow" ] || [ -z "$username" ]; then
