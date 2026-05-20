@@ -124,7 +124,7 @@ controls:
       enable_release_device_manually: false
       macos_setup_assistant:
         path: ../lib/unassigned/dep_profile.json
-      script:
+      macos_script:
         path: ../lib/unassigned/scripts/create_users.sh
   
 # ---------------------------------------------------------------------------
