@@ -29,8 +29,6 @@ settings:
 # ---------------------------------------------------------------------------
 controls:
 
-
-
   # ----- Profils de configuration MDM (.mobileconfig) -----
   apple_settings:
     configuration_profiles:
@@ -114,32 +112,26 @@ controls:
   windows_require_bitlocker_pin: false
 
   # ----- Scripts globaux (lancés à la demande, pas au setup) -----
-  scripts:
+
+  scripts:  
     - path: ../lib/unassigned/scripts/set_user_picture.sh
-    # - path: ../lib/unassigned/scripts/uninstall_captureone.sh
 
   # ----- SETUP EXPERIENCE (à ajouter si tu veux personnaliser le 1er démarrage) ------
-  # ⚠️ Le setup experience ne s'applique qu'aux machines enrôlées via ABM (ADE).
-  #    Il ne fonctionne PAS pour le pseudo-team "No team" — il faut un vrai team
-  #    (ce qui est ton cas ici puisque "Unassigned" est un team nommé).
-  #
-  # macos_setup:
-  #   bootstrap_package:                  # URL d'un .pkg distribution signé
-  #   enable_end_user_authentication: false
-  #   enable_release_device_manually: false
-  #   script:
-  #     path: ../lib/unassigned/scripts/setup_post_install.sh
-  #   # Software à installer pendant le setup — alternative au flag
-  #   # setup_experience: true des sections software ci-dessous
-  #   # software:
-  #   #   - hash_sha256: abc123...
-  #   #   - app_store_id: "1091189122"
 
+  setup_experience:
+    macos_setup:
+      bootstrap_package: ""  # ou votre bootstrap si vous en avez un
+      enable_release_device_manually: false
+      macos_setup_assistant:
+        path: ../lib/unassigned/dep_profile.json
+      script:
+        path: ../lib/unassigned/scripts/create_users.sh
+  
 # ---------------------------------------------------------------------------
 # SOFTWARE — apps disponibles pour ce team
 # ---------------------------------------------------------------------------
-software:
 
+software:
   # ----- Custom packages (.pkg, .dmg) -----
   packages:
     - path: ../lib/unassigned/software/capture_one.yml
