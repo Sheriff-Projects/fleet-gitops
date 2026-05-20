@@ -1,7 +1,7 @@
-- url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/unassigned/download/sp_wallpapers.pkg
+- url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/macos/download/sp_wallpapers.pkg
   hash_sha256: b3fc8d57e6bd53bd5fa5d7739e762345cc7d5bb356dae33761f2e9088ff27b1d
   icon:
-    path: ../../all/icon/s_p.png
+    path: ../../all/icons/s_p.png
   install_script:
     path: ./install_sp_wallpapers.sh
   uninstall_script:

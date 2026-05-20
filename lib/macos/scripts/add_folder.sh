@@ -1,14 +1,3 @@
-#!/bin/sh
-#
-# Install script — WallpaperFolderManager + ajout du dossier sp_wallpapers
-# https://github.com/bartreardon/WallpaperFolderManager
-#
-# Tourne en root via Fleet. $INSTALLER_PATH = chemin du .pkg fourni par Fleet.
-#
-
-# Installe le pkg Fleet
-installer -pkg "$INSTALLER_PATH" -target /
-
 WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers/"
 WALLPAPER_PATH="/Users/Shared/sp_wallpapers/Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
 

@@ -37,21 +37,21 @@ else
     REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 fi
 
-if [ ! -d "$REPO_ROOT/lib/unassigned" ]; then
-    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/unassigned n'existe pas.${NC}"
+if [ ! -d "$REPO_ROOT/lib/macos" ]; then
+    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/macos n'existe pas.${NC}"
     echo "Définis FLEET_GITOPS_REPO_PATH ou place ce script dans <repo>/scripts/"
     exit 1
 fi
 
 # --- Configuration ---
 XML_URL="https://www.captureone.com/update/capture-one-mac.xml"
-DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
+DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/capture_one.pkg"
 REPO="souari1974/fleet-gitops"
-YAML_FILE="$REPO_ROOT/lib/unassigned/software/capture_one.yml"
+YAML_FILE="$REPO_ROOT/lib/macos/software/capture_one.yml"
 
 # URL fixe (ne change jamais entre les versions)
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/capture_one.pkg"
+PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/capture_one.pkg"
 
 # Identifiant Apple Developer Team de Capture One A/S
 EXPECTED_TEAM_ID="5WTDB5F65L"
@@ -308,7 +308,7 @@ cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
   icon:
-    path: ../../all/icon/capture_one.png
+    path: ../../all/icons/capture_one.png
   install_script:
     path: ./install_capture_one.sh
   uninstall_script:

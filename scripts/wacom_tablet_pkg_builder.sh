@@ -16,15 +16,15 @@ BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
 REPO="souari1974/fleet-gitops"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/wacom_tablet.pkg"
+PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/wacom_tablet.pkg"
 
 # Identifier qui matche le bundle ID de Wacom Center.app
 # pour que Fleet détecte la version installée et affiche le bouton Uninstall.
 PKG_IDENTIFIER="com.wacom.WacomCenter"
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
-DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
+DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/wacom_tablet.pkg"
-SOFTWARE_DIR="$REPO_ROOT/lib/unassigned/software"
+SOFTWARE_DIR="$REPO_ROOT/lib/macos/software"
 YAML_FILE="$SOFTWARE_DIR/wacom_tablet.yml"
 INSTALL_SCRIPT="$SOFTWARE_DIR/install_wacom_tablet.sh"
 UNINSTALL_SCRIPT="$SOFTWARE_DIR/uninstall_wacom_tablet.sh"
@@ -380,7 +380,7 @@ cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
   icon:
-    path: ../../all/icon/wacom_tablet.png
+    path: ../../all/icons/wacom_tablet.png
   install_script:
     path: ./install_wacom_tablet.sh
   uninstall_script:

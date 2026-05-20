@@ -17,16 +17,16 @@ BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
 REPO="souari1974/fleet-gitops"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/color_navigator.pkg"
+PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/color_navigator.pkg"
 
 # Identifier qui matche le bundle ID de ColorNavigator 7.app
 # pour que Fleet détecte la version installée et affiche le bouton Uninstall.
 PKG_IDENTIFIER="com.eizo.ColorNavigator7"
 
 EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
-DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
+DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/color_navigator.pkg"
-SOFTWARE_DIR="$REPO_ROOT/lib/unassigned/software"
+SOFTWARE_DIR="$REPO_ROOT/lib/macos/software"
 YAML_FILE="$SOFTWARE_DIR/color_navigator.yml"
 INSTALL_SCRIPT="$SOFTWARE_DIR/install_color_navigator.sh"
 UNINSTALL_SCRIPT="$SOFTWARE_DIR/uninstall_color_navigator.sh"
@@ -378,7 +378,7 @@ cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
   icon:
-    path: ../../all/icon/color_navigator.png
+    path: ../../all/icons/color_navigator.png
   install_script:
     path: ./install_color_navigator.sh
   uninstall_script:
