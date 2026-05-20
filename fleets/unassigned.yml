@@ -91,42 +91,39 @@ controls:
 
 software:
   packages:
-    - path: ../lib/unassigned/software/capture_one.yml
-      self_service: true
-    - path: ../lib/unassigned/software/color_navigator.yml
-      display_name: ColorNavigator 7
+    - path: ../lib/unassigned/software/01_sp_wallpapers.yml
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/carbon_copy_cloner.yml
-      self_service: true
-    - path: ../lib/unassigned/software/sp_wallpapers.yml
+    - path: ../lib/unassigned/software/02_dark_mode.yml
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/wacom_tablet.yml
-      self_service: true
-      setup_experience: true
-    - path: ../lib/unassigned/software/dark_mode.yml
-      self_service: true
-      setup_experience: true
-    - path: ../lib/unassigned/software/desktoppr.yml
+    - path: ../lib/unassigned/software/03_desktoppr.yml
       display_name: desktoppr
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/forticlient.yml
-      display_name: FortiClient 7
+    - path: ../lib/unassigned/software/04_wallpaper_folder.yml
+      display_name: wallpaper_folder
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/forticlient_vpn_config.yml
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/wallpaper_folder.yml
-      display_name: wallpaper_folder
+
+    - path: ../lib/unassigned/software/capture_one.yml
       self_service: true
-      setup_experience: true
+    - path: ../lib/unassigned/software/color_navigator.yml
+      display_name: ColorNavigator 7
+      self_service: true
+    - path: ../lib/unassigned/software/carbon_copy_cloner.yml
+      self_service: true
+    - path: ../lib/unassigned/software/wacom_tablet.yml
+      self_service: true
+    - path: ../lib/unassigned/software/forticlient.yml
+      display_name: FortiClient 7
+      self_service: true
     - path: ../lib/unassigned/software/microsoft_365.yml
       display_name: "Microsoft 365 Apps"
       self_service: true
-      setup_experience: true
       categories:
         - Productivity
 
@@ -140,7 +137,6 @@ software:
   fleet_maintained_apps:
     - slug: slack/darwin
       self_service: true
-      setup_experience: true
       categories:
         - Communication
     - slug: google-chrome/darwin
@@ -150,7 +146,7 @@ software:
       self_service: true
     - slug: zoom/darwin
       self_service: true
-      setup_experience: true
+
 
 policies:
   - path: ../lib/unassigned/policies/user_picture_applied.yml
