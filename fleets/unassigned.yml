@@ -83,11 +83,11 @@ controls:
   scripts:
     - path: ../lib/unassigned/scripts/set_user_picture.sh
 
-  setup_experience:
-    macos_bootstrap_package: ""
-    apple_enable_release_device_manually: false
+# setup_experience:
+#    macos_bootstrap_package: ""
+#   apple_enable_release_device_manually: false
 #    apple_setup_assistant: /lib/unassigned/json/dep_profile.json
-    macos_script: ../lib/unassigned/scripts/create_users.sh
+  # macos_script: ../lib/unassigned/scripts/create_users.sh
 
 software:
   packages:
@@ -148,7 +148,7 @@ software:
       self_service: true
 
 
-policies:
-  - path: ../lib/unassigned/policies/user_picture_applied.yml
+# policies:
+#- path: ../lib/unassigned/policies/user_picture_applied.yml
 
 

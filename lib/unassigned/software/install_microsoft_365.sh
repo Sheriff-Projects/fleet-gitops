@@ -21,7 +21,7 @@ fi
 
 # Lance l'installation système (target / = volume de boot)
 # /usr/sbin/installer est l'outil natif macOS, signé par Apple
-/usr/sbin/installer -pkg "${INSTALLER_PATH}" -target /
+installer -pkg "${INSTALLER_PATH}" -target /
 INSTALL_EXIT=$?
 
 if [ $INSTALL_EXIT -ne 0 ]; then
