@@ -11,25 +11,14 @@ agent_options:
       distributed_interval: 10
       distributed_tls_max_attempts: 3
 
-# ---------------------------------------------------------------------------
-# TEAM SETTINGS — paramètres généraux du team
-# ---------------------------------------------------------------------------
-# (Ajoute ici ton enroll secret si nécessaire
-
 settings:
   webhook_settings:
     failing_policies_webhook:
-      destination_url:
+      destination_url: ""
       enable_failing_policies_webhook: false
       host_batch_size: 0
- 
 
-# ---------------------------------------------------------------------------
-# CONTROLS — profils MDM, chiffrement, mises à jour OS, setup experience
-# ---------------------------------------------------------------------------
 controls:
-
-  # ----- Profils de configuration MDM (.mobileconfig) -----
   apple_settings:
     configuration_profiles:
       - path: ../lib/unassigned/profiles/Install_Maxitype_Signs_Font.mobileconfig
@@ -51,7 +40,7 @@ controls:
       - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Preferences_SP_Interne.mobileconfig
       - path: ../lib/unassigned/profiles/Settings_Eizo_ColorNavigator.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Microsoft_AutoUpdate.mobileconfig    
+      - path: ../lib/unassigned/profiles/Settings_Microsoft_AutoUpdate.mobileconfig
 
       - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
         labels_include_any:
@@ -81,61 +70,38 @@ controls:
         labels_include_any:
           - "BU11 - PRODUCTION"
 
-  # ----- Sécurité disque -----
   enable_disk_encryption: false
   enable_recovery_lock_password: false
+  windows_require_bitlocker_pin: false
 
-  # ----- Mises à jour OS -----
+  # Laisse ces blocs absents si tu ne forces pas les mises a jour OS.
   macos_updates:
-    deadline:
-    minimum_version:
-    update_new_hosts:
+    deadline: ""
+    minimum_version: ""
+    update_new_hosts: false
   ios_updates:
-    deadline:
-    minimum_version:
-    update_new_hosts:
+    deadline: ""
+    minimum_version: ""
   ipados_updates:
-    deadline:
-    minimum_version:
-    update_new_hosts:
+    deadline: ""
+    minimum_version: ""
   windows_updates:
     deadline_days:
     grace_period_days:
 
-  # ----- Migration MDM -----
-  macos_migration:
-    enable: false
-    mode:
-    webhook_url:
-  windows_migration_enabled: false
-  enable_turn_on_windows_mdm_manually: false
-  windows_require_bitlocker_pin: false
-
-  # ----- Scripts globaux (lancés à la demande, pas au setup) -----
-
-  scripts:  
+  scripts:
     - path: ../lib/unassigned/scripts/set_user_picture.sh
 
-  # ----- SETUP EXPERIENCE (à ajouter si tu veux personnaliser le 1er démarrage) ------
-
-  macos_setup:
-    bootstrap_package: ""  # ou votre bootstrap si vous en avez un
-    enable_release_device_manually: false
-    apple_setup_assistant:
-      path: ../lib/unassigned/dep_profile.json
-    macos_script:
-      path: ../lib/unassigned/scripts/create_users.sh
-  
-# ---------------------------------------------------------------------------
-# SOFTWARE — apps disponibles pour ce team
-# ---------------------------------------------------------------------------
+  setup_experience:
+    macos_bootstrap_package: ""
+    apple_enable_release_device_manually: false
+    apple_setup_assistant: ../lib/unassigned/dep_profile.json
+    macos_script: ../lib/unassigned/scripts/create_users.sh
 
 software:
-  # ----- Custom packages (.pkg, .dmg) -----
   packages:
     - path: ../lib/unassigned/software/capture_one.yml
       self_service: true
-      # setup_experience: true   # ← décommente pour installer pendant le setup
     - path: ../lib/unassigned/software/color_navigator.yml
       display_name: ColorNavigator 7
       self_service: true
@@ -157,7 +123,7 @@ software:
       setup_experience: true
     - path: ../lib/unassigned/software/forticlient.yml
       display_name: FortiClient 7
-      self_service: true      
+      self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/forticlient_vpn_config.yml
       self_service: true
@@ -167,21 +133,19 @@ software:
       self_service: true
       setup_experience: true
     - path: ../lib/unassigned/software/microsoft_365.yml
-      display_name: "Microsoft 365 Apps" 
+      display_name: "Microsoft 365 Apps"
       self_service: true
       setup_experience: true
       categories:
         - Productivity
 
-  # ----- Apple App Store apps (VPP) -----
   app_store_apps:
-   - app_store_id: "361285480"  # Keynote
-     platform: darwin
-     self_service: true
-     categories:
-     - Productivity
+    - app_store_id: "361285480"  # Keynote
+      platform: darwin
+      self_service: true
+      categories:
+        - Productivity
 
-  # ----- Fleet-maintained apps -----
   fleet_maintained_apps:
     - slug: slack/darwin
       self_service: true
@@ -197,14 +161,7 @@ software:
       self_service: true
       setup_experience: true
 
-# ---------------------------------------------------------------------------
-# POLICIES (vide pour l'instant)
-# ---------------------------------------------------------------------------
-
 policies:
   - path: ../lib/unassigned/policies/user_picture_applied.yml
 
-# ---------------------------------------------------------------------------
-# QUERIES (vide pour l'instant)
-# ---------------------------------------------------------------------------
-# queries:
+reports: []
