@@ -1,14 +1,6 @@
 name: Unassigned
 
-config:
-  options:
-    pack_delimiter: /
-    logger_tls_period: 10
-    distributed_plugin: tls
-    disable_distributed: false
-    logger_tls_endpoint: /api/osquery/log
-    distributed_interval: 10
-    distributed_tls_max_attempts: 3
+
 
 settings:
   webhook_settings:
