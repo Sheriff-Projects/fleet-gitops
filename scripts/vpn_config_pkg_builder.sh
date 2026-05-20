@@ -8,13 +8,13 @@
 # les agents soient en place).
 #
 # Sources :
-#   lib/unassigned/conf/vpn.plist  → fichier de config versionné dans Git
+#   lib/macos/configuration-apps/vpn.plist  → fichier de config versionné dans Git
 #
 # Produits :
-#   lib/unassigned/download/forticlient_vpn_config.pkg
-#   lib/unassigned/software/forticlient_vpn_config.yml
-#   lib/unassigned/software/install_forticlient_vpn_config.sh
-#   lib/unassigned/software/uninstall_forticlient_vpn_config.sh
+#   lib/macos/download/forticlient_vpn_config.pkg
+#   lib/macos/software/forticlient_vpn_config.yml
+#   lib/macos/software/install_forticlient_vpn_config.sh
+#   lib/macos/software/uninstall_forticlient_vpn_config.sh
 
 set -euo pipefail
 
@@ -37,25 +37,25 @@ else
     REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 fi
 
-if [ ! -d "$REPO_ROOT/lib/unassigned" ]; then
-    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/unassigned n'existe pas.${NC}"
+if [ ! -d "$REPO_ROOT/lib/macos" ]; then
+    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/macos n'existe pas.${NC}"
     echo "Définis FLEET_GITOPS_REPO_PATH ou place ce script dans <repo>/scripts/"
     exit 1
 fi
 
 # --- Configuration ---
-VPN_PLIST_SOURCE="$REPO_ROOT/lib/unassigned/conf/vpn.plist"
+VPN_PLIST_SOURCE="$REPO_ROOT/lib/macos/configuration-apps/vpn.plist"
 VPN_PLIST_TARGET_RELATIVE="Library/Application Support/Fortinet/FortiClient/conf/vpn.plist"
 
-DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
+DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/forticlient_vpn_config.pkg"
-SOFTWARE_DIR="$REPO_ROOT/lib/unassigned/software"
+SOFTWARE_DIR="$REPO_ROOT/lib/macos/software"
 YAML_FILE="$SOFTWARE_DIR/forticlient_vpn_config.yml"
 INSTALL_SCRIPT="$SOFTWARE_DIR/install_forticlient_vpn_config.sh"
 UNINSTALL_SCRIPT="$SOFTWARE_DIR/uninstall_forticlient_vpn_config.sh"
 
 REPO="souari1974/fleet-gitops"
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/forticlient_vpn_config.pkg"
+PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/forticlient_vpn_config.pkg"
 
 # Identifiant unique pour ce PKG (pas le même que com.fortinet.FortiClient pour
 # que les deux PKG puissent cohabiter dans pkgutil)
@@ -83,7 +83,7 @@ echo -e "${BLUE}[1/5] Validating vpn.plist source...${NC}"
 if [ ! -f "$VPN_PLIST_SOURCE" ]; then
     echo -e "${RED}[ERROR] $VPN_PLIST_SOURCE introuvable${NC}"
     echo -e "${YELLOW}Crée ce fichier avant de relancer le builder :${NC}"
-    echo "  mkdir -p $REPO_ROOT/lib/unassigned/conf"
+    echo "  mkdir -p $REPO_ROOT/lib/macos/configuration-apps"
     echo "  cp /chemin/vers/ton/vpn.plist $VPN_PLIST_SOURCE"
     exit 1
 fi
@@ -352,7 +352,7 @@ echo "  Postinstall      : kill + bootstrap des agents Fortinet"
 echo ""
 echo "  À déployer APRÈS FortiClient dans Fleet :"
 echo "    packages:"
-echo "      - path: ../lib/unassigned/software/forticlient.yml"
+echo "      - path: ../lib/macos/software/forticlient.yml"
 echo "        self_service: true"
-echo "      - path: ../lib/unassigned/software/forticlient_vpn_config.yml"
+echo "      - path: ../lib/macos/software/forticlient_vpn_config.yml"
 echo "        self_service: true"

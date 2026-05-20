@@ -1,7 +1,5 @@
 name: Unassigned
 
-
-
 settings:
   webhook_settings:
     failing_policies_webhook:
@@ -9,55 +7,61 @@ settings:
       enable_failing_policies_webhook: false
       host_batch_size: 0
 
+setup_experience:
+  macos_bootstrap_package: ""
+  apple_enable_release_device_manually: false
+  apple_setup_assistant: ../lib/macos/enrollment-profiles/dep_profile.json
+  macos_script: ../lib/macos/scripts/create_users.sh
+
 controls:
   apple_settings:
     configuration_profiles:
-      - path: ../lib/unassigned/profiles/Install_Maxitype_Signs_Font.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Apple_Osascript.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Apple_Terminal.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Avid_Nexis_Client.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Bombich_Carbon_Copy_Cloner.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Capture_One.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_DEVONTech_Xmenu.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_FleetDM_Orbit.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Fortinet_Forticlient.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Google_Chrome.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Microsoft_Teams.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Root3_SupportApp.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Ryan_Hanson_Rectangle.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Salesforce_Slack.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_SP_Tools.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Wacom_Tablet.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Preferences_SP_Interne.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Eizo_ColorNavigator.mobileconfig
-      - path: ../lib/unassigned/profiles/Settings_Microsoft_AutoUpdate.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Install_Maxitype_Signs_Font.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Apple_Osascript.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Apple_Terminal.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Avid_Nexis_Client.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Bombich_Carbon_Copy_Cloner.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Capture_One.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_DEVONTech_Xmenu.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_FleetDM_Orbit.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Fortinet_Forticlient.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Google_Chrome.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Microsoft_Teams.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Root3_SupportApp.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Ryan_Hanson_Rectangle.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Salesforce_Slack.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Sheriff_Projects_SP_Tools.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Sheriff_Projects_Smb_Link.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Wacom_Tablet.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Preferences_SP_Interne.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Eizo_ColorNavigator.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Microsoft_AutoUpdate.mobileconfig
 
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
         labels_include_any:
           - "BU54 - DSI"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU02_ATELIER.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU02_ATELIER.mobileconfig
         labels_include_any:
           - "BU02 - ATELIER"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU05_PUB.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU05_PUB.mobileconfig
         labels_include_any:
           - "BU05 - PUB"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU06_ECOM.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU06_ECOM.mobileconfig
         labels_include_any:
           - "BU06 - ECOM"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU10_ULTRA_MOTION.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU10_ULTRA_MOTION.mobileconfig
         labels_include_any:
           - "BU10 - ULTRA MOTION"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU53_DRH.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU53_DRH.mobileconfig
         labels_include_any:
           - "BU53 - DRH"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU51_DIRECTION.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU51_DIRECTION.mobileconfig
         labels_include_any:
           - "BU51 - DIRECTION"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU52_COMPTABILITE.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU52_COMPTABILITE.mobileconfig
         labels_include_any:
           - "BU52 - COMPTABILITE"
-      - path: ../lib/unassigned/profiles/Settings_Chrome_Token_BU11_PRODUCTION.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU11_PRODUCTION.mobileconfig
         labels_include_any:
           - "BU11 - PRODUCTION"
 
@@ -81,47 +85,47 @@ controls:
     grace_period_days:
 
   scripts:
-    - path: ../lib/unassigned/scripts/set_user_picture.sh
+    - path: ../lib/macos/scripts/set_user_picture.sh
 
 # setup_experience:
 #    macos_bootstrap_package: ""
 #   apple_enable_release_device_manually: false
-#    apple_setup_assistant: /lib/unassigned/json/dep_profile.json
-  # macos_script: ../lib/unassigned/scripts/create_users.sh
+#    apple_setup_assistant: ../lib/macos/enrollment-profiles/dep_profile.json
+  # macos_script: ../lib/macos/scripts/create_users.sh
 
 software:
   packages:
-    - path: ../lib/unassigned/software/01_sp_wallpapers.yml
+    - path: ../lib/macos/software/01_sp_wallpapers.yml
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/02_dark_mode.yml
+    - path: ../lib/macos/software/02_dark_mode.yml
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/03_desktoppr.yml
+    - path: ../lib/macos/software/03_desktoppr.yml
       display_name: desktoppr
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/04_wallpaper_folder.yml
+    - path: ../lib/macos/software/04_wallpaper_folder.yml
       display_name: wallpaper_folder
       self_service: true
       setup_experience: true
-    - path: ../lib/unassigned/software/forticlient_vpn_config.yml
+    - path: ../lib/macos/software/forticlient_vpn_config.yml
       self_service: true
       setup_experience: true
 
-    - path: ../lib/unassigned/software/capture_one.yml
+    - path: ../lib/macos/software/capture_one.yml
       self_service: true
-    - path: ../lib/unassigned/software/color_navigator.yml
+    - path: ../lib/macos/software/color_navigator.yml
       display_name: ColorNavigator 7
       self_service: true
-    - path: ../lib/unassigned/software/carbon_copy_cloner.yml
+    - path: ../lib/macos/software/carbon_copy_cloner.yml
       self_service: true
-    - path: ../lib/unassigned/software/wacom_tablet.yml
+    - path: ../lib/macos/software/wacom_tablet.yml
       self_service: true
-    - path: ../lib/unassigned/software/forticlient.yml
+    - path: ../lib/macos/software/forticlient.yml
       display_name: FortiClient 7
       self_service: true
-    - path: ../lib/unassigned/software/microsoft_365.yml
+    - path: ../lib/macos/software/microsoft_365.yml
       display_name: "Microsoft 365 Apps"
       self_service: true
       categories:
@@ -149,6 +153,6 @@ software:
 
 
 # policies:
-#- path: ../lib/unassigned/policies/user_picture_applied.yml
+#- path: ../lib/macos/policies/user_picture_applied.yml
 
 

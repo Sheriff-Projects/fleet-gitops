@@ -25,21 +25,21 @@ else
     REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 fi
 
-if [ ! -d "$REPO_ROOT/lib/unassigned" ]; then
-    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/unassigned n'existe pas.${NC}"
+if [ ! -d "$REPO_ROOT/lib/macos" ]; then
+    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/macos n'existe pas.${NC}"
     echo "Définis FLEET_GITOPS_REPO_PATH ou place ce script dans <repo>/scripts/"
     exit 1
 fi
 
 # --- Configuration ---
 DOWNLOAD_URL="https://api.bombich.com/download/ccc?v=ccc7"
-DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
+DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/carbon_copy_cloner.pkg"
 REPO="souari1974/fleet-gitops"
-YAML_FILE="$REPO_ROOT/lib/unassigned/software/carbon_copy_cloner.yml"
+YAML_FILE="$REPO_ROOT/lib/macos/software/carbon_copy_cloner.yml"
 
 # URL fixe (ne change jamais entre les versions)
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/carbon_copy_cloner.pkg"
+PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/carbon_copy_cloner.pkg"
 
 # Identifiants Bombich
 EXPECTED_TEAM_ID="L4F2DED5Q7"
@@ -383,7 +383,7 @@ cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
   icon:
-    path: ../../all/icon/ccc.png
+    path: ../../all/icons/ccc.png
   install_script:
     path: ./install_carbon_copy_cloner.sh
   uninstall_script:

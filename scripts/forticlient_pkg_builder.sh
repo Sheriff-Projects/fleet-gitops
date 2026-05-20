@@ -34,23 +34,23 @@ else
     REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 fi
 
-if [ ! -d "$REPO_ROOT/lib/unassigned" ]; then
-    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/unassigned n'existe pas.${NC}"
+if [ ! -d "$REPO_ROOT/lib/macos" ]; then
+    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/macos n'existe pas.${NC}"
     echo "Définis FLEET_GITOPS_REPO_PATH ou place ce script dans <repo>/scripts/"
     exit 1
 fi
 
 # --- Configuration ---
 DOWNLOAD_URL="https://links.fortinet.com/forticlient/mac/vpnagent"
-DOWNLOAD_DIR="$REPO_ROOT/lib/unassigned/download"
+DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/forticlient.pkg"
 REPO="souari1974/fleet-gitops"
-SOFTWARE_DIR="$REPO_ROOT/lib/unassigned/software"
+SOFTWARE_DIR="$REPO_ROOT/lib/macos/software"
 YAML_FILE="$SOFTWARE_DIR/forticlient.yml"
 INSTALL_SCRIPT="$SOFTWARE_DIR/install_forticlient.sh"
 UNINSTALL_SCRIPT="$SOFTWARE_DIR/uninstall_forticlient.sh"
 
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/unassigned/download/forticlient.pkg"
+PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/forticlient.pkg"
 
 EXPECTED_BUNDLE_ID="com.fortinet.FortiClient"
 PKG_IDENTIFIER="com.fortinet.FortiClient"
@@ -460,7 +460,7 @@ cat > "$YAML_FILE" << EOF
 - url: $PKG_URL
   hash_sha256: $PKG_HASH
   icon:
-    path: ../../all/icon/forticlient.png
+    path: ../../all/icons/forticlient.png
   install_script:
     path: ./install_forticlient.sh
   uninstall_script:
