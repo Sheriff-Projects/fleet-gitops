@@ -24,31 +24,11 @@ agent_options:
       distributed_interval: 10
       distributed_tls_max_attempts: 3
 
-labels:
-- name: BU02 - ATELIER
-  label_membership_type: manual
-- name: BU05 - PUB
-  label_membership_type: manual
-- name: BU06 - ECOM
-  label_membership_type: manual
-- name: BU10 - ULTRA MOTION
-  label_membership_type: manual
-- name: BU11 - PRODUCTION
-  label_membership_type: manual
-- name: BU51 - DIRECTION
-  label_membership_type: manual
-- name: BU52 - COMPTABILITE
-  label_membership_type: manual
-- name: BU53 - DRH
-  label_membership_type: manual
-- name: BU54 - DSI
-  label_membership_type: manual
-- name: BU56 - COMMUNICATION
-  label_membership_type: manual
+
 org_settings:
   certificate_authorities:
     custom_est_proxy:
-    custom_scep_proxy:
+    custom_scep_proxy:x
     digicert:
     hydrant:
     ndes_scep_proxy:
