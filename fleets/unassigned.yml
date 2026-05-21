@@ -87,11 +87,11 @@ controls:
   scripts:
     - path: ../lib/macos/scripts/set_user_picture.sh
 
-# setup_experience:
-#    macos_bootstrap_package: ""
-#   apple_enable_release_device_manually: false
-#    apple_setup_assistant: ../lib/macos/enrollment-profiles/dep_profile.json
-  # macos_script: ../lib/macos/scripts/create_users.sh
+setup_experience:
+      macos_bootstrap_package: ""
+      apple_enable_release_device_manually: false
+      apple_setup_assistant: ../lib/macos/enrollment-profiles/dep_profile.json
+      macos_script: ../lib/macos/scripts/create_users.sh
 
 software:
   packages:
@@ -99,6 +99,7 @@ software:
       self_service: true
       setup_experience: true
     - path: ../lib/macos/software/02_dark_mode.yml
+      display_name: dark_mode
       self_service: true
       setup_experience: true
     - path: ../lib/macos/software/03_desktoppr.yml
