@@ -23,12 +23,11 @@ settings:
 agent_options:
 controls:
 
-  macos_setup:
-    bootstrap_package: ""
-    enable_release_device_manually: false
-    enable_end_user_authentication: false
-    script:
-      path: ../lib/macos/scripts/create_users.sh
+  setup_experience:
+      macos_bootstrap_package: ""
+      apple_enable_release_device_manually: false
+      enable_end_user_authentication: false
+      macos_script: ../lib/macos/scripts/create_users.sh
 
   apple_settings:
     configuration_profiles:
