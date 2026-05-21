@@ -9,7 +9,7 @@ set -eu
 LOG_TAG="fleet-onboarding"
 SENTINEL="/var/db/.sheriff_onboarding_done"
 
-WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers"
+WALLPAPER_FOLDER="/Users/Shared/Wallpapers_SP"
 WALLPAPER_FILE="${WALLPAPER_FOLDER}/Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
 USER_PICTURE="${WALLPAPER_FOLDER}/sheriff_projects.jpg"
 
