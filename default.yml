@@ -24,11 +24,10 @@ agent_options:
       distributed_interval: 10
       distributed_tls_max_attempts: 3
 
-
 org_settings:
   certificate_authorities:
     custom_est_proxy:
-    custom_scep_proxy:x
+    custom_scep_proxy:
     digicert:
     hydrant:
     ndes_scep_proxy:
