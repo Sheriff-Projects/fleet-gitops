@@ -29,31 +29,28 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Vérifier qu'il y a des .pkg à releaser
-        id: check
+      - name: Verifier qu il y a des pkg a releaser
         run: |
           PKG_COUNT=$(find lib/macos/download -name "*.pkg" -type f 2>/dev/null | wc -l)
           if [ "$PKG_COUNT" -eq 0 ]; then
-            echo "Aucun .pkg trouvé dans lib/macos/download/"
+            echo "Aucun .pkg trouve dans lib/macos/download/"
             exit 1
           fi
           echo "Found $PKG_COUNT .pkg to process"
 
-      - name: Créer la release si elle n'existe pas
+      - name: Creer la release si elle n existe pas
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.release_tag }}
         run: |
           if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" \
-              --title "Binaries — $TAG" \
-              --notes "Packages release for Fleet GitOps"
+            gh release create "$TAG" --title "Binaries - $TAG" --notes "Packages release for Fleet GitOps"
             echo "Release $TAG created"
           else
             echo "Release $TAG already exists, will append/overwrite assets"
           fi
 
-      - name: Upload .pkg + update YAMLs
+      - name: Upload pkg et update YAMLs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.release_tag }}
@@ -65,40 +62,28 @@ jobs:
             PKG_NAME=$(basename "$pkg")
             PKG_BASENAME="${PKG_NAME%.pkg}"
             HASH=$(sha256sum "$pkg" | awk '{print $1}')
-            URL="https://github.com/$REPO/releases/download/$TAG/$PKG_NAME"
+            URL="https://github.com/${REPO}/releases/download/${TAG}/${PKG_NAME}"
 
             echo "Processing: $PKG_NAME"
             echo "  Hash: $HASH"
             echo "  URL:  $URL"
 
-            # Upload (--clobber écrase si l'asset existe déjà sous ce nom)
             gh release upload "$TAG" "$pkg" --clobber
 
-            # Cherche le YAML correspondant (par nom de base)
             YAML_FILE=$(find lib/macos/software -name "${PKG_BASENAME}.yml" -type f | head -1)
             if [ -z "$YAML_FILE" ]; then
-              echo "  ⚠️  Pas de YAML trouvé pour $PKG_BASENAME, skip update"
+              echo "  Pas de YAML trouve pour $PKG_BASENAME, skip update"
               continue
             fi
 
             echo "  Updating YAML: $YAML_FILE"
 
-            # Remplace url: et hash_sha256: dans le YAML
-            python3 << PYEOF
-import re
-
-with open("$YAML_FILE", "r") as f:
-    content = f.read()
-
-content = re.sub(r'^(\s*-?\s*url:\s*).*$', r'\1$URL', content, count=1, flags=re.MULTILINE)
-content = re.sub(r'^(\s*hash_sha256:\s*).*$', r'\1$HASH', content, count=1, flags=re.MULTILINE)
-
-with open("$YAML_FILE", "w") as f:
-    f.write(content)
-PYEOF
+            # Echappement pour sed (les URLs et hashes ne contiennent que des caracteres surs)
+            sed -i "s|^\(\s*-\?\s*url:\s*\).*|\1${URL}|" "$YAML_FILE"
+            sed -i "s|^\(\s*hash_sha256:\s*\).*|\1${HASH}|" "$YAML_FILE"
           done
 
-      - name: Supprimer les .pkg du working tree
+      - name: Supprimer les pkg du working tree
         run: |
           rm -f lib/macos/download/*.pkg
           echo "Removed .pkg from working tree (they live in the release now)"
@@ -107,11 +92,10 @@ PYEOF
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add lib/macos/software/*.yml lib/macos/download/
+          git add lib/macos/software/*.yml lib/macos/download/ || true
           if git diff --staged --quiet; then
-            echo "Pas de changement à committer"
+            echo "Pas de changement a committer"
           else
-            git commit -m "Release ${{ inputs.release_tag }} — update YAMLs and clean download/"
+            git commit -m "Release ${{ inputs.release_tag }} - update YAMLs and clean download"
             git push
           fi
