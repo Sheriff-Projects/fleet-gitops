@@ -47,7 +47,7 @@ fi
 XML_URL="https://www.captureone.com/update/capture-one-mac.xml"
 DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/capture_one.pkg"
-REPO="souari1974/fleet-gitops"
+REPO="Sheriff-Projects/fleet-gitops"
 YAML_FILE="$REPO_ROOT/lib/macos/software/capture_one.yml"
 
 # URL fixe (ne change jamais entre les versions)

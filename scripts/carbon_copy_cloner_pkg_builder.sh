@@ -35,7 +35,7 @@ fi
 DOWNLOAD_URL="https://api.bombich.com/download/ccc?v=ccc7"
 DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/carbon_copy_cloner.pkg"
-REPO="souari1974/fleet-gitops"
+REPO="Sheriff-Projects/fleet-gitops"
 YAML_FILE="$REPO_ROOT/lib/macos/software/carbon_copy_cloner.yml"
 
 # URL fixe (ne change jamais entre les versions)

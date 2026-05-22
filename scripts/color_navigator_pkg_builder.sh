@@ -15,7 +15,7 @@ JSON_URL="https://www.eizo.co.jp/update/cn7-update-v2-global.json"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
-REPO="souari1974/fleet-gitops"
+REPO="Sheriff-Projects/fleet-gitops"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/color_navigator.pkg"
 

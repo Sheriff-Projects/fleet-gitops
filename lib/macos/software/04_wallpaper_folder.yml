@@ -1,4 +1,4 @@
-- url: https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/macos/download/wallpaper_folder.pkg
+- url: https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/wallpaper_folder.pkg
   hash_sha256: c767a893248964726be5d661c786d6b989bfd376322d7bb44589f610ed9e2e46
   icon:
     path: ../../all/icons/s_p.png

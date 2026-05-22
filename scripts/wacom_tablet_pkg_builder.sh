@@ -14,7 +14,7 @@ XML_URL="https://link.wacom.com/wdc/update.xml"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
-REPO="souari1974/fleet-gitops"
+REPO="Sheriff-Projects/fleet-gitops"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/wacom_tablet.pkg"
 
