@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/capture_one.pkg
-  hash_sha256: ff6072f342cdc94f3db825e6fc31f60237308700e5a2cfcdc3572f9b6e35cdd4
+  hash_sha256: a10fca453b1bc135dfd17c8724a4e1188d12a19d9d0bea95ca5a3d044958dc88
   icon:
     path: ../../all/icons/capture_one.png
   install_script:
