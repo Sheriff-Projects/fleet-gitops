@@ -413,6 +413,26 @@ fi
 # Auto-commit + push (cible : branche main)
 # ===========================================================================
 echo -e "${BLUE}[*] Auto-commit + push...${NC}"
+
+cd "$REPO_ROOT"
+
+# Stage uniquement le .pkg + le YAML pour ne pas embarquer d'autres changements
+git add "$OUTPUT_PKG" "$YAML_FILE"
+
+if git diff --staged --quiet; then
+    echo -e "${YELLOW}  ⚠ Aucun changement à committer${NC}"
+else
+    COMMIT_MSG="package release: $(basename "$OUTPUT_PKG" .pkg) $LATEST_VERSION"
+    git commit -m "$COMMIT_MSG"
+    git push
+    echo -e "${GREEN}  ✓ Pushed: $COMMIT_MSG${NC}"
+fi
+echo ""
+
+# ===========================================================================
+# Auto-commit + push (cible : branche main)
+# ===========================================================================
+echo -e "${BLUE}[*] Auto-commit + push...${NC}"
 ... (le snippet ici)
 echo ""
 
