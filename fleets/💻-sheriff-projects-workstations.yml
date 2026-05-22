@@ -98,6 +98,7 @@ controls:
   scripts:
     - path: ../lib/macos/scripts/set_user_picture.sh
     - path: ../lib/macos/scripts/onboarding_once.sh
+    - path: ../lib/macos/scripts/add_folder.sh
 
 software:
   packages:
