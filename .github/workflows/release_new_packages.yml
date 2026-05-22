@@ -1,47 +1,116 @@
-name: 'Apply latest configuration to Fleet'
+name: 'Release new packages'
+
+# Workflow déclenché manuellement depuis l'onglet Actions de GitHub.
+# Pour chaque .pkg trouvé dans lib/macos/download/ :
+#   1. Calcule le SHA256
+#   2. L'upload comme asset de la release demandée (la crée si elle n'existe pas)
+#   3. Met à jour le YAML correspondant (url + hash_sha256)
+#   4. Commit les YAMLs mis à jour
+#   5. Supprime les .pkg du working tree (ils restent dans la release)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  workflow_dispatch: # allows manual triggering
-  schedule:
-  - cron: '0 6 * * *' # Nightly 6AM UTC
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag de release (ex: v1.0.1, binaries-2026-06)'
+        required: true
+        type: string
 
-# Prevent concurrent runs of this workflow.
-concurrency:
-  group: ${{ github.workflow }}
-  cancel-in-progress: false
-
-defaults:
-  run:
-    shell: bash
-
-# Limit permissions of GITHUB_TOKEN.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  fleet-gitops:
+  release-packages:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout GitOps repository
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Apply latest configuration to Fleet
-        uses: ./.github/gitops-action
         with:
-          # Run GitOps in dry-run mode for pull requests.
-          dry-run-only: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
-        # Add the environment variables below to the repository secrets.
-        # In addition, specify or add secrets for all the environment variables that are mentioned in the global/team YAML files.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Vérifier qu'il y a des .pkg à releaser
+        id: check
+        run: |
+          PKG_COUNT=$(find lib/macos/download -name "*.pkg" -type f 2>/dev/null | wc -l)
+          if [ "$PKG_COUNT" -eq 0 ]; then
+            echo "Aucun .pkg trouvé dans lib/macos/download/"
+            exit 1
+          fi
+          echo "Found $PKG_COUNT .pkg to process"
+
+      - name: Créer la release si elle n'existe pas
         env:
-          FLEET_API_TOKEN: ${{ secrets.FLEET_API_TOKEN }}
-          FLEET_URL: ${{ secrets.FLEET_URL }}
-          FLEET_GLOBAL_ENROLL_SECRET: ${{ secrets.FLEET_GLOBAL_ENROLL_SECRET }}
-          FLEET_SHERIFF_PROJECTS_WORKSTATIONS_ENROLL_SECRET: ${{ secrets.FLEET_SHERIFF_PROJECTS_WORKSTATIONS_ENROLL_SECRET }}
-          FLEET_PERSONAL_MOBILE_DEVICES_ENROLL_SECRET: ${{ secrets.FLEET_PERSONAL_MOBILE_DEVICES_ENROLL_SECRET }}
-          FLEET_PRIMO_WEBHOOK_KEY: ${{ secrets.FLEET_PRIMO_WEBHOOK_KEY }}
-          FLEET_SECRET_ADMIN_PASSWORD: ${{ secrets.FLEET_SECRET_ADMIN_PASSWORD }}
-          FLEET_SECRET_SHERIFF_PASSWORD: ${{ secrets.FLEET_SECRET_SHERIFF_PASSWORD }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.release_tag }}
+        run: |
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" \
+              --title "Binaries — $TAG" \
+              --notes "Packages release for Fleet GitOps"
+            echo "Release $TAG created"
+          else
+            echo "Release $TAG already exists, will append assets"
+          fi
+
+      - name: Upload .pkg + update YAMLs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.release_tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          for pkg in lib/macos/download/*.pkg; do
+            [ -f "$pkg" ] || continue
+
+            PKG_NAME=$(basename "$pkg")
+            PKG_BASENAME="${PKG_NAME%.pkg}"
+            HASH=$(sha256sum "$pkg" | awk '{print $1}')
+            URL="https://github.com/$REPO/releases/download/$TAG/$PKG_NAME"
+
+            echo "Processing: $PKG_NAME"
+            echo "  Hash: $HASH"
+            echo "  URL:  $URL"
+
+            # Upload (--clobber écrase si l'asset existe déjà sous ce nom)
+            gh release upload "$TAG" "$pkg" --clobber
+
+            # Cherche le YAML correspondant (par nom de base)
+            YAML_FILE=$(find lib/macos/software -name "${PKG_BASENAME}.yml" -type f | head -1)
+            if [ -z "$YAML_FILE" ]; then
+              echo "  ⚠️  Pas de YAML trouvé pour $PKG_BASENAME, skip update"
+              continue
+            fi
+
+            echo "  Updating YAML: $YAML_FILE"
+
+            # Remplace url: et hash_sha256: dans le YAML
+            python3 << PYEOF
+import re
+
+with open("$YAML_FILE", "r") as f:
+    content = f.read()
+
+content = re.sub(r'^(\s*-?\s*url:\s*).*$', r'\1$URL', content, count=1, flags=re.MULTILINE)
+content = re.sub(r'^(\s*hash_sha256:\s*).*$', r'\1$HASH', content, count=1, flags=re.MULTILINE)
+
+with open("$YAML_FILE", "w") as f:
+    f.write(content)
+PYEOF
+          done
+
+      - name: Supprimer les .pkg du working tree
+        run: |
+          rm -f lib/macos/download/*.pkg
+          echo "Removed .pkg from working tree (they live in the release now)"
+
+      - name: Commit les changements
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add lib/macos/software/*.yml lib/macos/download/
+          if git diff --staged --quiet; then
+            echo "Pas de changement à committer"
+          else
+            git commit -m "Release ${{ inputs.release_tag }} — update YAMLs and clean download/"
+            git push
+          fi
