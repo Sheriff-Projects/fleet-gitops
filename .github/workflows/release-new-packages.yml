@@ -1,6 +1,8 @@
 name: 'Release new packages'
 
-# Workflow declenche manuellement depuis l'onglet Actions de GitHub.
+# Workflow declenche AUTOMATIQUEMENT quand un .pkg est pushe sur main,
+# OU manuellement depuis l'onglet Actions.
+#
 # Pour chaque .pkg trouve dans lib/macos/download/ :
 #   1. Calcule le SHA256
 #   2. Cree/ecrase une release dont le tag = nom du pkg (ex: capture_one)
@@ -10,9 +12,18 @@ name: 'Release new packages'
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/macos/download/*.pkg'
 
 permissions:
   contents: write
+
+# Empeche deux runs simultanes (ex: si plusieurs pkg builders pushent en parallele)
+concurrency:
+  group: release-packages
+  cancel-in-progress: false
 
 jobs:
   release-packages:

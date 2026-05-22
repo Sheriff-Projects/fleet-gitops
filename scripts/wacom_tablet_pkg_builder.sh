@@ -401,6 +401,23 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
     } >> "$GITHUB_OUTPUT"
 fi
 
+# --- Sortie compatible GitHub Actions ---
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    {
+        echo "version=$LATEST_VERSION"
+        ...
+    } >> "$GITHUB_OUTPUT"
+fi
+
+# ===========================================================================
+# Auto-commit + push (cible : branche main)
+# ===========================================================================
+echo -e "${BLUE}[*] Auto-commit + push...${NC}"
+... (le snippet ici)
+echo ""
+
+# --- Récap ---
+
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Build terminé${NC}"
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
