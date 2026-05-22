@@ -1,4 +1,4 @@
-- url: https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/wacom_tablet.pkg
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/wacom_tablet/wacom_tablet.pkg
   hash_sha256: 8235aa8b860cbc2598ec99e2d633db0ab8b7dc5da455e097aeff83e03ca3b2b0
   icon:
     path: ../../all/icons/wacom_tablet.png
