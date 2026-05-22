@@ -424,17 +424,17 @@ if git diff --staged --quiet; then
 else
     COMMIT_MSG="package release: $(basename "$OUTPUT_PKG" .pkg) $LATEST_VERSION"
     git commit -m "$COMMIT_MSG"
+
+    # Sync avec le remote avant push (résout le rejet en cas de commit fait par
+    # le workflow Release pendant qu'on buildait)
+    echo -e "${BLUE}  Sync avec remote...${NC}"
+    git pull --rebase
+
     git push
     echo -e "${GREEN}  ✓ Pushed: $COMMIT_MSG${NC}"
 fi
 echo ""
 
-# ===========================================================================
-# Auto-commit + push (cible : branche main)
-# ===========================================================================
-echo -e "${BLUE}[*] Auto-commit + push...${NC}"
-... (le snippet ici)
-echo ""
 
 # --- Récap ---
 
