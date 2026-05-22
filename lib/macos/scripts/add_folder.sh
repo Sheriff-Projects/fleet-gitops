@@ -1,5 +1,5 @@
-WALLPAPER_FOLDER="/Users/Shared/sp_wallpapers/"
-WALLPAPER_PATH="/Users/Shared/sp_wallpapers/Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
+WALLPAPER_FOLDER="/Users/Shared/Wallpapers_SP/"
+WALLPAPER_PATH="/Users/Shared/Wallpapers_SP/Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
 
 # Vérifie que le dossier existe
 if [ ! -d "$WALLPAPER_FOLDER" ]; then
