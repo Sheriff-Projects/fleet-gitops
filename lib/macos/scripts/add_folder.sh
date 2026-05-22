@@ -1,6 +1,6 @@
 WALLPAPER_FOLDER="/Users/Shared/Wallpapers_SP/"
 WALLPAPER_PATH="/Users/Shared/Wallpapers_SP/Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
-
+echo "test" 
 # Vérifie que le dossier existe
 if [ ! -d "$WALLPAPER_FOLDER" ]; then
   echo "Erreur : le dossier n'existe pas : $WALLPAPER_FOLDER"
