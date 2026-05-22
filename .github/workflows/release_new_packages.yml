@@ -12,9 +12,10 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Tag de release (ex: v1.0.1, binaries-2026-06)'
+        description: 'Tag de release (ex: binaries, v1.0.1)'
         required: true
         type: string
+        default: 'binaries'
 
 permissions:
   contents: write
@@ -49,7 +50,7 @@ jobs:
               --notes "Packages release for Fleet GitOps"
             echo "Release $TAG created"
           else
-            echo "Release $TAG already exists, will append assets"
+            echo "Release $TAG already exists, will append/overwrite assets"
           fi
 
       - name: Upload .pkg + update YAMLs
