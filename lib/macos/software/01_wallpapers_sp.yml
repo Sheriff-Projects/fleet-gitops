@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/wallpapers_sp.pkg
-  hash_sha256: 0effd737484e03831c4f359046900357bc5c9b57e27675748f56ef29a5187a7a
+  hash_sha256: 70b8338bc28da675bdb55f4e7d588e50af92a0f338d0adf8a29755993bb74b20
   icon:
     path: ../../all/icons/s_p.png
   install_script:
