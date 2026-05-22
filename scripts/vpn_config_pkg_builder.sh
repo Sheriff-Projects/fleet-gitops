@@ -54,7 +54,7 @@ YAML_FILE="$SOFTWARE_DIR/forticlient_vpn_config.yml"
 INSTALL_SCRIPT="$SOFTWARE_DIR/install_forticlient_vpn_config.sh"
 UNINSTALL_SCRIPT="$SOFTWARE_DIR/uninstall_forticlient_vpn_config.sh"
 
-REPO="souari1974/fleet-gitops"
+REPO="Sheriff-Projects/fleet-gitops"
 PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/forticlient_vpn_config.pkg"
 
 # Identifiant unique pour ce PKG (pas le même que com.fortinet.FortiClient pour

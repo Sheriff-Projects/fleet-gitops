@@ -8,7 +8,7 @@
 
 set -uo pipefail
 
-PKG_URL="https://raw.githubusercontent.com/souari1974/fleet-gitops/main/lib/macos/download/forticlient_vpn_config.pkg"
+PKG_URL="https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/forticlient_vpn_config.pkg"
 TEMP_DIR=$(mktemp -d)
 PKG_PATH="$TEMP_DIR/forticlient_vpn_config.pkg"
 LOG="/var/log/forticlient_vpn_config_install.log"

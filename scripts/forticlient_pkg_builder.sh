@@ -44,7 +44,7 @@ fi
 DOWNLOAD_URL="https://links.fortinet.com/forticlient/mac/vpnagent"
 DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/forticlient.pkg"
-REPO="souari1974/fleet-gitops"
+REPO="Sheriff-Projects/fleet-gitops"
 SOFTWARE_DIR="$REPO_ROOT/lib/macos/software"
 YAML_FILE="$SOFTWARE_DIR/forticlient.yml"
 INSTALL_SCRIPT="$SOFTWARE_DIR/install_forticlient.sh"
