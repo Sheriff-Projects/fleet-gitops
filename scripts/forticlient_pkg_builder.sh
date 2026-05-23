@@ -480,6 +480,34 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
     } >> "$GITHUB_OUTPUT"
 fi
 
+# ===========================================================================
+# Auto-commit + push (cible : branche main)
+# ===========================================================================
+echo -e "${BLUE}[*] Auto-commit + push...${NC}"
+
+cd "$REPO_ROOT"
+
+# Stage uniquement le .pkg + le YAML pour ne pas embarquer d'autres changements
+git add "$OUTPUT_PKG" "$YAML_FILE"
+
+if git diff --staged --quiet; then
+    echo -e "${YELLOW}  ⚠ Aucun changement à committer${NC}"
+else
+    COMMIT_MSG="package release: $(basename "$OUTPUT_PKG" .pkg) $LATEST_VERSION"
+    git commit -m "$COMMIT_MSG"
+
+    # Sync avec le remote avant push (résout le rejet en cas de commit fait par
+    # le workflow Release pendant qu'on buildait)
+    echo -e "${BLUE}  Sync avec remote...${NC}"
+    git pull --rebase
+
+    git push
+    echo -e "${GREEN}  ✓ Pushed: $COMMIT_MSG${NC}"
+fi
+echo ""
+
+# --- Récap ---
+
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Build terminé${NC}"
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
@@ -497,3 +525,6 @@ echo "                     + validation hdiutil imageinfo"
 echo "  Cleanup initial  : fctupdate caches >1h old (orphelins de runs ratés)"
 echo "  Cleanup final    : suppression du FortiClient.dmg après installer -pkg OK"
 echo "  Timeout sécurité : 15 min (modifiable via MAX_WAIT)"
+
+gh workflow run release-new-packages.yml
+echo -e "${GREEN}  ✓ Workflow Release déclenché${NC}"

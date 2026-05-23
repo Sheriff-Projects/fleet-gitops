@@ -435,7 +435,6 @@ else
 fi
 echo ""
 
-
 # --- Récap ---
 
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
@@ -452,7 +451,7 @@ echo ""
 echo "  Note : après installer -pkg, le script charge les LaunchAgents Wacom"
 echo "  dans la session GUI de l'utilisateur connecté — l'icône de la barre"
 echo "  de menu et Wacom Center démarrent sans redémarrage."
-echo " 
-echo " 
+echo " "
+ 
 gh workflow run release-new-packages.yml
 echo -e "${GREEN}  ✓ Workflow Release déclenché${NC}"
