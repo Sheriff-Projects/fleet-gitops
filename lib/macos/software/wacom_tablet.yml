@@ -1,5 +1,5 @@
 - url: https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/wacom_tablet.pkg
-  hash_sha256: d178d818dfb23fa0938fd236f77b8a0d7a04db56a4598f93aa570262917410dc
+  hash_sha256: 0b04cdd1f754324761587e7e08d16fc17e17cada0b99c3770d61764f54750ee6
   icon:
     path: ../../all/icons/wacom_tablet.png
   install_script:
