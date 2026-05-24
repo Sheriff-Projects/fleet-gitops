@@ -72,7 +72,7 @@ org_settings:
   mdm:
     apple_business_manager:
     - organization_name: SHERIFF
-      macos_fleet: "💻 Sheriff Projects workstations"
+      macos_fleet: "No team"
       ios_fleet: "📱🔐 Personal mobile devices"
       ipados_fleet: "📱🔐 Personal mobile devices"
     apple_server_url:
@@ -81,7 +81,7 @@ org_settings:
     volume_purchasing_program:
     - location: SHERIFF
       fleets:
-      - "💻 Sheriff Projects workstations"
+      - "All teams"
     end_user_authentication:
       entity_id:
       idp_name:
