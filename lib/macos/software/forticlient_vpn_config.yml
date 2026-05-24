@@ -1,5 +1,5 @@
-- url: https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/forticlient_vpn_config.pkg
-  hash_sha256: 01257707cc63c36cd3ec122c180d1f6269d144c91ae32133b647456b53135b83
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/forticlient_vpn_config/forticlient_vpn_config.pkg
+  hash_sha256: fa521f77060960bc5a1848a58639358cdb9cc42c6363659458ed04bb8f171190
   install_script:
     path: ./install_forticlient_vpn_config.sh
   uninstall_script:
