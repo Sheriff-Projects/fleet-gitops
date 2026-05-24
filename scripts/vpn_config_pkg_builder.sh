@@ -77,6 +77,26 @@ echo -e "${BLUE}╚════════════════════�
 echo "Repo root: $REPO_ROOT"
 echo ""
 
+# ===========================================================================
+# *** AJOUT : SYNC AVEC REMOTE AVANT DE COMMENCER ***
+# ===========================================================================
+# Objectif : partir d'un état local strictement identique au remote pour
+# éviter les conflits de rebase à la fin. Le workflow GitHub "Release new
+# packages" écrit régulièrement des commits sur main (YAMLs mis à jour, .pkg
+# supprimés). Sans ce sync au début, on builderait par-dessus une version
+# obsolète et le push serait rejeté en fin de script.
+#
+# WARNING : git reset --hard efface TOUS les changements non commités du
+# working tree. Si tu avais des modifs en cours, lance ce script seulement
+# après les avoir commitées ou stashées.
+# ===========================================================================
+echo -e "${BLUE}[*] Sync avec remote avant build...${NC}"
+cd "$REPO_ROOT"
+git fetch origin
+git reset --hard origin/main
+echo -e "${GREEN}  ✓ Repo aligné sur origin/main${NC}"
+echo ""
+
 # --- Étape 1 : Validation du vpn.plist source ---
 echo -e "${BLUE}[1/5] Validating vpn.plist source...${NC}"
 
@@ -332,31 +352,36 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
 fi
 
 # ===========================================================================
-# Auto-commit + push (cible : branche main)
+# *** MODIFIÉ : Auto-commit + push (simplifié) ***
+# ===========================================================================
+# Comme on a fait `git reset --hard origin/main` au début du script, on est
+# garanti d'être à jour avec le remote. Donc pas besoin de `git pull --rebase`
+# avant le push : on commit + on push directement, sans risque de conflit.
 # ===========================================================================
 echo -e "${BLUE}[*] Auto-commit + push...${NC}"
 
 cd "$REPO_ROOT"
 
-# Stage uniquement le .pkg + le YAML pour ne pas embarquer d'autres changements
 git add "$OUTPUT_PKG" "$YAML_FILE"
 
 if git diff --staged --quiet; then
     echo -e "${YELLOW}  ⚠ Aucun changement à committer${NC}"
 else
-    COMMIT_MSG="package release: $(basename "$OUTPUT_PKG" .pkg) $LATEST_VERSION"
+    COMMIT_MSG="package release: $(basename "$OUTPUT_PKG" .pkg) $PKG_VERSION"
     git commit -m "$COMMIT_MSG"
-
-    # Sync avec le remote avant push (résout le rejet en cas de commit fait par
-    # le workflow Release pendant qu'on buildait)
-    echo -e "${BLUE}  Sync avec remote...${NC}"
-    git pull --rebase
-
     git push
     echo -e "${GREEN}  ✓ Pushed: $COMMIT_MSG${NC}"
 fi
 echo ""
 
+# ===========================================================================
+# *** SUPPRIMÉ : `gh workflow run release-new-packages.yml` ***
+# ===========================================================================
+# Le workflow Release est maintenant configuré pour se déclencher AUTOMATIQUEMENT
+# quand un .pkg est pushé dans lib/macos/download/ (via `on: push: paths:`).
+# Donc pas besoin de le déclencher explicitement via gh CLI : GitHub le fera
+# tout seul dans les secondes qui suivent le `git push` ci-dessus.
+# ===========================================================================
 # --- Récap ---
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Build terminé${NC}"
@@ -383,6 +408,3 @@ echo "        self_service: true"
 echo "      - path: ../lib/macos/software/forticlient_vpn_config.yml"
 echo "        self_service: true"
 echo " "
-
-gh workflow run release-new-packages.yml
-echo -e "${GREEN}  ✓ Workflow Release déclenché${NC}"
