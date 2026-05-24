@@ -55,7 +55,7 @@ INSTALL_SCRIPT="$SOFTWARE_DIR/install_forticlient_vpn_config.sh"
 UNINSTALL_SCRIPT="$SOFTWARE_DIR/uninstall_forticlient_vpn_config.sh"
 
 REPO="Sheriff-Projects/fleet-gitops"
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/forticlient_vpn_config.pkg"
+PKG_URL="https://github.com/${REPO}/releases/download/forticlient_vpn_config/forticlient_vpn_config.pkg"
 
 # Identifiant unique pour ce PKG (pas le même que com.fortinet.FortiClient pour
 # que les deux PKG puissent cohabiter dans pkgutil)
@@ -75,26 +75,6 @@ echo -e "${BLUE}╔════════════════════�
 echo -e "${BLUE}║   FortiClient VPN Config — PKG Builder   ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
 echo "Repo root: $REPO_ROOT"
-echo ""
-
-# ===========================================================================
-# *** AJOUT : SYNC AVEC REMOTE AVANT DE COMMENCER ***
-# ===========================================================================
-# Objectif : partir d'un état local strictement identique au remote pour
-# éviter les conflits de rebase à la fin. Le workflow GitHub "Release new
-# packages" écrit régulièrement des commits sur main (YAMLs mis à jour, .pkg
-# supprimés). Sans ce sync au début, on builderait par-dessus une version
-# obsolète et le push serait rejeté en fin de script.
-#
-# WARNING : git reset --hard efface TOUS les changements non commités du
-# working tree. Si tu avais des modifs en cours, lance ce script seulement
-# après les avoir commitées ou stashées.
-# ===========================================================================
-echo -e "${BLUE}[*] Sync avec remote avant build...${NC}"
-cd "$REPO_ROOT"
-git fetch origin
-git reset --hard origin/main
-echo -e "${GREEN}  ✓ Repo aligné sur origin/main${NC}"
 echo ""
 
 # --- Étape 1 : Validation du vpn.plist source ---
@@ -352,36 +332,61 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
 fi
 
 # ===========================================================================
-# *** MODIFIÉ : Auto-commit + push (simplifié) ***
+# *** AJOUT : Upload du .pkg dans GitHub Release (approche directe) ***
 # ===========================================================================
-# Comme on a fait `git reset --hard origin/main` au début du script, on est
-# garanti d'être à jour avec le remote. Donc pas besoin de `git pull --rebase`
-# avant le push : on commit + on push directement, sans risque de conflit.
+# Au lieu de committer le .pkg dans Git (qui forçait Fleet GitOps à le
+# télécharger via raw.githubusercontent.com avec un timing fragile), on
+# uploade directement le .pkg dans une GitHub Release dédiée. Le YAML que
+# l'on commit en fin de script pointe déjà vers cette release, donc Fleet
+# GitOps n'aura aucun problème de race condition pour trouver le .pkg.
+#
+# Prérequis : gh CLI installé et authentifié (gh auth login).
 # ===========================================================================
-echo -e "${BLUE}[*] Auto-commit + push...${NC}"
+RELEASE_TAG=$(basename "$OUTPUT_PKG" .pkg)
+PKG_FILENAME=$(basename "$OUTPUT_PKG")
+
+# Crée la release si elle n'existe pas
+if ! gh release view "$RELEASE_TAG" --repo "$REPO" >/dev/null 2>&1; then
+    echo -e "${BLUE}[*] Création de la release ${RELEASE_TAG}...${NC}"
+    gh release create "$RELEASE_TAG" \
+        --repo "$REPO" \
+        --title "$RELEASE_TAG" \
+        --notes "Package $PKG_FILENAME for Fleet GitOps"
+    echo -e "${GREEN}  ✓ Release créée${NC}"
+fi
+
+# Upload le .pkg (--clobber écrase si l'asset existe déjà)
+echo -e "${BLUE}[*] Upload du .pkg dans la release ${RELEASE_TAG}...${NC}"
+gh release upload "$RELEASE_TAG" "$OUTPUT_PKG" --clobber --repo "$REPO"
+echo -e "${GREEN}  ✓ .pkg uploadé : https://github.com/${REPO}/releases/tag/${RELEASE_TAG}${NC}"
+
+# Supprime le .pkg local (il vit maintenant dans la release)
+rm -f "$OUTPUT_PKG"
+echo -e "${GREEN}  ✓ .pkg local supprimé${NC}"
+echo ""
+
+# ===========================================================================
+# *** MODIFIÉ : Commit + push du YAML seulement (pas le .pkg) ***
+# ===========================================================================
+# Le .pkg vit maintenant dans une GitHub Release (uploadé juste avant via gh).
+# On ne commit QUE le YAML (qui contient l'URL release + le hash mis à jour).
+# Pas de race condition possible avec Fleet GitOps puisque la release existe
+# DÉJÀ au moment où l'on push le YAML.
+# ===========================================================================
+echo -e "${BLUE}[*] Commit + push du YAML...${NC}"
 
 cd "$REPO_ROOT"
-
-git add "$OUTPUT_PKG" "$YAML_FILE"
+git add "$YAML_FILE"
 
 if git diff --staged --quiet; then
     echo -e "${YELLOW}  ⚠ Aucun changement à committer${NC}"
 else
-    COMMIT_MSG="package release: $(basename "$OUTPUT_PKG" .pkg) $PKG_VERSION"
+    COMMIT_MSG="package release: $RELEASE_TAG $PKG_VERSION"
     git commit -m "$COMMIT_MSG"
     git push
     echo -e "${GREEN}  ✓ Pushed: $COMMIT_MSG${NC}"
 fi
 echo ""
-
-# ===========================================================================
-# *** SUPPRIMÉ : `gh workflow run release-new-packages.yml` ***
-# ===========================================================================
-# Le workflow Release est maintenant configuré pour se déclencher AUTOMATIQUEMENT
-# quand un .pkg est pushé dans lib/macos/download/ (via `on: push: paths:`).
-# Donc pas besoin de le déclencher explicitement via gh CLI : GitHub le fera
-# tout seul dans les secondes qui suivent le `git push` ci-dessus.
-# ===========================================================================
 # --- Récap ---
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}  Build terminé${NC}"

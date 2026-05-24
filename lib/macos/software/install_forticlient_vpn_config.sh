@@ -3,12 +3,12 @@
 # Le PKG contient le vpn.plist dans son payload et un postinstall qui redémarre
 # les agents FortiClient. Pas de logique métier ici.
 #
-# Built on 2026-05-15 18:09:41
-# PKG version: 2026.05.15.180941
+# Built on 2026-05-24 21:39:18
+# PKG version: 2026.05.24.213918
 
 set -uo pipefail
 
-PKG_URL="https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/forticlient_vpn_config.pkg"
+PKG_URL="https://github.com/Sheriff-Projects/fleet-gitops/releases/download/forticlient_vpn_config/forticlient_vpn_config.pkg"
 TEMP_DIR=$(mktemp -d)
 PKG_PATH="$TEMP_DIR/forticlient_vpn_config.pkg"
 LOG="/var/log/forticlient_vpn_config_install.log"
