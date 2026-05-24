@@ -93,7 +93,7 @@ controls:
     macos_bootstrap_package: ""
     apple_enable_release_device_manually: false
     apple_setup_assistant: /lib/unassigned/json/dep_profile.json
-    macos_script: 
+    macos_script: ""
 
 software:
   packages:
