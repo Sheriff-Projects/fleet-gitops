@@ -1,26 +1,19 @@
 name: Unassigned
 
 settings:
-  features:
-    enable_host_users: true
-    enable_software_inventory: true
-  host_expiry_settings:
-    host_expiry_enabled: false
-    host_expiry_window: 0
-  integrations:
-    conditional_access_enabled: false
-    google_calendar:
-      enable_calendar_events: false
-      webhook_url:
   webhook_settings:
     failing_policies_webhook:
       destination_url: ""
       enable_failing_policies_webhook: false
       host_batch_size: 0
 
-agent_options:
-controls:
+setup_experience:
+  macos_bootstrap_package: ""
+  apple_enable_release_device_manually: false
+  apple_setup_assistant: ../lib/macos/enrollment-profiles/dep_profile.json
+  macos_script: ../lib/macos/scripts/create_users.sh
 
+controls:
   apple_settings:
     configuration_profiles:
       - path: ../lib/macos/configuration-profiles/Install_Maxitype_Signs_Font.mobileconfig
