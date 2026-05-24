@@ -7,12 +7,6 @@ settings:
       enable_failing_policies_webhook: false
       host_batch_size: 0
 
-setup_experience:
-  macos_bootstrap_package: ""
-  apple_enable_release_device_manually: false
-  apple_setup_assistant: ../lib/macos/enrollment-profiles/dep_profile.json
-  macos_script: ../lib/macos/scripts/create_users.sh
-
 controls:
   apple_settings:
     configuration_profiles:
