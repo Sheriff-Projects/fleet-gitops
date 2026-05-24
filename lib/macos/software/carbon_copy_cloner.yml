@@ -1,5 +1,5 @@
 - url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/carbon_copy_cloner/carbon_copy_cloner.pkg
-  hash_sha256: 046e9e640bd24654b9111bbe2cf1cacfd1ed4a597e331a87b4e68e93cc318e5f
+  hash_sha256: 0b79e6dd4fec8b00e177c535403085408aa765cabeebbdaf5d04473bc2798b4a
   icon:
     path: ../../all/icons/ccc.png
   install_script:
