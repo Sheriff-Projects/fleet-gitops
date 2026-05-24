@@ -89,6 +89,12 @@ controls:
     - path: ../lib/macos/scripts/onboarding_once.sh
     - path: ../lib/macos/scripts/add_folder.sh
 
+  setup_experience:
+    macos_bootstrap_package: ""
+    apple_enable_release_device_manually: false
+    apple_setup_assistant: /lib/unassigned/json/dep_profile.json
+    macos_script: ../lib/unassigned/scripts/create_users.sh
+
 software:
   packages:
     - path: ../lib/macos/software/01_wallpapers_sp.yml
