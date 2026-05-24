@@ -1,5 +1,5 @@
-- url: https://raw.githubusercontent.com/Sheriff-Projects/fleet-gitops/main/lib/macos/download/color_navigator.pkg
-  hash_sha256: 0a04f8354a81b04bd30c3b33ea40a802e672450e15df8baafcafb39dfba98b3f
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/color_navigator/color_navigator.pkg
+  hash_sha256: 5ee0546609afe5515e38ab7838625089ea108cb95b7d0aff8489c6a5cb24b597
   icon:
     path: ../../all/icons/color_navigator.png
   install_script:
