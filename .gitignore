@@ -1,6 +1,5 @@
 .DS_Store
 **/.DS_Store
 scripts/*.sh
-# Binaires hébergés via GitHub Releases
-#lib/macos/download/*.pkg
+lib/macos/download/*.pkg
 #*.dmg

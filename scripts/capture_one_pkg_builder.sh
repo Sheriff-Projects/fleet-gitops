@@ -51,7 +51,7 @@ REPO="Sheriff-Projects/fleet-gitops"
 YAML_FILE="$REPO_ROOT/lib/macos/software/capture_one.yml"
 
 # URL fixe (ne change jamais entre les versions)
-PKG_URL="https://raw.githubusercontent.com/${REPO}/main/lib/macos/download/capture_one.pkg"
+PKG_URL="https://github.com/${REPO}/releases/download/capture_one/capture_one.pkg"
 
 # Identifiant Apple Developer Team de Capture One A/S
 EXPECTED_TEAM_ID="5WTDB5F65L"
@@ -329,30 +329,60 @@ if [ -n "${GITHUB_OUTPUT:-}" ]; then
 fi
 
 # ===========================================================================
-# Auto-commit + push (cible : branche main)
+# *** AJOUT : Upload du .pkg dans GitHub Release (approche directe) ***
 # ===========================================================================
-echo -e "${BLUE}[*] Auto-commit + push...${NC}"
+# Au lieu de committer le .pkg dans Git (qui forçait Fleet GitOps à le
+# télécharger via raw.githubusercontent.com avec un timing fragile), on
+# uploade directement le .pkg dans une GitHub Release dédiée. Le YAML que
+# l'on commit en fin de script pointe déjà vers cette release, donc Fleet
+# GitOps n'aura aucun problème de race condition pour trouver le .pkg.
+#
+# Prérequis : gh CLI installé et authentifié (gh auth login).
+# ===========================================================================
+RELEASE_TAG=$(basename "$OUTPUT_PKG" .pkg)
+PKG_FILENAME=$(basename "$OUTPUT_PKG")
+
+# Crée la release si elle n'existe pas
+if ! gh release view "$RELEASE_TAG" --repo "$REPO" >/dev/null 2>&1; then
+    echo -e "${BLUE}[*] Création de la release ${RELEASE_TAG}...${NC}"
+    gh release create "$RELEASE_TAG" \
+        --repo "$REPO" \
+        --title "$RELEASE_TAG" \
+        --notes "Package $PKG_FILENAME for Fleet GitOps"
+    echo -e "${GREEN}  ✓ Release créée${NC}"
+fi
+
+# Upload le .pkg (--clobber écrase si l'asset existe déjà)
+echo -e "${BLUE}[*] Upload du .pkg dans la release ${RELEASE_TAG}...${NC}"
+gh release upload "$RELEASE_TAG" "$OUTPUT_PKG" --clobber --repo "$REPO"
+echo -e "${GREEN}  ✓ .pkg uploadé : https://github.com/${REPO}/releases/tag/${RELEASE_TAG}${NC}"
+
+# Supprime le .pkg local (il vit maintenant dans la release)
+rm -f "$OUTPUT_PKG"
+echo -e "${GREEN}  ✓ .pkg local supprimé${NC}"
+echo ""
+
+# ===========================================================================
+# *** MODIFIÉ : Commit + push du YAML seulement (pas le .pkg) ***
+# ===========================================================================
+# Le .pkg vit maintenant dans une GitHub Release (uploadé juste avant via gh).
+# On ne commit QUE le YAML (qui contient l'URL release + le hash mis à jour).
+# Pas de race condition possible avec Fleet GitOps puisque la release existe
+# DÉJÀ au moment où l'on push le YAML.
+# ===========================================================================
+echo -e "${BLUE}[*] Commit + push du YAML...${NC}"
 
 cd "$REPO_ROOT"
-
-# Stage uniquement le .pkg + le YAML pour ne pas embarquer d'autres changements
-git add "$OUTPUT_PKG" "$YAML_FILE"
+git add "$YAML_FILE"
 
 if git diff --staged --quiet; then
     echo -e "${YELLOW}  ⚠ Aucun changement à committer${NC}"
 else
-    COMMIT_MSG="package release: $(basename "$OUTPUT_PKG" .pkg) $LATEST_VERSION"
+    COMMIT_MSG="package release: $RELEASE_TAG $LATEST_VERSION"
     git commit -m "$COMMIT_MSG"
-
-    # Sync avec le remote avant push (résout le rejet en cas de commit fait par
-    # le workflow Release pendant qu'on buildait)
-    echo -e "${BLUE}  Sync avec remote...${NC}"
-    git pull --rebase
-
     git push
     echo -e "${GREEN}  ✓ Pushed: $COMMIT_MSG${NC}"
 fi
-
 echo ""
 # --- Récap ---
 echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
@@ -365,6 +395,3 @@ echo "  Size       : $PKG_SIZE"
 echo "  SHA256     : $PKG_HASH"
 echo "  TeamID     : $EXPECTED_TEAM_ID"
 echo ""
-
-gh workflow run release-new-packages.yml
-echo -e "${GREEN}  ✓ Workflow Release déclenché${NC}"
