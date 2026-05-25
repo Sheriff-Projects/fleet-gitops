@@ -158,6 +158,6 @@ policies:
     platform: darwin
     query: SELECT 1 FROM file WHERE path = '/Library/LaunchDaemons/com.sheriffprojects.onboarding.plist';
     run_script:
-      path: ./scripts/install_onboarding.sh
+      path: ../lib/macos/scripts/install_onboarding.sh
 
 
