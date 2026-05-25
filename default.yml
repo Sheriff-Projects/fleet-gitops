@@ -85,8 +85,7 @@ org_settings:
     end_user_authentication:
       entity_id: https://accounts.google.com/o/saml2?idpid=C02sbvzhb
       idp_name: "Google Workspace"
-      metadata: $END_USER_SSO_METADATA
-    end_user_license_agreement:
+      metadata_url: https://accounts.google.com/o/saml2/idp?idpid=C02sbvzhb
   org_info:
     contact_url: https://docs.getprimo.com
     org_logo_url:
