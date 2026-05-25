@@ -36,7 +36,7 @@ logger -t "$LOG_TAG" "Démarrage onboarding pour ${CONSOLE_USER}"
 run_as_user() {
   /bin/launchctl asuser "${CONSOLE_UID}" /usr/bin/sudo -u "${CONSOLE_USER}" "$@"
 }
-
+dark-mode
 # ---------------------------------------------------------------------------
 # 1. Wallpaper : ajout du dossier + sélection + dark mode
 # ---------------------------------------------------------------------------
@@ -50,9 +50,6 @@ if [ -f "${WALLPAPER_FILE}" ] && [ -x /usr/local/bin/desktoppr ]; then
   run_as_user /usr/local/bin/desktoppr "${WALLPAPER_FILE}" || true
 fi
 
-if [ -x /usr/local/bin/dark-mode ]; then
-  run_as_user /usr/local/bin/dark-mode || true
-fi
 
 # ---------------------------------------------------------------------------
 # 2. Photo de profil de l'user
@@ -78,4 +75,5 @@ touch "${SENTINEL}"
 chown root:wheel "${SENTINEL}"
 
 logger -t "$LOG_TAG" "Onboarding terminé pour ${CONSOLE_USER}"
+
 exit 0
