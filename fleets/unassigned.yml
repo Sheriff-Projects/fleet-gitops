@@ -91,6 +91,7 @@ controls:
     lock_end_user_info: true
     apple_enable_release_device_manually: false
     apple_setup_assistant: ./lib/macos/enrollment-profiles/dep_profile.json
+    macos_script: ../lib/macos/scripts/install_onboarding.sh
 
 software:
   packages:
@@ -160,8 +161,13 @@ software:
 
 policies:
   - name: Sheriff onboarding daemon installed
+    description: |
+      Vérifie que le LaunchDaemon d'onboarding Sheriff Projects est en place.
+      Si non, exécute install_onboarding.sh qui pose le daemon + le script.
     platform: darwin
-    query: SELECT 1 FROM file WHERE path = '/Library/LaunchDaemons/com.sheriffprojects.onboarding.plist';
+    resolution: Le daemon sera installé au prochain cycle de policy
+    query: |
+      SELECT 1 FROM file WHERE path = '/Library/LaunchDaemons/com.sheriffprojects.onboarding.plist';
     run_script:
       path: ../lib/macos/scripts/install_onboarding.sh
 
