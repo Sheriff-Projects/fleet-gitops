@@ -1,0 +1,8 @@
+url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/Volume-License-Microsoft/Volume_License_Microsoft_Office_365.pkg
+hash_sha256: c6f1709711270370d007c170155e054c0ebc9e09fec085effa9a8c868f4ad0e1
+icon:
+  path: ../../all/icons/microsoft_365.png
+install_script:
+  path: ./install_licence_microsoft_365.sh
+uninstall_script:
+  path: ./uninstall_licence_microsoft_365.sh

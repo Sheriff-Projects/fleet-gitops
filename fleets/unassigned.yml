@@ -30,6 +30,7 @@ controls:
       - path: ../lib/macos/configuration-profiles/Settings_Preferences_SP_Interne.mobileconfig
       - path: ../lib/macos/configuration-profiles/Settings_Eizo_ColorNavigator.mobileconfig
       - path: ../lib/macos/configuration-profiles/Settings_Microsoft_AutoUpdate.mobileconfig
+      - path: ../lib/macos/configuration-profiles/Settings_Microsoft_Office_365.mobileconfig
 
       - path: ../lib/macos/configuration-profiles/Settings_Chrome_Token_BU54_DSI.mobileconfig
         labels_include_any:
@@ -113,7 +114,6 @@ software:
       self_service: true
       display_name: S•P - VPN configuration
       setup_experience: true
-
     - path: ../lib/macos/software/capture_one.yml
       self_service: true
     - path: ../lib/macos/software/color_navigator.yml
@@ -128,6 +128,11 @@ software:
       self_service: true
     - path: ../lib/macos/software/microsoft_365.yml
       display_name: "Microsoft 365 Apps"
+      self_service: true
+      categories:
+        - Productivity
+    - path: ../lib/macos/software/licence_microsoft_365.yml
+      display_name: "Volume Licence Microsoft 365"
       self_service: true
       categories:
         - Productivity

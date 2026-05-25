@@ -9,8 +9,6 @@
 			<string>Configures Privacy Preferences Policy Control settings for FortiClient</string>
 			<key>PayloadDisplayName</key>
 			<string>Privacy Preferences</string>
-			<key>PayloadEnabled</key>
-			<true/>
 			<key>PayloadIdentifier</key>
 			<string>5EF9C4F3-292A-4D7F-8B0B-30D3C48EAE9C</string>
 			<key>PayloadOrganization</key>
@@ -92,8 +90,6 @@
 			<string></string>
 			<key>PayloadDisplayName</key>
 			<string>VPN Payload</string>
-			<key>PayloadEnabled</key>
-			<true/>
 			<key>PayloadIdentifier</key>
 			<string>F4DF7F27-3D0A-421E-94E7-66D44EB74323</string>
 			<key>PayloadOrganization</key>
