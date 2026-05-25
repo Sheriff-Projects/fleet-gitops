@@ -88,6 +88,7 @@ controls:
     enable_end_user_authentication: true
     lock_end_user_info: true
     apple_enable_release_device_manually: false
+    enable_managed_local_account: true
     apple_setup_assistant: ./lib/macos/enrollment-profiles/dep_profile.json
 
 software:
