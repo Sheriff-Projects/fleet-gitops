@@ -131,6 +131,46 @@
 			<key>ShowStatusBar</key>
 			<integer>1</integer>
 		</dict>
+		<dict>
+			<key>PayloadDescription</key>
+			<string>darkmode</string>
+			<key>PayloadDisplayName</key>
+			<string>dark-mode</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.TCC.configuration-profile-policy.A319B590-A447-44D8-9015-5D8972FE1CC2</string>
+			<key>PayloadOrganization</key>
+			<string>SHERIFF PROJECTS</string>
+			<key>PayloadType</key>
+			<string>com.apple.TCC.configuration-profile-policy</string>
+			<key>PayloadUUID</key>
+			<string>A319B590-A447-44D8-9015-5D8972FE1CC2</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>Services</key>
+			<dict>
+				<key>AppleEvents</key>
+				<array>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.systemevents" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.systemevents</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"ad294d4439e652c7b486cc681145b6c0f1a9a335" or cdhash H"b22a372ace3d9ef7c72d1616d36ee420f20be613" or cdhash H"fdc0b3a10f06aa610fa1d93444678941601b3b9c" or cdhash H"4845e50bd139a8347fcb76f82f7303d3d86b48d6"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/sheriff/Downloads/dark-mode</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
 	</array>
 	<key>PayloadDisplayName</key>
 	<string>Settings ••• Preferences - S•P Interne</string>
