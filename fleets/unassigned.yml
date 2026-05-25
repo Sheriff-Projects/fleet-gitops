@@ -82,6 +82,7 @@ controls:
     - path: ../lib/macos/scripts/set_user_picture.sh
     - path: ../lib/macos/scripts/onboarding_once.sh
     - path: ../lib/macos/scripts/add_folder.sh
+    - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
 
   setup_experience:
     macos_manual_agent_install: false
@@ -152,7 +153,11 @@ software:
       self_service: true
 
 
-# policies:
-#- path: ../lib/macos/policies/user_picture_applied.yml
+policies:
+  - name: Sheriff onboarding daemon installed
+    platform: darwin
+    query: SELECT 1 FROM file WHERE path = '/Library/LaunchDaemons/com.sheriffprojects.onboarding.plist';
+    run_script:
+      path: ../lib/macos/scripts/install_onboarding.sh
 
 
