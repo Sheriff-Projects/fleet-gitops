@@ -84,7 +84,7 @@ controls:
     - path: ../lib/macos/scripts/add_folder.sh
 
   setup_experience:
-    bootstrap_package: ""
+    macos_bootstrap_package: ""
     macos_manual_agent_install: false
     enable_end_user_authentication: true
     lock_end_user_info: true
