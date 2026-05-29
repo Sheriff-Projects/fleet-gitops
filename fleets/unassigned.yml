@@ -223,4 +223,12 @@ policies:
     run_script:
       path: ../lib/macos/scripts/install_onboarding.sh
 
+  - name: macOS - Zoom installed
+    platform: darwin
+    description: This policy checks that Zoom is installed
+    query: "SELECT 1 FROM apps WHERE bundle_identifier = 'us.zoom.xos'"
+    install_software:
+      fleet_maintained_app_slug: zoom/darwin
+      install_software: true
+
 
