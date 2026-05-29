@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadDisplayName</key>
+			<string>PPPC ••• Capture One •••</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.TCC.configuration-profile-policy.4AD415BA-7F24-49A3-9005-8ACC6FF60FA0</string>
+			<key>PayloadType</key>
+			<string>com.apple.TCC.configuration-profile-policy</string>
+			<key>PayloadUUID</key>
+			<string>4AD415BA-7F24-49A3-9005-8ACC6FF60FA0</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>Services</key>
+			<dict>
+				<key>SystemPolicyRemovableVolumes</key>
+				<array>
+					<dict>
+						<key>Authorization</key>
+						<string>Allow</string>
+						<key>CodeRequirement</key>
+						<string>identifier "com.captureone.captureone16" and certificate root = H"1430071242a64f17372572c4db78982f856eafbd"</string>
+						<key>Identifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>NotificationSettings</key>
+			<array>
+				<dict>
+					<key>BadgesEnabled</key>
+					<true/>
+					<key>BundleIdentifier</key>
+					<string>com.captureone.captureone16</string>
+					<key>CriticalAlertEnabled</key>
+					<false/>
+					<key>NotificationsEnabled</key>
+					<true/>
+					<key>ShowInCarPlay</key>
+					<true/>
+					<key>ShowInLockScreen</key>
+					<true/>
+					<key>ShowInNotificationCenter</key>
+					<true/>
+					<key>SoundsEnabled</key>
+					<true/>
+				</dict>
+			</array>
+			<key>PayloadDisplayName</key>
+			<string>Notifications ••• Capture One •••</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.notificationsettings.A709FDD5-85AE-43BD-99B8-96587DA1E8E6</string>
+			<key>PayloadType</key>
+			<string>com.apple.notificationsettings</string>
+			<key>PayloadUUID</key>
+			<string>A709FDD5-85AE-43BD-99B8-96587DA1E8E6</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDisplayName</key>
+	<string>Settings ••• Capture One •••</string>
+	<key>PayloadIdentifier</key>
+	<string>com.sheriffprojects.captureone</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>43DDE275-9A57-40BB-B815-87FD75431E24</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

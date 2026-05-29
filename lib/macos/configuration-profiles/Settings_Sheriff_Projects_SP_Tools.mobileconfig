@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadDescription</key>
+			<string>SP_TOOLS</string>
+			<key>PayloadDisplayName</key>
+			<string>PPPC ••• Sheriff Projects - SP Tools •••</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.TCC.configuration-profile-policy.35950DDE-8AD2-4DDF-9F12-18C4CE8AE3AA</string>
+			<key>PayloadOrganization</key>
+			<string>sheriffprojects</string>
+			<key>PayloadType</key>
+			<string>com.apple.TCC.configuration-profile-policy</string>
+			<key>PayloadUUID</key>
+			<string>35950DDE-8AD2-4DDF-9F12-18C4CE8AE3AA</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>Services</key>
+			<dict>
+				<key>AppleEvents</key>
+				<array>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.jamf.management.Jamf" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "483DWKW443")</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.jamf.management.Jamf</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>anchor apple generic and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = JQ525L2MZD)</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.adobe.Photoshop</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.jamf.management.Jamf" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "483DWKW443")</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.jamf.management.Jamf</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"9865c5e500b3ff86e9c83066a88d6c52290e2a89" or cdhash H"a267a461188a7cba4938c578c9ab905370da0001" or cdhash H"735fe411e16278ca34fffb5e49691ac5162cb490" or cdhash H"b00dd85defff901b2f7ed0ee21018920725e9671"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/010_Standardisation_C1/DEV-C1-1-PSD.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.systemevents" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.systemevents</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"9865c5e500b3ff86e9c83066a88d6c52290e2a89" or cdhash H"a267a461188a7cba4938c578c9ab905370da0001" or cdhash H"735fe411e16278ca34fffb5e49691ac5162cb490" or cdhash H"b00dd85defff901b2f7ed0ee21018920725e9671"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/010_Standardisation_C1/DEV-C1-1-PSD.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.finder" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.finder</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"9865c5e500b3ff86e9c83066a88d6c52290e2a89" or cdhash H"a267a461188a7cba4938c578c9ab905370da0001" or cdhash H"735fe411e16278ca34fffb5e49691ac5162cb490" or cdhash H"b00dd85defff901b2f7ed0ee21018920725e9671"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/010_Standardisation_C1/DEV-C1-1-PSD.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"53292c947b539e1f35d0a059bf9e4f5b1cf40781" or cdhash H"b9db3e38259ff2f5ba45e3cfec6d9b184a533df1" or cdhash H"4fe226127a1b1c1bb1b3faeee0db3c599b7b28ed" or cdhash H"192d8967424f41318a7dd17f3080fc2bd6f627af"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/010_Standardisation_C1/DEV-C1-3-MERA-PSDGRAIN.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.systemevents" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.systemevents</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"53292c947b539e1f35d0a059bf9e4f5b1cf40781" or cdhash H"b9db3e38259ff2f5ba45e3cfec6d9b184a533df1" or cdhash H"4fe226127a1b1c1bb1b3faeee0db3c599b7b28ed" or cdhash H"192d8967424f41318a7dd17f3080fc2bd6f627af"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/010_Standardisation_C1/DEV-C1-3-MERA-PSDGRAIN.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.finder" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.finder</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"53292c947b539e1f35d0a059bf9e4f5b1cf40781" or cdhash H"b9db3e38259ff2f5ba45e3cfec6d9b184a533df1" or cdhash H"4fe226127a1b1c1bb1b3faeee0db3c599b7b28ed" or cdhash H"192d8967424f41318a7dd17f3080fc2bd6f627af"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/010_Standardisation_C1/DEV-C1-3-MERA-PSDGRAIN.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.finder" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.finder</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"9790a92a165ea94a0058eb5abc3ec0f72c19fc2f" or cdhash H"c704276cfcb72574528233e787691330ae4d0b4f" or cdhash H"5981d741507c1182ee37020bc01258a789eabaa9" or cdhash H"2d911622ab2c1c142e9f6d377e496554784d2b58"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/TOOLSET.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>anchor apple generic and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = JQ525L2MZD)</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.adobe.Photoshop</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"9790a92a165ea94a0058eb5abc3ec0f72c19fc2f" or cdhash H"c704276cfcb72574528233e787691330ae4d0b4f" or cdhash H"5981d741507c1182ee37020bc01258a789eabaa9" or cdhash H"2d911622ab2c1c142e9f6d377e496554784d2b58"</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>/Users/Shared/TOOLS/SP_TOOLS/TOOLSET.app/Contents/MacOS/applet</string>
+						<key>IdentifierType</key>
+						<string>path</string>
+					</dict>
+				</array>
+				<key>SystemPolicyDesktopFolder</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = JQ525L2MZD)</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.adobe.Photoshop</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+				</array>
+				<key>SystemPolicyDocumentsFolder</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = JQ525L2MZD)</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.adobe.Photoshop</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+				</array>
+				<key>SystemPolicyDownloadsFolder</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = JQ525L2MZD)</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.adobe.Photoshop</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+				</array>
+				<key>SystemPolicyNetworkVolumes</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+				</array>
+				<key>SystemPolicyRemovableVolumes</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>anchor apple generic and identifier "com.captureone.captureone16" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "5WTDB5F65L")</string>
+						<key>Comment</key>
+						<string></string>
+						<key>Identifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+	</array>
+	<key>PayloadDisplayName</key>
+	<string>Settings ••• Sheriff Projects - SP Tools •••</string>
+	<key>PayloadIdentifier</key>
+	<string>com.sheriffprojects.sptools</string>
+	<key>PayloadOrganization</key>
+	<string>sheriffprojects</string>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>1260CBAE-EF30-48A9-82B5-22D2A19645B9</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

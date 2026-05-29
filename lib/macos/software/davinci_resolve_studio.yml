@@ -1,0 +1,8 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/davinci_resolve_studio/davinci_resolve_studio.pkg
+  hash_sha256: 24c27da0c7d5c14ab5a7ad36e72e2b2d8caccf94ee9472334f6b8063964d499f
+  icon:
+    path: ../../all/icons/resolve.png
+  install_script:
+    path: ./install_davinci_resolve_studio.sh
+  uninstall_script:
+    path: ./uninstall_davinci_resolve_studio.sh

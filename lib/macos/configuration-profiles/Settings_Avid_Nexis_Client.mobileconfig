@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>AllowNonAdminUserApprovals</key>
+			<true/>
+			<key>AllowUserOverrides</key>
+			<true/>
+			<key>AllowedTeamIdentifiers</key>
+			<array>
+				<string>4UYUA773XD</string>
+			</array>
+			<key>PayloadDescription</key>
+			<string></string>
+			<key>PayloadDisplayName</key>
+			<string>Approved Kernel Extensions ••• Avid - Nexis Client  •••</string>
+			<key>PayloadIdentifier</key>
+			<string>1477F10E-F210-4176-A5A9-BDE4E1FB6C2B</string>
+			<key>PayloadOrganization</key>
+			<string>SHERIFF PROJECTS</string>
+			<key>PayloadType</key>
+			<string>com.apple.syspolicy.kernel-extension-policy</string>
+			<key>PayloadUUID</key>
+			<string>1477F10E-F210-4176-A5A9-BDE4E1FB6C2B</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Allow kext Avid Client Nexis</string>
+	<key>PayloadDisplayName</key>
+	<string>Settings ••• Avid - Nexis Client  •••</string>
+	<key>PayloadIdentifier</key>
+	<string>com.sheriffprojects.nexis</string>
+	<key>PayloadOrganization</key>
+	<string>SHERIFF PROJECTS</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>9BEF3745-945E-42A8-9FA1-88DF4461EBC8</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

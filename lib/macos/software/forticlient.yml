@@ -1,0 +1,8 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/forticlient/forticlient.pkg
+  hash_sha256: 3953445e6f490c43ac7e3a68f3e1266693a6d242e4f0d024768124deec8ca6c3
+  icon:
+    path: ../../all/icons/forticlient.png
+  install_script:
+    path: ./install_forticlient.sh
+  uninstall_script:
+    path: ./uninstall_forticlient.sh

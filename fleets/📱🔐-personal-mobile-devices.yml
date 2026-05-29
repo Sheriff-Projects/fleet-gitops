@@ -1,0 +1,50 @@
+agent_options:
+controls:
+  enable_disk_encryption: false
+  enable_recovery_lock_password: false
+  ios_updates:
+    deadline:
+    minimum_version:
+    update_new_hosts:
+  ipados_updates:
+    deadline:
+    minimum_version:
+    update_new_hosts:
+  macos_updates:
+    deadline:
+    minimum_version:
+    update_new_hosts:
+  scripts:
+  windows_require_bitlocker_pin: false
+  windows_updates:
+    deadline_days:
+    grace_period_days:
+labels:
+name: "📱🔐 Personal mobile devices"
+policies:
+reports:
+settings:
+  features:
+    enable_host_users: true
+    enable_software_inventory: true
+  host_expiry_settings:
+    host_expiry_enabled: false
+    host_expiry_window: 0
+  integrations:
+    conditional_access_enabled: false
+    google_calendar:
+      enable_calendar_events: false
+      webhook_url:
+  secrets:
+  - secret: "$FLEET_PERSONAL_MOBILE_DEVICES_ENROLL_SECRET"
+  webhook_settings:
+    failing_policies_webhook:
+      destination_url:
+      enable_failing_policies_webhook: false
+      host_batch_size: 0
+    host_status_webhook:
+      days_count: 0
+      destination_url:
+      enable_host_status_webhook: false
+      host_percentage: 0
+software:

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadDescription</key>
+			<string></string>
+			<key>PayloadDisplayName</key>
+			<string>PPPC ••• Sheriff Projects - Smb Link •••</string>
+			<key>PayloadIdentifier</key>
+			<string>00D2F318-8252-46BB-8A39-9C52335D1212</string>
+			<key>PayloadOrganization</key>
+			<string>SHERIFF PROJECTS</string>
+			<key>PayloadType</key>
+			<string>com.apple.TCC.configuration-profile-policy</string>
+			<key>PayloadUUID</key>
+			<string>9E339250-3489-478D-96B5-08D22E8D4EE1</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>Services</key>
+			<dict>
+				<key>AppleEvents</key>
+				<array>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.systemevents" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.systemevents</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"d54b7f71c8a8e168532ae16b6f2455aea74d4b34" or cdhash H"b82e0d758e5471739d096e987ff14dc748a0e890" or cdhash H"5f93cbdb5d445955bd24f217a93af51ffc8f3e05" or cdhash H"6105c21d88ff7b373710524cfc670de4cafa1cbe"</string>
+						<key>Identifier</key>
+						<string>com.apple.automator.SMB-LINK</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>identifier "com.apple.finder" and anchor apple</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.finder</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"d54b7f71c8a8e168532ae16b6f2455aea74d4b34" or cdhash H"b82e0d758e5471739d096e987ff14dc748a0e890" or cdhash H"5f93cbdb5d445955bd24f217a93af51ffc8f3e05" or cdhash H"6105c21d88ff7b373710524cfc670de4cafa1cbe"</string>
+						<key>Identifier</key>
+						<string>com.apple.automator.SMB-LINK</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
+					<dict>
+						<key>AEReceiverCodeRequirement</key>
+						<string>cdhash H"d54b7f71c8a8e168532ae16b6f2455aea74d4b34" or cdhash H"b82e0d758e5471739d096e987ff14dc748a0e890" or cdhash H"5f93cbdb5d445955bd24f217a93af51ffc8f3e05" or cdhash H"6105c21d88ff7b373710524cfc670de4cafa1cbe"</string>
+						<key>AEReceiverIdentifier</key>
+						<string>com.apple.automator.SMB-LINK</string>
+						<key>AEReceiverIdentifierType</key>
+						<string>bundleID</string>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"d54b7f71c8a8e168532ae16b6f2455aea74d4b34" or cdhash H"b82e0d758e5471739d096e987ff14dc748a0e890" or cdhash H"5f93cbdb5d445955bd24f217a93af51ffc8f3e05" or cdhash H"6105c21d88ff7b373710524cfc670de4cafa1cbe"</string>
+						<key>Identifier</key>
+						<string>com.apple.automator.SMB-LINK</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
+				</array>
+				<key>SystemPolicyNetworkVolumes</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>cdhash H"d54b7f71c8a8e168532ae16b6f2455aea74d4b34" or cdhash H"b82e0d758e5471739d096e987ff14dc748a0e890" or cdhash H"5f93cbdb5d445955bd24f217a93af51ffc8f3e05" or cdhash H"6105c21d88ff7b373710524cfc670de4cafa1cbe"</string>
+						<key>Identifier</key>
+						<string>com.apple.automator.SMB-LINK</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string></string>
+	<key>PayloadDisplayName</key>
+	<string>Settings ••• Sheriff Projects - Smb Link •••</string>
+	<key>PayloadIdentifier</key>
+	<string>com.sheriffprojects.smb-link</string>
+	<key>PayloadOrganization</key>
+	<string>SHERIFF PROJECTS</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>fd20fe15-e365-48a6-9b56-ba2013d8327d</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

@@ -1,0 +1,104 @@
+name: 'Release new packages'
+
+# Workflow declenche AUTOMATIQUEMENT quand un .pkg est pushe sur main,
+# OU manuellement depuis l'onglet Actions.
+#
+# Pour chaque .pkg trouve dans lib/macos/download/ :
+#   1. Calcule le SHA256
+#   2. Cree/ecrase une release dont le tag = nom du pkg (ex: capture_one)
+#   3. Upload le .pkg comme asset de cette release
+#   4. Met a jour le YAML correspondant (url + hash_sha256)
+#   5. Supprime les .pkg du working tree (ils restent dans les releases)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/macos/download/*.pkg'
+
+permissions:
+  contents: write
+
+# Empeche deux runs simultanes (ex: si plusieurs pkg builders pushent en parallele)
+concurrency:
+  group: release-packages
+  cancel-in-progress: false
+
+jobs:
+  release-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verifier qu il y a des pkg a releaser
+        run: |
+          PKG_COUNT=$(find lib/macos/download -name "*.pkg" -type f 2>/dev/null | wc -l)
+          if [ "$PKG_COUNT" -eq 0 ]; then
+            echo "Aucun .pkg trouve dans lib/macos/download/"
+            exit 1
+          fi
+          echo "Found $PKG_COUNT .pkg to process"
+
+      - name: Upload pkg et update YAMLs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          for pkg in lib/macos/download/*.pkg; do
+            [ -f "$pkg" ] || continue
+
+            PKG_NAME=$(basename "$pkg")
+            PKG_BASENAME="${PKG_NAME%.pkg}"
+            TAG="$PKG_BASENAME"
+            HASH=$(sha256sum "$pkg" | awk '{print $1}')
+            URL="https://github.com/${REPO}/releases/download/${TAG}/${PKG_NAME}"
+
+            echo "==========================================="
+            echo "Processing: $PKG_NAME"
+            echo "  Tag:  $TAG"
+            echo "  Hash: $HASH"
+            echo "  URL:  $URL"
+
+            # Cree la release si elle n existe pas
+            if ! gh release view "$TAG" >/dev/null 2>&1; then
+              gh release create "$TAG" --title "$PKG_BASENAME" --notes "Package $PKG_NAME for Fleet GitOps"
+              echo "  -> Release $TAG created"
+            else
+              echo "  -> Release $TAG exists, overwriting asset"
+            fi
+
+            # Upload (--clobber ecrase si l asset existe deja)
+            gh release upload "$TAG" "$pkg" --clobber
+
+            # Cherche le YAML correspondant
+            YAML_FILE=$(find lib/macos/software -name "${PKG_BASENAME}.yml" -type f | head -1)
+            if [ -z "$YAML_FILE" ]; then
+              echo "  WARN: Pas de YAML trouve pour $PKG_BASENAME, skip update"
+              continue
+            fi
+
+            echo "  Updating YAML: $YAML_FILE"
+            sed -i "s|^\(\s*-\?\s*url:\s*\).*|\1${URL}|" "$YAML_FILE"
+            sed -i "s|^\(\s*hash_sha256:\s*\).*|\1${HASH}|" "$YAML_FILE"
+          done
+
+      - name: Supprimer les pkg du working tree
+        run: |
+          rm -f lib/macos/download/*.pkg
+          echo "Removed .pkg from working tree"
+
+      - name: Commit les changements
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lib/macos/software/*.yml lib/macos/download/ || true
+          if git diff --staged --quiet; then
+            echo "Pas de changement a committer"
+          else
+            git commit -m "Release packages - update YAMLs and clean download"
+            git push
+          fi

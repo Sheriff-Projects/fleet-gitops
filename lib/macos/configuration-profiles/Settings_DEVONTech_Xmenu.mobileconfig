@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>AutoLaunchedApplicationDictionary-managed</key>
+			<array>
+				<dict>
+					<key>Hide</key>
+					<true/>
+					<key>Path</key>
+					<string>/Applications/XMenu.app/</string>
+				</dict>
+			</array>
+			<key>PayloadDescription</key>
+			<string></string>
+			<key>PayloadDisplayName</key>
+			<string>Login Items:  Managed Items</string>
+			<key>PayloadIdentifier</key>
+			<string>4A72D9F8-C9FB-4048-A2A2-B217230CFCA5</string>
+			<key>PayloadOrganization</key>
+			<string>SHERIFF PROJECTS</string>
+			<key>PayloadType</key>
+			<string>com.apple.loginitems.managed</string>
+			<key>PayloadUUID</key>
+			<string>4A72D9F8-C9FB-4048-A2A2-B217230CFCA5</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string></string>
+	<key>PayloadDisplayName</key>
+	<string>Settings ••• DEVONTech - Xmenu •••</string>
+	<key>PayloadIdentifier</key>
+	<string>com.sheriffprojects.xmenu</string>
+	<key>PayloadOrganization</key>
+	<string>SHERIFF PROJECTS</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>806C3FC8-FDD8-40DB-8F56-498494913BEF</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

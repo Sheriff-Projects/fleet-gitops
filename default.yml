@@ -1,0 +1,217 @@
+# ---------------------------------------------------------------------------
+# LABELS
+# ---------------------------------------------------------------------------
+# Les labels sont déclarés ici uniquement pour que fleetctl accepte le YAML
+# (bug 4.84.x : ne respecte pas le flag exceptions.labels du serveur, et
+# exige la présence de la clé `labels:` dans default.yml malgré l'exception).
+#
+# IMPORTANT : la clé `hosts:` est volontairement OMISE pour chaque label.
+# Selon la doc Fleet (https://fleetdm.com/docs/configuration/yaml-files#labels) :
+#   "If [hosts is] omitted, existing host membership is preserved (no changes)."
+# Donc la membership manuelle gérée dans l'UI Fleet n'est PAS écrasée à chaque
+# run GitOps. C'est exactement le comportement voulu : UI = source de vérité
+# pour les assignations de devices aux BU.
+# ---------------------------------------------------------------------------
+agent_options:
+
+  config:
+    options:
+      pack_delimiter: /
+      logger_tls_period: 10
+      distributed_plugin: tls
+      disable_distributed: false
+      logger_tls_endpoint: /api/osquery/log
+      distributed_interval: 10
+      distributed_tls_max_attempts: 3
+
+labels:
+- name: BU02 - ATELIER
+  label_membership_type: manual
+- name: BU05 - PUB
+  label_membership_type: manual
+- name: BU06 - ECOM
+  label_membership_type: manual
+- name: BU10 - ULTRA MOTION
+  label_membership_type: manual
+- name: BU11 - PRODUCTION
+  label_membership_type: manual
+- name: BU51 - DIRECTION
+  label_membership_type: manual
+- name: BU52 - COMPTABILITE
+  label_membership_type: manual
+- name: BU53 - DRH
+  label_membership_type: manual
+- name: BU54 - DSI
+  label_membership_type: manual
+- name: BU56 - COMMUNICATION
+  label_membership_type: manual
+
+  
+org_settings:
+  certificate_authorities:
+    custom_est_proxy:
+    custom_scep_proxy:
+    digicert:
+    hydrant:
+    ndes_scep_proxy:
+    smallstep:
+  features:
+    enable_host_users: false
+    enable_software_inventory: true
+  fleet_desktop:
+    alternative_browser_host:
+    transparency_url: https://www.sheriffprojects.com
+  host_expiry_settings:
+    host_expiry_enabled: true
+    host_expiry_window: 30
+  integrations:
+    conditional_access_enabled: false
+    google_calendar:
+    jira:
+    zendesk:
+  mdm:
+    apple_business_manager:
+    - organization_name: SHERIFF
+      macos_fleet: "No team"
+      ios_fleet: "📱🔐 Personal mobile devices"
+      ipados_fleet: "📱🔐 Personal mobile devices"
+    apple_server_url:
+    # NB: bug Fleet 4.84.x — la nouvelle terminologie n'est pas reconnue ici.
+    # On doit écrire "No team" et non "Unassigned" (ni "All fleets" — utiliser "All teams").
+    volume_purchasing_program:
+    - location: SHERIFF
+      fleets:
+      - "All teams"
+
+    end_user_authentication:
+      entity_id: fleet
+      idp_name: "Google Workspace"
+      metadata: ""
+      metadata_url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/sso-metadata/google_workspace_metadata.xml
+
+  org_info:
+    contact_url: https://docs.getprimo.com
+    org_logo_url:
+    org_logo_url_light_background:
+    org_name: Sheriff Projects
+  secrets:
+  - secret: "$FLEET_GLOBAL_ENROLL_SECRET"
+  server_settings:
+    ai_features_disabled: false
+    deferred_save_host: false
+    discard_reports_data: false
+    enable_analytics: true
+    live_reporting_disabled: false
+    report_cap: 0
+    scripts_disabled: false
+    server_url: https://sheriffprojects.mdm.getprimo.com
+  sso_settings:
+  webhook_settings:
+    activities_webhook:
+      destination_url: https://webhooks.getprimo.com/processFleetActivityEvent?companyId=6880bdb90a71bce529867530&apikey=$FLEET_PRIMO_WEBHOOK_KEY
+      enable_activities_webhook: false
+    failing_policies_webhook:
+      destination_url:
+      enable_failing_policies_webhook: false
+      host_batch_size: 0
+    host_status_webhook:
+      days_count: 0
+      destination_url:
+      enable_host_status_webhook: false
+      host_percentage: 0
+    interval: 24h0m0s
+    vulnerabilities_webhook:
+      destination_url:
+      enable_vulnerabilities_webhook: false
+      host_batch_size: 0
+  yara_rules:
+policies:
+reports:
+- automations_enabled: true
+  description:
+  discard_data: false
+  interval: 300
+  logging: snapshot
+  min_osquery_version:
+  name: Primo Query - Get users & groups
+  observer_can_run: false
+  platform:
+  query: "WITH cached_groups AS (select * from groups)\nSELECT \n    uid, \n    username,
+    \n    type, \n    groupname, \n    shell,\n    CASE \n        WHEN EXISTS (\n
+    \           SELECT 1 \n            FROM groups g \n            JOIN user_groups
+    ug ON g.gid = ug.gid \n            WHERE (g.groupname = 'admin' OR g.group_sid
+    = 'S-1-5-32-544')\n            AND ug.uid = users.uid\n        ) THEN 1 \n        ELSE
+    0 \n    END AS isAdmin\nFROM users \nLEFT JOIN cached_groups USING (gid) \nWHERE
+    type <> 'special' \n    AND shell NOT LIKE '%/false' \n    AND shell NOT LIKE
+    '%/nologin' \n    AND shell NOT LIKE '%/shutdown' \n    AND shell NOT LIKE '%/halt'
+    \n    AND username NOT LIKE '%$' \n    AND username NOT LIKE '\\_%' ESCAPE '\\'
+    \n    AND NOT (username = 'sync' AND shell ='/bin/sync' AND directory <> '')"
+- automations_enabled: true
+  description:
+  discard_data: false
+  interval: 300
+  logging: snapshot
+  min_osquery_version:
+  name: Primo Query - Get logged in users
+  observer_can_run: false
+  platform:
+  query: SELECT type, user FROM logged_in_users WHERE type != 'dead'
+- automations_enabled: true
+  description:
+  discard_data: false
+  interval: 300
+  logging: snapshot
+  min_osquery_version:
+  name: Primo Query - Get logon session
+  observer_can_run: false
+  platform:
+  query: |-
+    SELECT email as upn, user
+    FROM (
+        SELECT LOWER(TRIM(upn)) as email, user FROM logon_sessions WHERE email LIKE "%@sheriffprojects.com"
+        UNION ALL
+        SELECT data as email, data as user FROM registry WHERE key LIKE 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments\%%' AND name = "UPN"
+    ) as combined
+    GROUP BY email
+- automations_enabled: true
+  description:
+  discard_data: false
+  interval: 1800
+  logging: snapshot
+  min_osquery_version:
+  name: Primo Query - Get mac and linux devices cpu and ram
+  observer_can_run: false
+  platform:
+  query: |-
+    SELECT
+      ROUND(
+        (CAST(SUM(system) + SUM(user) AS FLOAT) /
+         (SUM(idle) + SUM(system) + SUM(user)) * 100),
+        2
+      ) AS cpu_percent,
+
+      IFNULL((
+        SELECT SUM(resident_size) / 1024.0 / 1024.0
+        FROM processes
+      ), 0) AS total_ram_used_mb,
+
+      (
+        SELECT physical_memory / 1024.0 / 1024.0
+        FROM system_info
+      ) AS total_ram_mb
+    FROM cpu_time;
+- automations_enabled: true
+  description:
+  discard_data: false
+  interval: 1800
+  logging: snapshot
+  min_osquery_version:
+  name: Primo Query - Get windows devices cpu and ram
+  observer_can_run: false
+  platform:
+  query: "SELECT\n  (\n    SELECT IFNULL(SUM(user_time + system_time), 0)\n    FROM
+    processes\n  ) AS total_process_cpu_time,\n  \n  (\n    SELECT IFNULL(SUM(resident_size)
+    / 1024.0 / 1024.0, 0)\n    FROM processes\n  ) AS total_ram_used_mb,\n  \n  (\n
+    \   SELECT cpu_logical_cores\n    FROM system_info\n  ) AS cpu_logical_cores,\n\n
+    \ (\n    SELECT physical_memory / 1024.0 / 1024.0\n    FROM system_info\n  ) AS
+    total_ram_mb;"

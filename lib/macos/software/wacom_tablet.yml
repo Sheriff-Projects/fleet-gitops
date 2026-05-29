@@ -1,0 +1,8 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/wacom_tablet/wacom_tablet.pkg
+  hash_sha256: 0b04cdd1f754324761587e7e08d16fc17e17cada0b99c3770d61764f54750ee6
+  icon:
+    path: ../../all/icons/wacom_tablet.png
+  install_script:
+    path: ./install_wacom_tablet.sh
+  uninstall_script:
+    path: ./uninstall_wacom_tablet.sh
