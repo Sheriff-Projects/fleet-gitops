@@ -85,6 +85,7 @@ controls:
     - path: ../lib/macos/scripts/install_onboarding.sh
     - path: ../lib/macos/scripts/add_folder.sh
     - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
+    
 
   setup_experience:
     macos_manual_agent_install: false
@@ -97,25 +98,45 @@ controls:
 software:
   packages:
     - path: ../lib/macos/software/01_wallpapers_sp.yml
-      display_name: S•P - wallpapers
+      display_name: "Installation - S•P fond d'écran"
       self_service: true
       setup_experience: true
+
     - path: ../lib/macos/software/02_dark_mode.yml
-      display_name: dark-mode
+      display_name: Installatio - dark-mode
       self_service: true
       setup_experience: true
+
     - path: ../lib/macos/software/03_desktoppr.yml
-      display_name: desktoppr
+      display_name: Installation - desktoppr
       self_service: true
       setup_experience: true
+
     - path: ../lib/macos/software/04_wallpaper_folder.yml
-      display_name: wallpaper-folder
+      display_name: Installation - wallpaper-folder
       self_service: true
       setup_experience: true
-    - path: ../lib/macos/software/forticlient_vpn_config.yml
+
+    - path: ../lib/macos/software/05_forticlient_vpn_config.yml
+      display_name: "Configuration - S•P VPN"
       self_service: true
-      display_name: S•P - VPN configuration
       setup_experience: true
+
+    - path: ../lib/macos/scripts/06_install-command-line-tools-rosetta.sh
+      display_name: "Installation - Command Line Tools et Rosetta"
+      self_service: true
+      setup_experience: true
+
+    - path: ../lib/macos/scripts/07_install-homebrew.sh
+      display_name: "Installation - Homebrew"
+      self_service: true
+      setup_experience: true
+
+    - path: ../lib/macos/software/09_licence_microsoft_365.yml
+      display_name: "Volume Licence Microsoft 365"
+      self_service: true
+      setup_experience: true
+
     - path: ../lib/macos/software/capture_one.yml
       self_service: true
     - path: ../lib/macos/software/color_navigator.yml
@@ -135,11 +156,6 @@ software:
         - Productivity
     - path: ../lib/macos/software/microsoft_365.yml
       display_name: "Microsoft 365 Apps"
-      self_service: true
-      categories:
-        - Productivity
-    - path: ../lib/macos/software/licence_microsoft_365.yml
-      display_name: "Volume Licence Microsoft 365"
       self_service: true
       categories:
         - Productivity
@@ -174,6 +190,10 @@ software:
       setup_experience: true
 
     - slug: rectangle/darwin
+      self_service: true
+      setup_experience: true
+
+    - slug: adobe-creative-cloud/darwin
       self_service: true
       setup_experience: true
 
@@ -212,7 +232,7 @@ software:
 #    self_service: true
 
 policies:
-  - name: Sheriff onboarding daemon installed
+  - name: Sheriff-Projects onboarding daemon installed
     description: |
       Vérifie que le LaunchDaemon d'onboarding Sheriff Projects est en place.
       Si non, exécute install_onboarding.sh qui pose le daemon + le script.
