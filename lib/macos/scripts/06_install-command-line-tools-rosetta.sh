@@ -1,54 +1,107 @@
-WALLPAPER_FOLDER="/Users/Shared/Wallpapers_SP/"
-WALLPAPER_PATH="/Users/Shared/Wallpapers_SP/Wallpaper_Retina_Black_SHERIFF_PROJECTS.jpg"
-echo "test" 
-# Vérifie que le dossier existe
-if [ ! -d "$WALLPAPER_FOLDER" ]; then
-  echo "Erreur : le dossier n'existe pas : $WALLPAPER_FOLDER"
-  exit 1
-fi
+#!/bin/bash
 
-# Vérifie que le binaire est disponible
-if [ ! -x "/usr/local/bin/wallpaper-folder" ]; then
-  echo "Erreur : /usr/local/bin/wallpaper-folder introuvable ou non exécutable"
-  exit 1
-fi
+set -euo pipefail
 
-# Récupère l'utilisateur actuellement connecté à la session graphique
-LOGGED_IN_USER=$(/usr/bin/stat -f "%Su" /dev/console)
-LOGGED_IN_UID=$(/usr/bin/id -u "$LOGGED_IN_USER")
+LOG_FILE="/var/log/fleet-install-dev-tools.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
 
-if [ "$LOGGED_IN_USER" = "root" ] || [ -z "$LOGGED_IN_USER" ]; then
-  echo "Erreur : aucun utilisateur graphique connecté"
-  exit 1
-fi
+echo "=== Fleet Self-service: Command Line Tools + Rosetta ==="
+date
 
-echo "Utilisateur connecté : $LOGGED_IN_USER"
-echo "UID : $LOGGED_IN_UID"
+CLT_PATH="/Library/Developer/CommandLineTools"
+CLT_RECEIPT="com.apple.pkg.CLTools_Executables"
+SENTINEL="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
 
-# Ajoute le dossier dans les préférences Fond d'écran de l'utilisateur connecté
-/bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
-  /usr/local/bin/wallpaper-folder add "$WALLPAPER_FOLDER" --verbose
+ARCH="$(/usr/bin/uname -m)"
 
-RESULT=$?
+is_clt_installed() {
+  /usr/sbin/pkgutil --pkg-info "$CLT_RECEIPT" >/dev/null 2>&1 && [ -d "$CLT_PATH" ]
+}
 
-# Redémarre les services côté utilisateur
-/bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
-  /usr/bin/killall cfprefsd 2>/dev/null
+show_clt_version() {
+  if /usr/sbin/pkgutil --pkg-info "$CLT_RECEIPT" >/dev/null 2>&1; then
+    /usr/sbin/pkgutil --pkg-info "$CLT_RECEIPT" | grep -E "package-id|version|install-time" || true
+  else
+    echo "Command Line Tools non installés."
+  fi
+}
 
-/bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
-  /usr/bin/killall WallpaperAgent 2>/dev/null
+find_clt_update_label() {
+  /usr/sbin/softwareupdate --list 2>&1 | awk -F'* Label: ' '
+    /Label: Command Line Tools/ && $2 !~ /beta|Beta/ { print $2 }
+  ' | tail -n 1
+}
 
-if [ "$RESULT" -ne 0 ]; then
-  echo "Erreur : wallpaper-folder add a échoué"
-  exit "$RESULT"
-fi
+install_or_update_clt() {
+  echo "--- Command Line Tools ---"
 
-echo "Dossier ajouté aux préférences Fond d'écran pour $LOGGED_IN_USER : $WALLPAPER_FOLDER"
+  echo "État avant :"
+  show_clt_version
 
-/bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
-  /usr/local/bin/desktoppr "$WALLPAPER_PATH"
+  touch "$SENTINEL"
+  trap 'rm -f "$SENTINEL"' EXIT
 
-/bin/launchctl asuser "$LOGGED_IN_UID" /usr/bin/sudo -u "$LOGGED_IN_USER" \
-  /usr/local/bin/dark-mode
+  LABEL="$(find_clt_update_label || true)"
+
+  if [ -z "${LABEL:-}" ]; then
+    echo "Aucune installation/mise à jour Command Line Tools disponible via softwareupdate."
+  else
+    echo "Installation/mise à jour : $LABEL"
+    /usr/sbin/softwareupdate --install "$LABEL" --verbose
+  fi
+
+  if [ -d "$CLT_PATH" ]; then
+    /usr/bin/xcode-select --switch "$CLT_PATH" || true
+  fi
+
+  echo "État après :"
+  show_clt_version
+
+  if is_clt_installed; then
+    echo "OK: Command Line Tools installés ou à jour."
+  else
+    echo "ATTENTION: Command Line Tools non détectés après exécution."
+  fi
+}
+
+is_rosetta_installed() {
+  /usr/bin/pgrep oahd >/dev/null 2>&1 && return 0
+
+  if [ -f "/Library/Apple/System/Library/LaunchDaemons/com.apple.oahd.plist" ]; then
+    return 0
+  fi
+
+  return 1
+}
+
+install_rosetta() {
+  echo "--- Rosetta ---"
+
+  if [ "$ARCH" != "arm64" ]; then
+    echo "Mac Intel détecté ($ARCH) : Rosetta ignoré."
+    return 0
+  fi
+
+  if is_rosetta_installed; then
+    echo "OK: Rosetta est déjà installé."
+    return 0
+  fi
+
+  echo "Mac Apple Silicon détecté : installation de Rosetta..."
+  /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+
+  if is_rosetta_installed; then
+    echo "OK: Rosetta installé."
+  else
+    echo "ERREUR: Rosetta non détecté après installation."
+    return 1
+  fi
+}
+
+install_or_update_clt
+install_rosetta
+
+echo "=== Terminé ==="
+date
 
 exit 0
