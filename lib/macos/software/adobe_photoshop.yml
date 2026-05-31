@@ -1,0 +1,8 @@
+- url: 
+  hash_sha256:
+  icon:
+    path: ../../all/icons/photoshop.png
+  install_script:
+    path: ./install_adobe_photoshop.sh
+  uninstall_script:
+    path: ./uninstall_adobe_photoshop.sh
