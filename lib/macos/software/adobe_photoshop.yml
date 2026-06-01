@@ -1,7 +1,7 @@
 - url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/adobe_photoshop/adobe_photoshop.pkg
-  hash_sha256: 3134edb68b613a26395d68c5448461fcce9953179aac8136152cb1c63df72fc3
+  hash_sha256: 9c2c32440dc1955edeadf6efc5f2aabfd9a17c6720c5b4f76338c8b1c108af6e
   icon:
-    path: ../../all/icons/adobe_photoshop.png
+    path: ../../all/icons/photoshop.png
   install_script:
     path: ./install_adobe_photoshop.sh
   uninstall_script:
