@@ -83,6 +83,7 @@ controls:
   scripts:
     - path: ../lib/macos/scripts/install_onboarding.sh
     - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
+    - path: ../lib/macos/scripts/install-pip-deps.sh
     
 
   setup_experience:
