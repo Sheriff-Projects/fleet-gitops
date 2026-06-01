@@ -95,7 +95,7 @@ controls:
 
 software:
   packages:
-    - path: ../lib/macos/software/ccdl.yml
+    - path: ../lib/macos/software/ccdl.ymlcdl.yml
       display_name: "Adobe CCDL Helper"
       self_service: true
       setup_experience: true
