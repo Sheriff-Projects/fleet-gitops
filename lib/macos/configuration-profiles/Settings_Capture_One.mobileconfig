@@ -17,11 +17,26 @@
 			<integer>1</integer>
 			<key>Services</key>
 			<dict>
+				<key>SystemPolicyNetworkVolumes</key>
+				<array>
+					<dict>
+						<key>Allowed</key>
+						<true/>
+						<key>CodeRequirement</key>
+						<string>identifier "com.captureone.captureone16" and certificate root = H"1430071242a64f17372572c4db78982f856eafbd"</string>
+						<key>Identifier</key>
+						<string>com.captureone.captureone16</string>
+						<key>IdentifierType</key>
+						<string>bundleID</string>
+						<key>StaticCode</key>
+						<false/>
+					</dict>
+				</array>
 				<key>SystemPolicyRemovableVolumes</key>
 				<array>
 					<dict>
-						<key>Authorization</key>
-						<string>Allow</string>
+						<key>Allowed</key>
+						<true/>
 						<key>CodeRequirement</key>
 						<string>identifier "com.captureone.captureone16" and certificate root = H"1430071242a64f17372572c4db78982f856eafbd"</string>
 						<key>Identifier</key>
