@@ -1,8 +1,0 @@
-- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/binaries/dark_mode.pkg
-  hash_sha256: 5098dddf818452b72cc9a72295c74c5cea74372d2241e05534a52d30aafe0c29
-  icon:
-    path: ../../all/icons/s_p.png
-  install_script:
-    path: ./install_dark_mode.sh
-  uninstall_script:
-    path: ./uninstall_dark_mode.sh
