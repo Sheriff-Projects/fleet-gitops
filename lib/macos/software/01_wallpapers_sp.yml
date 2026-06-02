@@ -1,5 +1,5 @@
 - url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/Wallpapers/wallpapers_sp.pkg
-  hash_sha256: 70b8338bc28da675bdb55f4e7d588e50af92a0f338d0adf8a29755993bb74b20
+  hash_sha256: a06bc77db7cc3e5c0e67c9fc67b4619803e9f82f0aec0105be194748073e49d9
   icon:
     path: ../../all/icons/s_p.png
   install_script:
