@@ -15,6 +15,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
 REPO="Sheriff-Projects/fleet-gitops"
+REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 PKG_URL="https://github.com/${REPO}/releases/download/wacom_tablet/wacom_tablet.pkg"
 
 # Identifier qui matche le bundle ID de Wacom Center.app
