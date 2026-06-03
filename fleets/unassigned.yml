@@ -167,6 +167,11 @@ software:
       self_service: true
       categories:
         - Productivity
+    - path: ../lib/windows/software/microsoft_365.yml
+      display_name: "Microsoft 365 Apps"
+      self_service: true
+      categories:
+        - Productivity
 
   app_store_apps:
     - app_store_id: "361285480"  # Keynote
