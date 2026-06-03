@@ -189,6 +189,8 @@ software:
 
   fleet_maintained_apps:
 
+    ####### APPLE SOFTWARE
+
     - slug: google-chrome/darwin
       self_service: true
       setup_experience: true
@@ -239,6 +241,39 @@ software:
 #    - slug: microsoft-excel/darwin
 #    self_service: true
 
+
+    ####### WINDOWS SOFTWARE
+
+    - slug: google-chrome/windows
+      self_service: true
+      categories:
+        - Browsers
+
+    - slug: slack/windows
+      self_service: true
+      categories:
+        - Communication
+
+    - slug: adobe-acrobat-reader/windows
+      self_service: true
+      categories:
+        - Productivity
+
+    - slug: google-drive/windows
+      self_service: true
+      categories:
+        - Productivity
+
+    - slug: claude/windows
+      self_service: true
+      categories:
+        - Productivity
+
+    - slug: notion/windows
+      self_service: true
+      categories:
+        - Productivity
+    
 policies:
   - name: Sheriff-Projects onboarding daemon installed
     description: |
