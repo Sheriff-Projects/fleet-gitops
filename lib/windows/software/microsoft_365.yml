@@ -1,5 +1,5 @@
 - url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/microsoft_365/setup.exe
-  hash_sha256: PLACEHOLDER_SERA_REMPLI_PAR_LE_BUILDER
+  hash_sha256: 22fc10ddbab93122fcae58cf5d8fef9724c3a7375c29c9c340d2de5682fab49c
   install_script:
     path: ./install_microsoft_365.ps1
   uninstall_script:
