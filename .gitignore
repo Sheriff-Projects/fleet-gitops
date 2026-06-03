@@ -3,3 +3,4 @@
 scripts/*.sh
 lib/macos/download/*.pkg
 #*.dmg
+lib/windows/download/*.exe
