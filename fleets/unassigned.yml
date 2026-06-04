@@ -114,7 +114,7 @@ software:
       setup_experience: true
 
     - path: ../lib/macos/software/02_dark_mode.yml
-      display_name: Installatio - dark-mode
+      display_name: Installation - dark-mode
       self_service: true
       setup_experience: true
 
@@ -138,7 +138,7 @@ software:
       self_service: true
       setup_experience: true
 
-    - path: ../lib/macos/scripts/07_homebrew.yml
+    - path: ../lib/macos/software/07_homebrew.yml
       display_name: "Installation - Homebrew"
       self_service: true
       setup_experience: true
