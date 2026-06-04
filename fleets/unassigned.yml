@@ -205,6 +205,9 @@ software:
 
     ####### APPLE SOFTWARE
 
+    - slug: rustdesk/darwin
+      self_service: true
+      
     - slug: google-chrome/darwin
       self_service: true
       setup_experience: true
