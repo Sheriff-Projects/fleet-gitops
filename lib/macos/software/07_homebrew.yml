@@ -1,0 +1,8 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/homebrew/Homebrew.pkg
+  hash_sha256: e30811e445a8e524262e79c1c2a603f69d0d08f1b3d2fcee1a3f4c81e902f4bd
+  icon:
+    path: ../../all/icons/homebrew.png
+  install_script:
+    path: ./install_homebrew.sh
+  uninstall_script:
+    path: ./uninstall_homebrew.sh

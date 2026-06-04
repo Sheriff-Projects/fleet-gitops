@@ -86,10 +86,7 @@ controls:
 
   scripts:
     - path: ../lib/macos/scripts/install_onboarding.sh
-    - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
-    - path: ../lib/macos/scripts/install-pip-deps.sh
     
-
   setup_experience:
     macos_manual_agent_install: false
     enable_end_user_authentication: true
@@ -126,10 +123,6 @@ software:
       self_service: true
       setup_experience: true
 
-    - path: ../lib/macos/software/adobe_photoshop.yml
-      display_name: Adobe Photoshop
-      self_service: true
-
     - path: ../lib/macos/software/04_wallpaper_folder.yml
       display_name: Installation - wallpaper-folder
       self_service: true
@@ -145,7 +138,7 @@ software:
       self_service: true
       setup_experience: true
 
-    - path: ../lib/macos/scripts/07_install-homebrew.sh
+    - path: ../lib/macos/scripts/07_homebrew.yml
       display_name: "Installation - Homebrew"
       self_service: true
       setup_experience: true
