@@ -45,7 +45,10 @@ labels:
   label_membership_type: manual
 - name: BU56 - COMMUNICATION
   label_membership_type: manual
-
+- name: BU156 - FREE SEATING
+  label_membership_type: manual
+  hosts:
+    - F5KFX05JK7GF
   
 org_settings:
   certificate_authorities:
