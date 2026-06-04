@@ -85,10 +85,10 @@ org_settings:
     - location: SHERIFF
       fleets:
       - "All teams"
-      
+
     # ✅ NOUVEAUX settings Windows à ajouter
     windows_enabled_and_configured: true
-    enable_turn_on_windows_mdm_manually: false
+    enable_turn_on_windows_mdm_manually: true
     windows_migration_enabled: false
 
     
