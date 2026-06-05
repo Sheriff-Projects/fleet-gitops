@@ -160,6 +160,13 @@ software:
       self_service: true
       categories:
         - Productivity
+    
+    - path: ../lib/macos/software/cask_deepl.yml
+      display_name: "DeepL"
+      self_service: true
+      categories:
+        - Productivity
+
 
     - path: ../lib/macos/software/capture_one.yml
       self_service: true
