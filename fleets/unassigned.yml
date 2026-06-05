@@ -170,12 +170,12 @@ software:
       categories:
         - Productivity
     - path: ../lib/macos/software/microsoft_365.yml
-      display_name: "Microsoft 365 Apps"
+      display_name: "Microsoft 365 - Applications bureautique"
       self_service: true
       categories:
         - Productivity
     - path: ../lib/windows/software/microsoft_365.yml
-      display_name: "Microsoft 365 Apps"
+      display_name: "Microsoft 365 - Applications bureautique"
       self_service: true
       categories:
         - Productivity
