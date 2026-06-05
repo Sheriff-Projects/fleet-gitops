@@ -73,6 +73,9 @@ org_settings:
     jira:
     zendesk:
   mdm:
+    windows_enabled_and_configured: true
+    enable_turn_on_windows_mdm_manually: false
+    windows_migration_enabled: false
     apple_business_manager:
     - organization_name: SHERIFF
       macos_fleet: "No team"
@@ -85,9 +88,7 @@ org_settings:
     - location: SHERIFF
       fleets:
       - "All teams"
-    windows_enabled_and_configured: true
-    enable_turn_on_windows_mdm_manually: false
-    windows_migration_enabled: false
+
 
     end_user_authentication:
       entity_id: fleet
