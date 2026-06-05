@@ -71,8 +71,8 @@ controls:
 
   # Laisse ces blocs absents si tu ne forces pas les mises a jour OS.
   macos_updates:
-    deadline: ""
-    minimum_version: ""
+    deadline: "2025-15-06"
+    minimum_version: "26.5"
     update_new_hosts: false
   ios_updates:
     deadline: ""
@@ -156,16 +156,21 @@ software:
       setup_experience: true
 
     - path: ../lib/macos/software/cask_deltawalker.yml
+      icon:
+        path: ../../all/icons/deltawalker.png
       display_name: "DeltaWalker"
       self_service: true
       categories:
         - Productivity
-    
+
     - path: ../lib/macos/software/cask_deepl.yml
-      display_name: "DeepL"
+      icon:
+        path: ../../all/icons/deepl.png
+      display_name: "Deepl"
       self_service: true
       categories:
         - Productivity
+
 
 
     - path: ../lib/macos/software/capture_one.yml
