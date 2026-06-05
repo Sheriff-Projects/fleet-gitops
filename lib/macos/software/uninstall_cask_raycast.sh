@@ -1,29 +1,21 @@
 #!/bin/bash
-# Uninstall script pour Raycast (Cask : raycast)
+# Uninstall script pour Raycast (Cask : raycast, via sp-installer)
 
 set -uo pipefail
 
+SERVICE_USER="sp-installer"
 CASK_NAME="raycast"
 LOG="/var/log/cask_${CASK_NAME}_uninstall.log"
-SUDOERS_TEMP="/etc/sudoers.d/sheriffprojects-cask-uninstall-${CASK_NAME}"
-
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
-
-cleanup_sudoers() {
-    [ -f "$SUDOERS_TEMP" ] && rm -f "$SUDOERS_TEMP" && log "Sudoers temp supprimé"
-}
-trap cleanup_sudoers EXIT
 
 log "=== Cask uninstall : $CASK_NAME ==="
 
 cd /tmp || cd /
 
-CONSOLE_USER=$(stat -f%Su /dev/console)
-if [ -z "$CONSOLE_USER" ] || [ "$CONSOLE_USER" = "root" ]; then
-    log "[ERROR] Pas d'user GUI"
+if ! id "$SERVICE_USER" >/dev/null 2>&1; then
+    log "[ERROR] $SERVICE_USER n'existe pas"
     exit 1
 fi
-CONSOLE_UID=$(id -u "$CONSOLE_USER")
 
 ARCH=$(uname -m)
 if [ "$ARCH" = "arm64" ]; then
@@ -37,26 +29,14 @@ if [ ! -x "$BREW_BIN" ]; then
     exit 0
 fi
 
-# Sudoers temp pour uninstall (idem install)
-cat > "$SUDOERS_TEMP" << SUDOEOF
-$CONSOLE_USER ALL=(ALL) NOPASSWD: ALL
-SUDOEOF
-chmod 0440 "$SUDOERS_TEMP"
-chown root:wheel "$SUDOERS_TEMP"
-visudo -c -f "$SUDOERS_TEMP" >/dev/null 2>&1 || exit 1
-
-run_as_user() {
-    /bin/launchctl asuser "$CONSOLE_UID" /usr/bin/sudo -u "$CONSOLE_USER" -H "$@"
-}
-
-if run_as_user "$BREW_BIN" list --cask "$CASK_NAME" >/dev/null 2>&1; then
+if sudo -u "$SERVICE_USER" -H "$BREW_BIN" list --cask "$CASK_NAME" >/dev/null 2>&1; then
     log "Désinstallation de $CASK_NAME..."
-    run_as_user "$BREW_BIN" uninstall --cask --zap "$CASK_NAME" >> "$LOG" 2>&1 || {
+    sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask --zap "$CASK_NAME" >> "$LOG" 2>&1 || {
         log "[WARN] --zap a échoué, fallback simple"
-        run_as_user "$BREW_BIN" uninstall --cask "$CASK_NAME" >> "$LOG" 2>&1 || true
+        sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask "$CASK_NAME" >> "$LOG" 2>&1 || true
     }
 else
-    log "$CASK_NAME pas installé via Homebrew"
+    log "$CASK_NAME pas installé"
 fi
 
 log "=== Uninstall done ==="
