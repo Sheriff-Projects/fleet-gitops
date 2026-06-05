@@ -165,7 +165,7 @@ software:
 
     - path: ../lib/macos/software/cask_deepl.yml
       icon:
-        path: ../lib/all/icons/deepl.png
+        path: ../lib/all/icons/deepl.pngs
       display_name: "Deepl"
       self_service: true
       categories:
