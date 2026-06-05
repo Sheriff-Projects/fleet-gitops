@@ -104,10 +104,12 @@ software:
       setup_experience: true
 
     - path: ../lib/macos/scripts/02_create_service_admin.sh
-      display_name: "Création - Service Admin sp-installer"
+      self_service: true
+      display_name: "Creation - Service Admin sp-installer"
       setup_experience: true
 
     - path: ../lib/macos/scripts/03_install_homebrew.sh
+      self_service: true
       display_name: "Installation - Homebrew"
       setup_experience: true
 
