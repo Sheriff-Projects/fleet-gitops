@@ -89,7 +89,6 @@ org_settings:
     enable_turn_on_windows_mdm_manually: false
     windows_migration_enabled: false
 
-    
     end_user_authentication:
       entity_id: fleet
       idp_name: "Google Workspace"

@@ -113,9 +113,10 @@ software:
       display_name: "Installation - Homebrew"
       setup_experience: true
 
-    - path: ../lib/macos/software/04_cask_raycast.yml
+    - path: ../lib/macos/software/cask_raycast.yml
       display_name: "Installation - Raycast"
       self_service: true
+      setup_experience: true
       categories:
         - Productivity
 
@@ -153,6 +154,12 @@ software:
       display_name: "Adobe CCDL Helper"
       self_service: true
       setup_experience: true
+
+    - path: ../lib/macos/software/cask_deltawalker.yml
+      display_name: "DeltaWalker"
+      self_service: true
+      categories:
+        - Productivity
 
     - path: ../lib/macos/software/capture_one.yml
       self_service: true
