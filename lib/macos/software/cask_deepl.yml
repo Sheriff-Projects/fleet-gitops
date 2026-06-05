@@ -1,0 +1,6 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/cask_deepl/cask_deepl.pkg
+  hash_sha256: 3cd754ee539b3d8f439c22aaf69e580f693ad70f7b8270ff68ccfbdb84911fbd
+  install_script:
+    path: ./install_cask_deepl.sh
+  uninstall_script:
+    path: ./uninstall_cask_deepl.sh
