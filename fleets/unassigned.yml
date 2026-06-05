@@ -156,22 +156,16 @@ software:
       setup_experience: true
 
     - path: ../lib/macos/software/cask_deltawalker.yml
-      icon:
-        path: ../lib/all/icons/deltawalker.png
       display_name: "DeltaWalker"
       self_service: true
       categories:
         - Productivity
 
     - path: ../lib/macos/software/cask_deepl.yml
-      icon:
-        path: ../lib/all/icons/deepl.pngs
       display_name: "Deepl"
       self_service: true
       categories:
         - Productivity
-
-
 
     - path: ../lib/macos/software/capture_one.yml
       self_service: true
