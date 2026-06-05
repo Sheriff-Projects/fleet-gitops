@@ -1,5 +1,5 @@
 - url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/cask_raycast/cask_raycast.pkg
-  hash_sha256: 7e87dacb07a5d8d6c8f14fd072181e1d0355ae9a9b04a9211dc4d94d730ff2b2
+  hash_sha256: dde005cf71fb9a7723bf171f4a2e5a89cacdbad4d56c34c5bab266e7c9fed76a
   install_script:
     path: ./install_cask_raycast.sh
   uninstall_script:
