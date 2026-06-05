@@ -157,7 +157,7 @@ software:
 
     - path: ../lib/macos/software/cask_deltawalker.yml
       icon:
-        path: ../../all/icons/deltawalker.png
+        path: ../lib/all/icons/deltawalker.png
       display_name: "DeltaWalker"
       self_service: true
       categories:
@@ -165,7 +165,7 @@ software:
 
     - path: ../lib/macos/software/cask_deepl.yml
       icon:
-        path: ../../all/icons/deepl.png
+        path: ../lib/all/icons/deepl.png
       display_name: "Deepl"
       self_service: true
       categories:
