@@ -71,7 +71,7 @@ controls:
 
   # Laisse ces blocs absents si tu ne forces pas les mises a jour OS.
   macos_updates:
-    deadline: "2025-15-06"
+    deadline: "2026-06-30"
     minimum_version: "26.5"
     update_new_hosts: false
   ios_updates:
