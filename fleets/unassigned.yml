@@ -97,54 +97,58 @@ controls:
 
 software:
   packages:
-    - path: ../lib/macos/software/ccdl.yml
-      display_name: "Adobe CCDL Helper"
-      self_service: true
-      setup_experience: true
 
-    - path: ../lib/macos/software/cask_raycast.yml
-      display_name: "Raycast"
-      self_service: true
-      categories:
-        - Productivity
-
-    - path: ../lib/macos/software/01_wallpapers_sp.yml
-      display_name: "Installation - S•P fond d'écran"
-      self_service: true
-      setup_experience: true
-
-    - path: ../lib/macos/software/02_dark_mode.yml
-      display_name: Installation - dark-mode
-      self_service: true
-      setup_experience: true
-
-    - path: ../lib/macos/software/03_desktoppr.yml
-      display_name: Installation - desktoppr
-      self_service: true
-      setup_experience: true
-
-    - path: ../lib/macos/software/04_wallpaper_folder.yml
-      display_name: Installation - wallpaper-folder
-      self_service: true
-      setup_experience: true
-
-    - path: ../lib/macos/software/05_forticlient_vpn_config.yml
-      display_name: "Configuration - S•P VPN"
-      self_service: true
-      setup_experience: true
-
-    - path: ../lib/macos/scripts/06_install-command-line-tools-rosetta.sh
+    - path: ../lib/macos/scripts/01_install-command-line-tools-rosetta.sh
       display_name: "Installation - Command Line Tools et Rosetta"
       self_service: true
       setup_experience: true
 
-    - path: ../lib/macos/software/07_homebrew.yml
+    - path: ../lib/macos/scripts/02_create_service_admin.sh
+      display_name: "Création - Service Admin sp-installer"
+      setup_experience: true
+
+    - path: ../lib/macos/scripts/03_install_homebrew.sh
       display_name: "Installation - Homebrew"
+      setup_experience: true
+
+    - path: ../lib/macos/software/04_cask_raycast.yml
+      display_name: "Installation - Raycast"
+      self_service: true
+      categories:
+        - Productivity
+
+    - path: ../lib/macos/software/05_wallpapers_sp.yml
+      display_name: "Installation - S•P fond d'écran"
       self_service: true
       setup_experience: true
 
-    - path: ../lib/macos/software/09_licence_microsoft_365.yml
+    - path: ../lib/macos/software/06_desktoppr.yml
+      display_name: Installation - desktoppr
+      self_service: true
+      setup_experience: true
+
+    - path: ../lib/macos/software/07_wallpaper_folder.yml
+      display_name: Installation - wallpaper-folder
+      self_service: true
+      setup_experience: true
+
+    - path: ../lib/macos/software/08_forticlient_vpn_config.yml
+      display_name: "Configuration - S•P VPN"
+      self_service: true
+      setup_experience: true
+
+    - path: ../lib/macos/software/09_dark_mode.yml
+      display_name: Installation - dark-mode
+      self_service: true
+      setup_experience: true
+
+    - path: ../lib/macos/software/010_licence_microsoft_365.yml
       display_name: "Volume Licence Microsoft 365"
+      self_service: true
+      setup_experience: true
+
+    - path: ../lib/macos/software/ccdl.yml
+      display_name: "Adobe CCDL Helper"
       self_service: true
       setup_experience: true
 
