@@ -9,7 +9,6 @@ LOG="/var/log/cask_${CASK_NAME}_uninstall.log"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
 
 log "=== Cask uninstall : $CASK_NAME ==="
-
 cd /tmp || cd /
 
 if ! id "$SERVICE_USER" >/dev/null 2>&1; then
