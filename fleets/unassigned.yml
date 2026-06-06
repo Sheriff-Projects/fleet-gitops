@@ -184,16 +184,13 @@ software:
       self_service: true
       categories:
         - Productivity
-    - path: ../lib/macos/software/microsoft_365.yml
-      display_name: "Microsoft 365 - Applications bureautique"
-      self_service: true
-      categories:
-        - Productivity
+
     - path: ../lib/windows/software/microsoft_365.yml
       display_name: "Microsoft 365 - Applications bureautique"
       self_service: true
       categories:
         - Productivity
+        
     - path: ../lib/windows/software/arc.yml
       display_name: "Arc"
       self_service: true
@@ -237,17 +234,6 @@ software:
     - slug: rectangle/darwin
       self_service: true
       setup_experience: true
-
-    - slug: adobe-creative-cloud/darwin
-      self_service: true
-      setup_experience: true
-
-    - slug: the-unarchiver/darwin
-      self_service: true
-      install_script: 
-        path: ../lib/macos/software/install_the-unarchiver.sh
-      uninstall_script: 
-        path: ../lib/macos/software/uninstall_the-unarchiver.sh
 
     - slug: google-drive/darwin
       self_service: true
@@ -310,6 +296,7 @@ software:
         - Productivity
     
 policies:
+
   - name: Sheriff-Projects onboarding daemon installed
     description: |
       Vérifie que le LaunchDaemon d'onboarding Sheriff Projects est en place.
