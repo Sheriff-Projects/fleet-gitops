@@ -8,6 +8,7 @@ settings:
       host_batch_size: 0
 
 controls:
+  windows_enabled_and_configured: true
   apple_settings:
     configuration_profiles:
       - path: ../lib/macos/configuration-profiles/Install_Maxitype_Signs_Font.mobileconfig
@@ -190,7 +191,7 @@ software:
       self_service: true
       categories:
         - Productivity
-        
+
     - path: ../lib/windows/software/arc.yml
       display_name: "Arc"
       self_service: true
