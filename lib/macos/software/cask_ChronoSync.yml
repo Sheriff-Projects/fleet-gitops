@@ -1,0 +1,6 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/cask_ChronoSync/cask_ChronoSync.pkg
+  hash_sha256: 4e8813b18d04debcd6c18980940545c9bcb9d1c5fa64012c9d950f878cd97303
+  install_script:
+    path: ./install_cask_ChronoSync.sh
+  uninstall_script:
+    path: ./uninstall_cask_ChronoSync.sh
