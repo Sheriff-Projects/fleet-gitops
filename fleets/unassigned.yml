@@ -166,6 +166,18 @@ software:
       categories:
         - Productivity
 
+    - path: ../lib/macos/software/cask_a_better_finder_rename.yml
+      display_name: "A Better Name Renamer"
+      self_service: true
+      categories:
+        - Productivity
+
+    - path: ../lib/macos/software/cask_ChronoSync.yml
+      display_name: "ChronoSync"
+      self_service: true
+      categories:
+        - Photo
+
     - path: ../lib/macos/software/cask_deepl.yml
       display_name: "Deepl"
       self_service: true
