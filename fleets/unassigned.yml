@@ -176,7 +176,7 @@ software:
       display_name: "ChronoSync"
       self_service: true
       categories:
-        - Photo
+        - Productivity
 
     - path: ../lib/macos/software/cask_deepl.yml
       display_name: "Deepl"
