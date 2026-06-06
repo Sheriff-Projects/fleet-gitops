@@ -13,7 +13,6 @@
 # pour les assignations de devices aux BU.
 # ---------------------------------------------------------------------------
 agent_options:
-
   config:
     options:
       pack_delimiter: /
@@ -23,7 +22,6 @@ agent_options:
       logger_tls_endpoint: /api/osquery/log
       distributed_interval: 10
       distributed_tls_max_attempts: 3
-
 labels:
 - name: BU02 - ATELIER
   label_membership_type: manual
@@ -72,7 +70,6 @@ org_settings:
     google_calendar:
     jira:
     zendesk:
-    
   mdm:
     apple_business_manager:
     - organization_name: SHERIFF
@@ -82,27 +79,22 @@ org_settings:
     apple_server_url:
     # NB: bug Fleet 4.84.x — la nouvelle terminologie n'est pas reconnue ici.
     # On doit écrire "No team" et non "Unassigned" (ni "All fleets" — utiliser "All teams").
-  
-  volume_purchasing_program:
+    volume_purchasing_program:
     - location: SHERIFF
       fleets:
       - "All teams"
-
-  end_user_authentication:
+    end_user_authentication:
       entity_id: fleet
       idp_name: "Google Workspace"
       metadata: ""
       metadata_url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/sso-metadata/google_workspace_metadata.xml
-
   org_info:
     contact_url: https://docs.getprimo.com
     org_logo_url:
     org_logo_url_light_background:
     org_name: Sheriff Projects
-
   secrets:
   - secret: "$FLEET_GLOBAL_ENROLL_SECRET"
-
   server_settings:
     ai_features_disabled: false
     deferred_save_host: false
@@ -112,7 +104,6 @@ org_settings:
     report_cap: 0
     scripts_disabled: false
     server_url: https://sheriffprojects.mdm.getprimo.com
-  
   sso_settings:
   webhook_settings:
     activities_webhook:
@@ -133,9 +124,7 @@ org_settings:
       enable_vulnerabilities_webhook: false
       host_batch_size: 0
   yara_rules:
-
 policies:
-
 reports:
 - automations_enabled: true
   description:
@@ -143,7 +132,6 @@ reports:
   interval: 300
   logging: snapshot
   min_osquery_version:
-
   name: Primo Query - Get users & groups
   observer_can_run: false
   platform:
@@ -163,7 +151,6 @@ reports:
   interval: 300
   logging: snapshot
   min_osquery_version:
-
   name: Primo Query - Get logged in users
   observer_can_run: false
   platform:
@@ -174,7 +161,6 @@ reports:
   interval: 300
   logging: snapshot
   min_osquery_version:
-
   name: Primo Query - Get logon session
   observer_can_run: false
   platform:
@@ -192,7 +178,6 @@ reports:
   interval: 1800
   logging: snapshot
   min_osquery_version:
-
   name: Primo Query - Get mac and linux devices cpu and ram
   observer_can_run: false
   platform:
@@ -220,7 +205,6 @@ reports:
   interval: 1800
   logging: snapshot
   min_osquery_version:
-
   name: Primo Query - Get windows devices cpu and ram
   observer_can_run: false
   platform:
