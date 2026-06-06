@@ -74,7 +74,7 @@ controls:
   macos_updates:
     deadline: "2026-06-30"
     minimum_version: "26.5"
-    update_new_hosts: false
+    update_new_hosts: true
   ios_updates:
     deadline: ""
     minimum_version: ""
@@ -86,10 +86,10 @@ controls:
     grace_period_days: 
 
   scripts:
-    - path: ../lib/macos/scripts/install_onboarding.sh
+    - path: ../lib/macos/scripts/*.sh
     
   setup_experience:
-    macos_manual_agent_install: false
+    macos_manual_agent_install: true
     enable_end_user_authentication: true
     lock_end_user_info: true
     apple_enable_release_device_manually: false
@@ -298,16 +298,17 @@ software:
     
 policies:
 
-  - name: Sheriff-Projects onboarding daemon installed
-    description: |
-      Vérifie que le LaunchDaemon d'onboarding Sheriff Projects est en place.
-      Si non, exécute install_onboarding.sh qui pose le daemon + le script.
+  - name: macOS - Run post enrollment script
+    description: Run post-enrollment script after Fleet enrollment and first user login.
+    resolution: The script creates the post_enrollment_done flag after successful execution.
     platform: darwin
-    resolution: Le daemon sera installé au prochain cycle de policy
+    critical: false
     query: |
-      SELECT 1 FROM file WHERE path = '/Library/LaunchDaemons/com.sheriffprojects.onboarding.plist';
+      SELECT 1
+      FROM file
+      WHERE path = '/Library/Application Support/Sheriff Projects/post_enrollment_done';
     run_script:
-      path: ../lib/macos/scripts/install_onboarding.sh
+      path: ../lib/macos/scripts/post-enrollment.sh
 
   - name: macOS - FortiCLient Installation
     description: |
