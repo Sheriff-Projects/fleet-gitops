@@ -28,7 +28,7 @@ fi
 if [ -x /usr/local/bin/dark-mode ]; then
   logger -t "$LOG" "Activation Dark Mode pour ${CURRENT_USER}"
 
-launchctl asuser "${USER_ID}" sudo -u "${CURRENT_USER}" /usr/local/bin/dark-mode
+sudo -u "${CURRENT_USER}" /usr/local/bin/dark-mode
 
 else
   logger -t "$LOGG" "WARNING: dark-mode absent, skip"
@@ -65,9 +65,9 @@ if [ -d "${WALLPAPER_FOLDER}" ] && [ -x /usr/local/bin/wallpaper-folder ]; then
 
   logger -t "$LOG" "Ajout du dossier wallpaper aux prefs de ${CURRENT_USER}"
 
-launchctl asuser "${USER_ID}" sudo -u "${CURRENT_USER}" /usr/local/bin/wallpaper-folder add "${WALLPAPER_FOLDER}"
-launchctl asuser "${USER_ID}" sudo -u "${CURRENT_USER}" /usr/bin/killall cfprefsd
-launchctl asuser "${USER_ID}" sudo -u "${CURRENT_USER}" /usr/bin/killall WallpaperAgent
+sudo -u "${CURRENT_USER}" /usr/local/bin/wallpaper-folder add "${WALLPAPER_FOLDER}"
+sudo -u "${CURRENT_USER}" /usr/bin/killall cfprefsd
+sudo -u "${CURRENT_USER}" /usr/bin/killall WallpaperAgent
 
 else
   logger -t "$LOG" "WARNING: wallpaper-folder ou dossier wallpapers absent, skip"
@@ -81,7 +81,7 @@ if [ -f "${WALLPAPER_FILE}" ] && [ -x /usr/local/bin/desktoppr ]; then
 
   logger -t "$LOG" "Application du wallpaper pour ${CURRENT_USER}"
 
-launchctl asuser "${USER_ID}" sudo -u "${CURRENT_USER}" /usr/local/bin/desktoppr "${WALLPAPER_FILE}"
+sudo -u "${CURRENT_USER}" /usr/local/bin/desktoppr "${WALLPAPER_FILE}"
 
 else
   logger -t "$LOG" "WARN: desktoppr ou wallpaper.jpg absent, skip"
