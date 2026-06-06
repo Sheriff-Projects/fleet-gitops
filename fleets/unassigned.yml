@@ -94,12 +94,11 @@ controls:
     - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
     
   setup_experience:
-    macos_manual_agent_install: true
+    macos_manual_agent_install: false
     enable_end_user_authentication: true
     lock_end_user_info: true
     apple_enable_release_device_manually: false
     apple_setup_assistant: ./lib/macos/enrollment-profiles/dep_profile.json
-    #macos_script: ../lib/macos/scripts/install_onboarding.sh
 
 software:
   packages:
