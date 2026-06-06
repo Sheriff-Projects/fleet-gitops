@@ -72,7 +72,7 @@ controls:
 
   # Laisse ces blocs absents si tu ne forces pas les mises a jour OS.
   macos_updates:
-    deadline: "2026-06-30"
+    deadline: "2026-06-10"
     minimum_version: "26.5"
     update_new_hosts: true
   ios_updates:
@@ -86,7 +86,12 @@ controls:
     grace_period_days: 
 
   scripts:
-    - path: ../lib/macos/scripts/*.sh
+
+    - path: ../lib/macos/scripts/01_install-command-line-tools-rosetta.sh 
+    - path: ../lib/macos/scripts/02_create_service_admin.sh
+    - path: ../lib/macos/scripts/03_install_homebrew.sh 
+    - path: ../lib/macos/scripts/post-enrollment.sh
+    - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
     
   setup_experience:
     macos_manual_agent_install: true
