@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstall DeltaWalker (Cask : deltawalker)
+# Uninstall DeltaWalker (Cask : deltawalker, Bundle: com.deltopia.DeltaWalker)
 
 set -uo pipefail
 
