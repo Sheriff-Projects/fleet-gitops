@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstall DeltaWalker (Cask : deltawalker, Bundle: com.deltopia.DeltaWalker)
+# Uninstall script pour DeltaWalker (Cask : deltawalker, via sp-installer)
 
 set -uo pipefail
 
@@ -29,13 +29,13 @@ if [ ! -x "$BREW_BIN" ]; then
 fi
 
 if sudo -u "$SERVICE_USER" -H "$BREW_BIN" list --cask "$CASK_NAME" >/dev/null 2>&1; then
-    log "Désinstallation de $CASK_NAME (--zap retire aussi les prefs)..."
+    log "Désinstallation de $CASK_NAME..."
     sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask --zap "$CASK_NAME" >> "$LOG" 2>&1 || {
-        log "[WARN] --zap a échoué, fallback uninstall simple"
-        sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask --force "$CASK_NAME" >> "$LOG" 2>&1 || true
+        log "[WARN] --zap a échoué, fallback simple"
+        sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask "$CASK_NAME" >> "$LOG" 2>&1 || true
     }
 else
-    log "$CASK_NAME pas connu de brew comme installé"
+    log "$CASK_NAME pas installé"
 fi
 
 log "=== Uninstall done ==="
