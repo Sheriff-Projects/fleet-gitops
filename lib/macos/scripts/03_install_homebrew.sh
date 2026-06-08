@@ -4,6 +4,10 @@
 # Installe Homebrew dans le contexte du compte de service sp-installer
 # (admin caché créé par create_service_admin.sh).
 #
+# Note : Cask est intégré nativement à Homebrew depuis longtemps. Pas besoin
+# de l'installer séparément. `brew install --cask <nom>` fonctionne directement
+# une fois Homebrew installé.
+#
 # Conséquence : l'utilisateur final (samir.ouari, etc.) reste STANDARD.
 # /opt/homebrew/ (ou /usr/local sur Intel) appartient à sp-installer.
 # Les standard users peuvent LIRE brew (brew list, brew search, brew info)
@@ -53,7 +57,13 @@ if [ -x "$BREW_BIN" ]; then
 
     if [ "$BREW_OWNER" != "$SERVICE_USER" ]; then
         log "[WARN] Homebrew n'appartient pas à $SERVICE_USER ($BREW_OWNER)"
-        log "Si tu veux corriger : sudo chown -R $SERVICE_USER:admin $BREW_PREFIX"
+        log "Correction automatique : chown -R $SERVICE_USER:admin $BREW_PREFIX"
+        if chown -R "${SERVICE_USER}:admin" "$BREW_PREFIX"; then
+            log "✓ Ownership corrigé"
+        else
+            log "[ERROR] Impossible de corriger l'ownership"
+            exit 1
+        fi
     fi
 
     log "=== Homebrew install: nothing to do ==="
@@ -127,7 +137,18 @@ BREW_OWNER=$(stat -f%Su "$BREW_PREFIX")
 log "Propriétaire $BREW_PREFIX : $BREW_OWNER"
 
 # -------------------------------------------------------------------------
-# 7. Configurer le PATH pour TOUS les users (système-wide)
+# 7. Vérifier que Cask est dispo (intégré nativement)
+# -------------------------------------------------------------------------
+# brew --cask <commande> est intégré depuis longtemps. On vérifie juste
+# que brew répond pour valider l'installation.
+if sudo -u "$SERVICE_USER" -H "$BREW_BIN" --help | grep -q -- '--cask'; then
+    log "Cask : intégré ✓ (brew install --cask <name> fonctionnera)"
+else
+    log "[WARN] Cask ne semble pas disponible dans cette version de Homebrew"
+fi
+
+# -------------------------------------------------------------------------
+# 8. Configurer le PATH pour TOUS les users (système-wide)
 # -------------------------------------------------------------------------
 # Pour que tous les users (samir.ouari + futurs users) puissent utiliser
 # brew read-only (brew list, search, info), on ajoute le PATH dans
@@ -152,12 +173,9 @@ add_to_system_rc "/etc/zshrc"
 add_to_system_rc "/etc/bashrc"
 
 # -------------------------------------------------------------------------
-# 8. brew update initial (en tant que sp-installer)
+# 9. brew update initial (en tant que sp-installer)
 # -------------------------------------------------------------------------
 log "Lancement de brew update..."
-sudo -u "$SERVICE_USER" -H "$BREW_BIN" install cask >> "$LOG" 2>&1 || {
-    log "[WARN] cask install a échoué"
-}
 sudo -u "$SERVICE_USER" -H "$BREW_BIN" update >> "$LOG" 2>&1 || {
     log "[WARN] brew update a échoué (non-bloquant)"
 }
