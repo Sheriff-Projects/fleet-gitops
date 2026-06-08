@@ -47,6 +47,9 @@ labels:
   label_membership_type: manual
   hosts:
     - F5KFX05JK7GF
+    - C02DX0SAPN7C
+    - H12GKHCHPN7C
+    - DGKZVHCKJV40
   
 org_settings:
   certificate_authorities:
