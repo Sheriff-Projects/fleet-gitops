@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install DeltaWalker via Homebrew Cask
-# Build on 2026-06-09 01:01:14
+# Build on 2026-06-09 01:35:58
 # Cask       : deltawalker (v2.8.1)
 # Bundle ID  : com.deltopia.DeltaWalker
 #
