@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install DeltaWalker via Homebrew Cask
-# Build on 2026-06-08 20:08:52
+# Build on 2026-06-08 20:32:24
 # Cask : deltawalker (v2.8.1)
 #
 # Cet install_script est exécuté directement par Fleet (pas dans un postinstall
