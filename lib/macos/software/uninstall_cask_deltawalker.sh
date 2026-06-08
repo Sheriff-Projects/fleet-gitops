@@ -29,13 +29,13 @@ if [ ! -x "$BREW_BIN" ]; then
 fi
 
 if sudo -u "$SERVICE_USER" -H "$BREW_BIN" list --cask "$CASK_NAME" >/dev/null 2>&1; then
-    log "Désinstallation de $CASK_NAME..."
+    log "Désinstallation de $CASK_NAME (--zap retire aussi les prefs)..."
     sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask --zap "$CASK_NAME" >> "$LOG" 2>&1 || {
-        log "[WARN] --zap a échoué, fallback simple"
-        sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask "$CASK_NAME" >> "$LOG" 2>&1 || true
+        log "[WARN] --zap a échoué, fallback uninstall simple"
+        sudo -u "$SERVICE_USER" -H "$BREW_BIN" uninstall --cask --force "$CASK_NAME" >> "$LOG" 2>&1 || true
     }
 else
-    log "$CASK_NAME pas installé"
+    log "$CASK_NAME pas connu de brew comme installé"
 fi
 
 log "=== Uninstall done ==="
