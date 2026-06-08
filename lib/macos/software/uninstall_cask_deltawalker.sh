@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstall script pour DeltaWalker (Cask : deltawalker, via sp-installer)
+# Uninstall DeltaWalker (Cask : deltawalker)
 
 set -uo pipefail
 
