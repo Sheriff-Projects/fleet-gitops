@@ -155,6 +155,9 @@ add_to_system_rc "/etc/bashrc"
 # 8. brew update initial (en tant que sp-installer)
 # -------------------------------------------------------------------------
 log "Lancement de brew update..."
+sudo -u "$SERVICE_USER" -H "$BREW_BIN" install cask >> "$LOG" 2>&1 || {
+    log "[WARN] cask install a échoué"
+}
 sudo -u "$SERVICE_USER" -H "$BREW_BIN" update >> "$LOG" 2>&1 || {
     log "[WARN] brew update a échoué (non-bloquant)"
 }
