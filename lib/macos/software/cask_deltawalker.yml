@@ -1,5 +1,5 @@
 - url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/cask_deltawalker/cask_deltawalker.pkg
-  hash_sha256: d247ac6009f899a10d60259a6818390b938a3c2a0980003934d1aae564a314e9
+  hash_sha256: f251e9e7ec680f83c8c9ec0cb59a693b93472e2e0e8f558c3776f8bcbaa7bae6
   install_script:
     path: ./install_cask_deltawalker.sh
   uninstall_script:
