@@ -23,26 +23,86 @@ agent_options:
       distributed_interval: 10
       distributed_tls_max_attempts: 3
 labels:
+
 - name: BU02 - ATELIER
   label_membership_type: manual
+  hosts:
+    - Y57MP6R4DL # Maxime Teneur
+    - WMCQ72GRQR # Guillaume Cobas
+    - CV9W07HG3W # Marc-Antoine Lorcy
+
 - name: BU05 - PUB
   label_membership_type: manual
+  hosts:
+    - KCFG4W9K1G # Laurent Martinez
+    - NF00FVR90W # Félix Fouchet
+    - C02G51P6MD6M # Marina Samitier
+    - VWQ4XF4FKH # Yan Duffas
+    - MG7XJ6XMQK # Fanfan Fallot
+    - R49Q67N23K # Machine à distance
+
 - name: BU06 - ECOM
   label_membership_type: manual
+  hosts:
+    - NFYH995JNY # David Abramski
+    - K7JT2PH09G # Allan Rischard
+    - YJWVV37625 # Rafaela Fernandes
+    - WH6YF9JG2H # Noémi Lemaire
+    - N94CC6H9QQ # Gwen Risk
+    - YG4XCN96Q9 # Jean Ranobrac
+
 - name: BU10 - ULTRA MOTION
   label_membership_type: manual
+  hosts:
+  - XJ4CQD4Y5D # Karl Agodor
+  - H5LQ3221FY # Flore Caramelli
+  - HPG19Q0Q10 # Salle de Montage 1
+  - FXWH1WFKQP # Salle de Montage 2
+
+
 - name: BU11 - PRODUCTION
   label_membership_type: manual
+  hosts:
+    - DY1Q1424R3 # Sacha Duret
+    - FVFK12LQ1WG7 # Eryn Millien
+    - QQ2NQ0P4DK # Laurie Castillan
+    - C02FT747MD6R # Emma Gibbe
+    - GWM6P32X6M # Héléna Rodon
+    - FVFF81KRQ05D #Sofia Driouich
+
 - name: BU51 - DIRECTION
   label_membership_type: manual
+  hosts:
+    - KFVTWQQY5F # David Frasson
+    - JQ61X690D0 # Carl Smith Thomas
+
 - name: BU52 - COMPTABILITE
   label_membership_type: manual
+  hosts:
+    - PF63FCY2 # Etoile Diwa Elyard
+    - PF63TDA9 # Jean-Philippe Guichard    
+    - PF63FD0P #
+    - PF63PCKG #
+    - K6RCF63JFX # Elizabeth Doan
+
 - name: BU53 - DRH
   label_membership_type: manual
+  hosts:
+    - PF63SF0Z # 
+
 - name: BU54 - DSI
   label_membership_type: manual
+  hosts:
+  - L1679NTHFK # Samir Ouari
+
+
 - name: BU56 - COMMUNICATION
   label_membership_type: manual
+  hosts:
+    - CD91RQV9MW # Kira Arnal
+    - C02ZVKQHMD6M #
+    - 
+
 - name: BU156 - FREE SEATING
   label_membership_type: manual
   hosts:
@@ -51,7 +111,6 @@ labels:
     - H12GKHCHPN7C
     - DGKZVHCKJV40
     - C07HP1NLQ6P0
-    - HPG19Q0Q10
     - C07HQ06KQ6P0
     - C02C201LK7GF
     - DGKC2HMEJV40
@@ -59,11 +118,9 @@ labels:
     - F5KFX03SK7GF
     - F5KFX064K7GF
     - C02DX0S2PN7C
-    - H12FXHLLPN7C
     - C07HP1NMQ6P0
     - F5KFX0H2K7GF
-    
-      
+
 org_settings:
   certificate_authorities:
     custom_est_proxy:
@@ -72,20 +129,25 @@ org_settings:
     hydrant:
     ndes_scep_proxy:
     smallstep:
+  
   features:
     enable_host_users: false
     enable_software_inventory: true
+
   fleet_desktop:
     alternative_browser_host:
     transparency_url: https://fleetdm.com/transparency
+    
   host_expiry_settings:
     host_expiry_enabled: true
     host_expiry_window: 30
+
   integrations:
     conditional_access_enabled: false
     google_calendar:
     jira:
     zendesk:
+
   mdm:
     apple_business_manager:
     - organization_name: SHERIFF
@@ -95,22 +157,27 @@ org_settings:
     apple_server_url:
     # NB: bug Fleet 4.84.x — la nouvelle terminologie n'est pas reconnue ici.
     # On doit écrire "No team" et non "Unassigned" (ni "All fleets" — utiliser "All teams").
+
     volume_purchasing_program:
     - location: SHERIFF
       fleets:
       - "All teams"
+
     end_user_authentication:
       entity_id: fleet
       idp_name: "Google Workspace"
       metadata: ""
       metadata_url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/sso-metadata/google_workspace_metadata.xml
+
   org_info:
     contact_url: https://docs.getprimo.com
     org_logo_url:
     org_logo_url_light_background:
     org_name: Sheriff Projects
+
   secrets:
   - secret: "$FLEET_GLOBAL_ENROLL_SECRET"
+
   server_settings:
     ai_features_disabled: false
     deferred_save_host: false
@@ -120,7 +187,17 @@ org_settings:
     report_cap: 0
     scripts_disabled: false
     server_url: https://sheriffprojects.mdm.getprimo.com
-  sso_settings:
+
+  sso_settings:                                          # ← MODIFIE ICI
+    enable_sso: true
+    enable_sso_idp_login: true
+    enable_jit_provisioning: true
+    entity_id: primo_fleet_sso_sheriffprojects
+    idp_image_url: ""
+    idp_name: Primo
+    metadata: ""
+    metadata_url: https://app.getprimo.com/sso/sheriffprojects/metadata
+
   webhook_settings:
     activities_webhook:
       destination_url: https://webhooks.getprimo.com/processFleetActivityEvent?companyId=6880bdb90a71bce529867530&apikey=$FLEET_PRIMO_WEBHOOK_KEY

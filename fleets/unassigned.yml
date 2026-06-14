@@ -118,12 +118,12 @@ software:
       display_name: "Installation - Homebrew"
       setup_experience: true
 
-    - path: ../lib/macos/software/cask_raycast.yml
-      display_name: "Installation - Raycast"
-      self_service: true
-      setup_experience: true
-      categories:
-        - Productivity
+    # - path: ../lib/macos/software/cask_raycast.yml
+    #   display_name: "Installation - Raycast"
+    #   self_service: true
+    #   setup_experience: true
+    #   categories:
+    #     - Productivity
 
     - path: ../lib/macos/software/05_wallpapers_sp.yml
       display_name: "Installation - S•P fond d'écran"
@@ -160,29 +160,29 @@ software:
       self_service: true
       setup_experience: true
 
-    - path: ../lib/macos/software/cask_deltawalker.yml
-      display_name: "DeltaWalker"
-      self_service: true
-      categories:
-        - Productivity
+    # - path: ../lib/macos/software/cask_deltawalker.yml
+    #   display_name: "DeltaWalker"
+    #   self_service: true
+    #   categories:
+    #     - Productivity
 
-    - path: ../lib/macos/software/cask_a_better_finder_rename.yml
-      display_name: "A Better Name Renamer"
-      self_service: true
-      categories:
-        - Productivity
+    #- path: ../lib/macos/software/cask_a_better_finder_rename.yml
+    #  display_name: "A Better Name Renamer"
+    #  self_service: true
+    # categories:
+    #   - Productivity
 
-    - path: ../lib/macos/software/cask_ChronoSync.yml
-      display_name: "ChronoSync"
-      self_service: true
-      categories:
-        - Productivity
+    # - path: ../lib/macos/software/cask_ChronoSync.yml
+    #   display_name: "ChronoSync"
+    #   self_service: true
+    #   categories:
+    #     - Productivity
 
-    - path: ../lib/macos/software/cask_deepl.yml
-      display_name: "Deepl"
-      self_service: true
-      categories:
-        - Productivity
+    # - path: ../lib/macos/software/cask_deepl.yml
+    #   display_name: "Deepl"
+    #   self_service: true
+    #   categories:
+    #     - Productivity
 
     - path: ../lib/macos/software/capture_one.yml
       self_service: true
@@ -241,13 +241,11 @@ software:
 
   fleet_maintained_apps:
 
-    ####### APPLE SOFTWARE
-
     - slug: rustdesk/darwin
       self_service: true
       
     - slug: google-chrome/darwin
-      self_service: true
+      self_service: trues
       setup_experience: true
 
     - slug: slack/darwin
@@ -275,16 +273,6 @@ software:
 
     - slug: zoom/darwin
       self_service: true
-
-#    - slug: microsoft-word/darwin
-#     self_service: true
-
-#    - slug: microsoft-powerpoint/darwin
-#    self_service: true
-
-#    - slug: microsoft-excel/darwin
-#    self_service: true
-
 
     ####### WINDOWS SOFTWARE
 

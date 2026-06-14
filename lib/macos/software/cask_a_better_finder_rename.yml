@@ -1,6 +1,0 @@
-- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/cask_a_better_finder_rename/cask_a_better_finder_rename.pkg
-  hash_sha256: 740f48812e4cbdcdc9b0ba84f19e9a4747aa9b996a45375a0b7f68ae7d7eeec7
-  install_script:
-    path: ./install_cask_a_better_finder_rename.sh
-  uninstall_script:
-    path: ./uninstall_cask_a_better_finder_rename.sh
