@@ -1,0 +1,8 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/chronosync/chronosync.pkg
+  hash_sha256: df18ee1404146140fcc8316676af065bb0865890e9c9f47621e7c177c0a3f013
+  icon:
+    path: ../../all/icons/chronosync.png
+  install_script:
+    path: ./install_chronosync.sh
+  uninstall_script:
+    path: ./uninstall_chronosync.sh
