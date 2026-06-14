@@ -172,11 +172,6 @@ software:
     # categories:
     #   - Productivity
 
-    # - path: ../lib/macos/software/cask_ChronoSync.yml
-    #   display_name: "ChronoSync"
-    #   self_service: true
-    #   categories:
-    #     - Productivity
 
     # - path: ../lib/macos/software/cask_deepl.yml
     #   display_name: "Deepl"
@@ -185,6 +180,9 @@ software:
     #     - Productivity
 
     - path: ../lib/macos/software/capture_one.yml
+      self_service: true
+    - path: ../lib/macos/software/chronosync.yml
+      display_name: ChronoSync
       self_service: true
     - path: ../lib/macos/software/color_navigator.yml
       display_name: ColorNavigator 7
