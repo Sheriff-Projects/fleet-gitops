@@ -22,6 +22,7 @@ agent_options:
       logger_tls_endpoint: /api/osquery/log
       distributed_interval: 10
       distributed_tls_max_attempts: 3
+
 labels:
 
 - name: BU02 - ATELIER
@@ -95,13 +96,11 @@ labels:
   hosts:
   - L1679NTHFK # Samir Ouari
 
-
 - name: BU56 - COMMUNICATION
   label_membership_type: manual
   hosts:
     - CD91RQV9MW # Kira Arnal
     - C02ZVKQHMD6M #
-    - 
 
 - name: BU156 - FREE SEATING
   label_membership_type: manual
