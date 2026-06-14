@@ -245,7 +245,7 @@ software:
       self_service: true
       
     - slug: google-chrome/darwin
-      self_service: trues
+      self_service: true
       setup_experience: true
 
     - slug: slack/darwin
