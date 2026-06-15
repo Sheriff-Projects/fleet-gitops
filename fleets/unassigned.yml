@@ -33,6 +33,7 @@ controls:
       - path: ../lib/macos/configuration-profiles/Settings_Microsoft_AutoUpdate.mobileconfig
       - path: ../lib/macos/configuration-profiles/Settings_Microsoft_Office_365.mobileconfig
       - path: ../lib/macos/configuration-profiles/Settings_Blackmagic_DaVinci_Resolve.mobileconfig      
+      - path: ../lib/macos/configuration-profiles/Settings_Apple_hide-login-and-background-items-notifications.mobileconfig
 
 
       - path: ../lib/macos/configuration-profiles/Settings_BU156_Free_seating.mobileconfig

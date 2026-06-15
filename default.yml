@@ -70,7 +70,7 @@ labels:
     - QQ2NQ0P4DK # Laurie Castillan
     - C02FT747MD6R # Emma Gibbe
     - GWM6P32X6M # Héléna Rodon
-    - FVFF81KRQ05D #Sofia Driouich
+    - FVFF81KRQ05D # Sofia Driouich
 
 - name: BU51 - DIRECTION
   label_membership_type: manual
@@ -123,6 +123,8 @@ labels:
     - F5KFX0H2K7GF
     - C07HP1NPQ6P0
     - C07GQ088Q6NY # Serveur PREP ECOM - 192.168.2.203
+    - C07FX0EUQ6P0 # Mac Mini Appe Silicon M1 - à enroller
+    - C07HP1NNQ6P0 # Mac Mini Appe Silicon M1 - à enroller
 
 org_settings:
   certificate_authorities:
