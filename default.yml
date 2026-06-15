@@ -51,6 +51,7 @@ labels:
     - WH6YF9JG2H # Noémi Lemaire
     - N94CC6H9QQ # Gwen Risk
     - YG4XCN96Q9 # Jean Ranobrac
+    - C02DQ7HTMD6M # Héléna Lacoste
 
 - name: BU10 - ULTRA MOTION
   label_membership_type: manual
@@ -82,14 +83,14 @@ labels:
   hosts:
     - PF63FCY2 # Etoile Diwa Elyard
     - PF63TDA9 # Jean-Philippe Guichard    
-    - PF63FD0P #
+    - PF63FD0P # 
     - PF63PCKG #
     - K6RCF63JFX # Elizabeth Doan
 
 - name: BU53 - DRH
   label_membership_type: manual
   hosts:
-    - PF63SF0Z # 
+    - PF63SF0Z # Laura Marion
 
 - name: BU54 - DSI
   label_membership_type: manual
@@ -100,7 +101,8 @@ labels:
   label_membership_type: manual
   hosts:
     - CD91RQV9MW # Kira Arnal
-    - C02ZVKQHMD6M #
+    - C02ZVKQHMD6M # Mandala.Rahenitsoa
+    - FVFGR2XQQ05F # Olga Thellier
 
 - name: BU156 - FREE SEATING
   label_membership_type: manual
@@ -119,6 +121,8 @@ labels:
     - C02DX0S2PN7C
     - C07HP1NMQ6P0
     - F5KFX0H2K7GF
+    - C07HP1NPQ6P0
+    - C07GQ088Q6NY # Serveur PREP ECOM - 192.168.2.203
 
 org_settings:
   certificate_authorities:
