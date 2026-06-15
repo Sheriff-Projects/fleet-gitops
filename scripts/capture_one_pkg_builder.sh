@@ -1,259 +1,138 @@
 #!/bin/bash
-# Build le PKG Capture One avec la dernière version embarquée.
-# Version portable (pas de paths hardcodés) destinée à être versionnée dans le
-# repo et exécutée par le workflow GitHub Actions self-hosted runner.
-#
-# Cette version diffère de la version locale uniquement par :
-#   - Les paths sont calculés relativement au repo (ou via env var)
-#   - Pas de pbcopy (inutile en CI)
-#   - Pas de récap final orienté "GitHub Desktop" (inutile en CI)
-#   - Sortie GitHub Actions compatible ($GITHUB_OUTPUT)
-#
-# Usage local :
-#   ./scripts/capture_one_pkg_builder.sh
-# Usage CI (déjà configuré dans le workflow) :
-#   FLEET_GITOPS_REPO_PATH=/path/to/checkout ./scripts/capture_one_pkg_builder.sh
-
+# ============================================================================
+# Capture One — PKG Builder  (généré par Fleet Package Factory)
+# Type d'install : app_in_dmg | Mode : fleet_install_script
+# ============================================================================
+# Ce script : détecte la dernière version, construit le .pkg, calcule le
+# SHA256, met à jour le YAML Fleet, publie le .pkg en GitHub Release, puis
+# commit/push uniquement le YAML (anti race-condition).
 set -euo pipefail
 
 # --- Couleurs (auto-désactivées en CI sans tty) ---
 if [ -t 1 ]; then
-    GREEN='\033[0;32m'
-    BLUE='\033[0;34m'
-    YELLOW='\033[1;33m'
-    RED='\033[0;31m'
-    NC='\033[0m'
+    GREEN='\033[0;32m'; BLUE='\033[0;34m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
 else
     GREEN=''; BLUE=''; YELLOW=''; RED=''; NC=''
 fi
 
 # --- Détection du répertoire du repo ---
-# Priorité 1 : variable d'env (utilisée par CI)
-# Priorité 2 : remonter depuis le script (le script est dans <repo>/scripts/)
 if [ -n "${FLEET_GITOPS_REPO_PATH:-}" ]; then
     REPO_ROOT="$FLEET_GITOPS_REPO_PATH"
 else
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 fi
-
 if [ ! -d "$REPO_ROOT/lib/macos" ]; then
-    echo -e "${RED}[ERROR] Le répertoire $REPO_ROOT/lib/macos n'existe pas.${NC}"
-    echo "Définis FLEET_GITOPS_REPO_PATH ou place ce script dans <repo>/scripts/"
-    exit 1
+    echo -e "${RED}[ERROR] $REPO_ROOT/lib/macos introuvable. Définis FLEET_GITOPS_REPO_PATH.${NC}"; exit 1
 fi
 
-# --- Configuration ---
-XML_URL="https://www.captureone.com/update/capture-one-mac.xml"
+# --- Configuration (issue de la fiche capture_one.yml) ---
+REPO="Sheriff-Projects/fleet-gitops"
+SLUG="capture_one"
+RELEASE_TAG="capture_one"
 DOWNLOAD_DIR="$REPO_ROOT/lib/macos/download"
 OUTPUT_PKG="$DOWNLOAD_DIR/capture_one.pkg"
-REPO="Sheriff-Projects/fleet-gitops"
 YAML_FILE="$REPO_ROOT/lib/macos/software/capture_one.yml"
-
-# URL fixe (ne change jamais entre les versions)
-PKG_URL="https://github.com/${REPO}/releases/download/capture_one/capture_one.pkg"
-
-# Identifiant Apple Developer Team de Capture One A/S
+PKG_URL="https://github.com/${REPO}/releases/download/${RELEASE_TAG}/${SLUG}.pkg"
+PKG_IDENTIFIER="com.captureone.captureone16"
 EXPECTED_TEAM_ID="5WTDB5F65L"
+EXPECTED_BUNDLE_ID="com.captureone.captureone16"
+APP_PATH="/Applications/Capture One.app"
 
 BUILD_DIR=$(mktemp -d)
 SCRIPTS_DIR="$BUILD_DIR/scripts"
-
+EMPTY_PAYLOAD_ROOT="$BUILD_DIR/empty-root"
 trap 'rm -rf "$BUILD_DIR"' EXIT
 
-echo -e "${BLUE}╔══════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   Capture One — PKG Builder (CI/local)   ║${NC}"
-echo -e "${BLUE}╚══════════════════════════════════════════╝${NC}"
-echo "Repo root: $REPO_ROOT"
+echo -e "${BLUE}╔════════════════════════════════════════════╗${NC}"
+printf  "${BLUE}║ %-44s ║${NC}\n" "Capture One — PKG Builder"
+echo -e "${BLUE}╚════════════════════════════════════════════╝${NC}"
+echo "Repo root: $REPO_ROOT"; echo ""
+
+# ============================================================================
+# Détection de la dernière version — stratégie : xml_path
+# ============================================================================
+echo -e "${BLUE}[*] Détection de la dernière version...${NC}"
+
+
+# XML générique : chemins version + URL (style json_path). Namespaces ignorés,
+# attributs supportés via .../@attr. Le 1er élément trouvé = le plus récent.
+XML_TMP=$(mktemp)
+curl -sSL --fail --max-time 30 "https://www.captureone.com/update/capture-one-mac.xml" -o "$XML_TMP" || { echo -e "${RED}[ERROR] Fetch XML échoué${NC}"; exit 1; }
+PARSED=$(python3 - "$XML_TMP" "item/title" "item/enclosure/@url" <<'PYEOF'
+import sys, xml.etree.ElementTree as ET
+fn, vpath, upath = sys.argv[1], sys.argv[2], sys.argv[3]
+root = ET.parse(fn).getroot()
+def ln(t): return t.split('}')[-1]
+def resolve(path):
+    attr = None
+    if '/@' in path:
+        path, attr = path.rsplit('/@', 1)
+    parts = [p.split(':')[-1] for p in path.split('/') if p]
+    nodes = [root]
+    for part in parts:
+        nodes = [c for n in nodes for c in n.iter() if c is not n and ln(c.tag) == part]
+        if not nodes:
+            return None, attr
+    return nodes[0], attr
+def val(el, attr):
+    if el is None:
+        return ''
+    if attr:
+        return next((v for k, v in el.attrib.items() if ln(k) == attr), '')
+    return (el.text or '').strip()
+ve, va = resolve(vpath)
+ue, ua = resolve(upath)
+print(val(ve, va))
+print(val(ue, ua))
+PYEOF
+)
+RAW_VERSION=$(printf '%s\n' "$PARSED" | sed -n 1p)
+DOWNLOAD_URL=$(printf '%s\n' "$PARSED" | sed -n 2p)
+rm -f "$XML_TMP"
+
+
+if [ -z "${RAW_VERSION:-}" ] || [ "$RAW_VERSION" = "null" ]; then echo -e "${RED}[ERROR] Version introuvable${NC}"; exit 1; fi
+
+LATEST_VERSION="$RAW_VERSION"
+
+
+echo -e "${GREEN}  ✓ Version : $LATEST_VERSION${NC}"
+echo -e "${GREEN}  ✓ URL     : $DOWNLOAD_URL${NC}"
+echo -e "${GREEN}  ✓ Bundle  : $PKG_IDENTIFIER${NC}"
 echo ""
 
-# --- Étape 1 : Fetch version ---
-echo -e "${BLUE}[1/4] Fetching latest Capture One version...${NC}"
-
-XML_CONTENT=$(curl -sSL --fail --max-time 30 "$XML_URL") || {
-    echo -e "${RED}[ERROR] Failed to fetch manifest${NC}"
-    exit 1
-}
-
-LATEST_VERSION=$(echo "$XML_CONTENT" | grep -A 5 "<item>" | grep "<title>" | head -n 1 | sed -E 's/.*<title>(.*)<\/title>.*/\1/')
-DOWNLOAD_URL=$(echo "$XML_CONTENT" | grep -oE 'url="https://[^"]+\.dmg"' | head -n 1 | cut -d'"' -f2)
-
-if [ -z "$LATEST_VERSION" ] || [ -z "$DOWNLOAD_URL" ]; then
-    echo -e "${RED}[ERROR] Unable to parse version or URL${NC}"
-    exit 1
-fi
-
-MAJOR_VERSION=$(echo "$LATEST_VERSION" | cut -d'.' -f1)
-PKG_IDENTIFIER="com.captureone.captureone${MAJOR_VERSION}"
-
-echo -e "${GREEN}  ✓ Version:    $LATEST_VERSION${NC}"
-echo -e "${GREEN}  ✓ Major:      $MAJOR_VERSION${NC}"
-echo -e "${GREEN}  ✓ Bundle ID:  $PKG_IDENTIFIER${NC}"
-echo -e "${GREEN}  ✓ DMG URL:    $DOWNLOAD_URL${NC}"
-echo ""
-
-# --- Étape 2 : Prepare postinstall ---
-echo -e "${BLUE}[2/4] Preparing postinstall script...${NC}"
-
+# ============================================================================
+# Génération du postinstall embarqué dans le PKG
+# Règle d'échappement heredoc : $VAR = build-time (valeur figée) ; \$VAR = runtime (Mac client)
+# ============================================================================
 mkdir -p "$SCRIPTS_DIR"
 
+
+# --- PKG stub : postinstall no-op (vraie install dans install_capture_one.sh) ---
 cat > "$SCRIPTS_DIR/postinstall" << EOF
 #!/bin/bash
-# Capture One installer — built on $(date '+%Y-%m-%d %H:%M:%S')
-# Target version: $LATEST_VERSION
-# Expected TeamIdentifier: $EXPECTED_TEAM_ID (Capture One A/S)
-
-set -euo pipefail
-
-TARGET_VERSION="$LATEST_VERSION"
-DOWNLOAD_URL="$DOWNLOAD_URL"
-EXPECTED_TEAM_ID="$EXPECTED_TEAM_ID"
-APP_PATH="/Applications/Capture One.app"
-TEMP_DIR=\$(mktemp -d)
-DMG_PATH="\$TEMP_DIR/CaptureOne.dmg"
-MOUNT_POINT="\$TEMP_DIR/CaptureOneMount"
-LOG="/var/log/capture_one_install.log"
-
-log() {
-    echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$1" | tee -a "\$LOG"
-}
-
-cleanup() {
-    hdiutil detach "\$MOUNT_POINT" -force -quiet 2>/dev/null || true
-    rm -rf "\$TEMP_DIR"
-}
-trap cleanup EXIT
-
-log "=== Capture One install/update started ==="
-log "Target version: \$TARGET_VERSION"
-log "Expected TeamID: \$EXPECTED_TEAM_ID"
-
-if [ -d "\$APP_PATH" ]; then
-    INSTALLED_VERSION=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "unknown")
-    log "Installed version: \$INSTALLED_VERSION"
-    if [ "\$INSTALLED_VERSION" = "\$TARGET_VERSION" ]; then
-        log "Already up to date. Exiting."
-        exit 0
-    fi
-    log "Upgrading from \$INSTALLED_VERSION to \$TARGET_VERSION..."
-else
-    log "Capture One not installed, performing fresh install..."
-fi
-
-log "Downloading from \$DOWNLOAD_URL..."
-curl -sSL --fail --max-time 1800 "\$DOWNLOAD_URL" -o "\$DMG_PATH" || {
-    log "[ERROR] Download failed"
-    exit 1
-}
-
-DMG_SIZE=\$(du -h "\$DMG_PATH" | awk '{print \$1}')
-log "DMG downloaded: \$DMG_SIZE"
-
-log "Mounting DMG..."
-mkdir -p "\$MOUNT_POINT"
-hdiutil attach "\$DMG_PATH" -mountpoint "\$MOUNT_POINT" -nobrowse -quiet || {
-    log "[ERROR] Failed to mount DMG"
-    exit 1
-}
-
-SOURCE_APP="\$MOUNT_POINT/Capture One.app"
-if [ ! -d "\$SOURCE_APP" ]; then
-    log "[ERROR] Capture One.app not found in DMG at \$SOURCE_APP"
-    log "[ERROR] DMG content:"
-    ls -la "\$MOUNT_POINT" | tee -a "\$LOG"
-    exit 1
-fi
-
-log "Verifying app signature integrity..."
-codesign --verify --deep --strict "\$SOURCE_APP" 2>&1 | tee -a "\$LOG" || {
-    log "[ERROR] App signature invalid"
-    exit 1
-}
-
-APP_AUTHORITY=\$(codesign -dvv "\$SOURCE_APP" 2>&1 | grep "Authority=" | head -n 1 || echo "")
-APP_TEAM_ID=\$(codesign -dvv "\$SOURCE_APP" 2>&1 | grep "TeamIdentifier=" | cut -d= -f2 || echo "")
-log "App signed by:   \$APP_AUTHORITY"
-log "Team Identifier: \$APP_TEAM_ID"
-
-if [ "\$APP_TEAM_ID" != "\$EXPECTED_TEAM_ID" ]; then
-    log "[ERROR] Unexpected Team Identifier"
-    log "[ERROR]   Expected: \$EXPECTED_TEAM_ID"
-    log "[ERROR]   Got:      \$APP_TEAM_ID"
-    exit 1
-fi
-log "TeamID match: OK (\$APP_TEAM_ID)"
-
-log "Verifying Apple notarization..."
-NOTARIZE_RESULT=\$(spctl -a -vv -t install "\$SOURCE_APP" 2>&1 || true)
-echo "\$NOTARIZE_RESULT" | tee -a "\$LOG"
-if ! echo "\$NOTARIZE_RESULT" | grep -q "accepted"; then
-    log "[ERROR] App is not notarized by Apple — aborting"
-    exit 1
-fi
-log "Notarization: OK"
-
-if pgrep -x "Capture One" > /dev/null; then
-    log "Capture One is running — asking it to quit gracefully..."
-    osascript -e 'tell application "Capture One" to quit' 2>/dev/null || true
-    
-    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-        if ! pgrep -x "Capture One" > /dev/null; then
-            log "Capture One quit cleanly after \$((i*2))s"
-            break
-        fi
-        sleep 2
-    done
-    
-    if pgrep -x "Capture One" > /dev/null; then
-        log "[WARN] Capture One did not quit gracefully — force killing"
-        pkill -9 -x "Capture One" 2>/dev/null || true
-        sleep 2
-    fi
-fi
-
-log "Installing..."
-if [ -d "\$APP_PATH" ]; then
-    rm -rf "\$APP_PATH"
-fi
-
-cp -R "\$SOURCE_APP" "/Applications/" || {
-    log "[ERROR] Copy failed"
-    exit 1
-}
-
-if [ ! -d "\$APP_PATH" ]; then
-    log "[ERROR] App not found after copy"
-    exit 1
-fi
-
-NEW_INSTALLED=\$(defaults read "\$APP_PATH/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "FAILED")
-if [ "\$NEW_INSTALLED" != "\$TARGET_VERSION" ]; then
-    log "[ERROR] Version mismatch after install"
-    log "[ERROR]   Expected: \$TARGET_VERSION"
-    log "[ERROR]   Got:      \$NEW_INSTALLED"
-    exit 1
-fi
-
-log "Installation verified: \$NEW_INSTALLED"
-log "=== Capture One install/update successful ==="
+echo "[\$(date '+%Y-%m-%d %H:%M:%S')] Capture One stub PKG installé (no-op)" >> /var/log/capture_one_install.log
 exit 0
 EOF
 
 chmod +x "$SCRIPTS_DIR/postinstall"
-echo -e "${GREEN}  ✓ postinstall embedded with version $LATEST_VERSION${NC}"
-echo ""
+echo -e "${GREEN}  ✓ postinstall préparé${NC}"; echo ""
 
-# --- Étape 3 : Build PKG ---
-echo -e "${BLUE}[3/4] Building PKG...${NC}"
-
-mkdir -p "$DOWNLOAD_DIR"
+# ============================================================================
+# Construction du .pkg (pkgbuild stub + productbuild distribution)
+# ============================================================================
+echo -e "${BLUE}[*] Construction du PKG...${NC}"
+mkdir -p "$DOWNLOAD_DIR" "$EMPTY_PAYLOAD_ROOT"
 rm -f "$OUTPUT_PKG"
+chmod +x "$SCRIPTS_DIR/postinstall"
 
 COMPONENT_PKG="$BUILD_DIR/component.pkg"
 pkgbuild \
     --identifier "$PKG_IDENTIFIER" \
     --version "$LATEST_VERSION" \
-    --nopayload \
+    --root "$EMPTY_PAYLOAD_ROOT" \
+    --install-location "/" \
     --scripts "$SCRIPTS_DIR" \
     "$COMPONENT_PKG" > /dev/null
 
@@ -261,137 +140,63 @@ DIST_XML="$BUILD_DIR/distribution.xml"
 cat > "$DIST_XML" << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
-    <title>Capture One $MAJOR_VERSION</title>
+    <title>Capture One</title>
     <pkg-ref id="$PKG_IDENTIFIER"/>
     <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
-    <choices-outline>
-        <line choice="default">
-            <line choice="$PKG_IDENTIFIER"/>
-        </line>
-    </choices-outline>
+    <choices-outline><line choice="default"><line choice="$PKG_IDENTIFIER"/></line></choices-outline>
     <choice id="default"/>
-    <choice id="$PKG_IDENTIFIER" visible="false">
-        <pkg-ref id="$PKG_IDENTIFIER"/>
-    </choice>
+    <choice id="$PKG_IDENTIFIER" visible="false"><pkg-ref id="$PKG_IDENTIFIER"/></choice>
     <pkg-ref id="$PKG_IDENTIFIER" version="$LATEST_VERSION" onConclusion="none">component.pkg</pkg-ref>
 </installer-gui-script>
 EOF
 
-productbuild \
-    --distribution "$DIST_XML" \
-    --package-path "$BUILD_DIR" \
-    "$OUTPUT_PKG" > /dev/null
+productbuild --distribution "$DIST_XML" --package-path "$BUILD_DIR" "$OUTPUT_PKG" > /dev/null
+echo -e "${GREEN}  ✓ PKG construit : $OUTPUT_PKG${NC}"; echo ""
 
-if [ ! -f "$OUTPUT_PKG" ]; then
-    echo -e "${RED}[ERROR] PKG build failed${NC}"
-    exit 1
+# ============================================================================
+# SHA256 → YAML Fleet → GitHub Release → commit/push YAML
+# ============================================================================
+echo -e "${BLUE}[*] Calcul SHA256 + mise à jour du YAML Fleet...${NC}"
+SHA256=$(shasum -a 256 "$OUTPUT_PKG" | cut -d' ' -f1)
+echo -e "${GREEN}  ✓ SHA256 : $SHA256${NC}"
+
+# Met à jour hash_sha256 et version dans le YAML (créé s'il manque par le builder appelant).
+if [ -f "$YAML_FILE" ]; then
+    /usr/bin/sed -i '' -E "s/^( *hash_sha256: *).*/\1$SHA256/" "$YAML_FILE" 2>/dev/null || \
+        sed -i -E "s/^( *hash_sha256: *).*/\1$SHA256/" "$YAML_FILE"
+    /usr/bin/sed -i '' -E "s/^( *version: *).*/\1\"$LATEST_VERSION\"/" "$YAML_FILE" 2>/dev/null || \
+        sed -i -E "s/^( *version: *).*/\1\"$LATEST_VERSION\"/" "$YAML_FILE"
 fi
-
-PKG_SIZE=$(du -h "$OUTPUT_PKG" | awk '{print $1}')
-PKG_HASH=$(shasum -a 256 "$OUTPUT_PKG" | awk '{print $1}')
-
-if [ -z "$PKG_HASH" ] || [ ${#PKG_HASH} -ne 64 ]; then
-    echo -e "${RED}[ERROR] Invalid SHA-256 computed: '$PKG_HASH'${NC}"
-    exit 1
-fi
-
-echo -e "${GREEN}  ✓ PKG built: $OUTPUT_PKG ($PKG_SIZE)${NC}"
-echo -e "${GREEN}  ✓ SHA256:    $PKG_HASH${NC}"
 echo ""
 
-# --- Étape 4 : Update YAML ---
-echo -e "${BLUE}[4/4] Updating capture_one.yml...${NC}"
+echo -e "${BLUE}[*] Publication GitHub Release (tag: $RELEASE_TAG)...${NC}"
+if ! command -v gh >/dev/null 2>&1; then echo -e "${RED}[ERROR] gh CLI requis${NC}"; exit 1; fi
+# Crée la release si absente, puis upload (clobber pour remplacer l'ancien pkg).
+gh release view "$RELEASE_TAG" --repo "$REPO" >/dev/null 2>&1 || \
+    gh release create "$RELEASE_TAG" --repo "$REPO" --title "$RELEASE_TAG" --notes "Auto-généré" >/dev/null
+gh release upload "$RELEASE_TAG" "$OUTPUT_PKG" --repo "$REPO" --clobber >/dev/null
+echo -e "${GREEN}  ✓ PKG uploadé : $PKG_URL${NC}"
 
-mkdir -p "$(dirname "$YAML_FILE")"
-
-cat > "$YAML_FILE" << EOF
-- url: $PKG_URL
-  hash_sha256: $PKG_HASH
-  icon:
-    path: ../../all/icons/capture_one.png
-  install_script:
-    path: ./install_capture_one.sh
-  uninstall_script:
-    path: ./uninstall_capture_one.sh
-EOF
-
-echo -e "${GREEN}  ✓ Updated: $YAML_FILE${NC}"
-echo ""
-
-# --- Sortie compatible GitHub Actions ---
-if [ -n "${GITHUB_OUTPUT:-}" ]; then
-    {
-        echo "version=$LATEST_VERSION"
-        echo "pkg_path=$OUTPUT_PKG"
-        echo "pkg_hash=$PKG_HASH"
-        echo "pkg_size=$PKG_SIZE"
-    } >> "$GITHUB_OUTPUT"
-fi
-
-# ===========================================================================
-# *** AJOUT : Upload du .pkg dans GitHub Release (approche directe) ***
-# ===========================================================================
-# Au lieu de committer le .pkg dans Git (qui forçait Fleet GitOps à le
-# télécharger via raw.githubusercontent.com avec un timing fragile), on
-# uploade directement le .pkg dans une GitHub Release dédiée. Le YAML que
-# l'on commit en fin de script pointe déjà vers cette release, donc Fleet
-# GitOps n'aura aucun problème de race condition pour trouver le .pkg.
-#
-# Prérequis : gh CLI installé et authentifié (gh auth login).
-# ===========================================================================
-RELEASE_TAG=$(basename "$OUTPUT_PKG" .pkg)
-PKG_FILENAME=$(basename "$OUTPUT_PKG")
-
-# Crée la release si elle n'existe pas
-if ! gh release view "$RELEASE_TAG" --repo "$REPO" >/dev/null 2>&1; then
-    echo -e "${BLUE}[*] Création de la release ${RELEASE_TAG}...${NC}"
-    gh release create "$RELEASE_TAG" \
-        --repo "$REPO" \
-        --title "$RELEASE_TAG" \
-        --notes "Package $PKG_FILENAME for Fleet GitOps"
-    echo -e "${GREEN}  ✓ Release créée${NC}"
-fi
-
-# Upload le .pkg (--clobber écrase si l'asset existe déjà)
-echo -e "${BLUE}[*] Upload du .pkg dans la release ${RELEASE_TAG}...${NC}"
-gh release upload "$RELEASE_TAG" "$OUTPUT_PKG" --clobber --repo "$REPO"
-echo -e "${GREEN}  ✓ .pkg uploadé : https://github.com/${REPO}/releases/tag/${RELEASE_TAG}${NC}"
-
-# Supprime le .pkg local (il vit maintenant dans la release)
+# On ne versionne PAS le .pkg dans Git : on le supprime localement.
 rm -f "$OUTPUT_PKG"
-echo -e "${GREEN}  ✓ .pkg local supprimé${NC}"
 echo ""
 
-# ===========================================================================
-# *** MODIFIÉ : Commit + push du YAML seulement (pas le .pkg) ***
-# ===========================================================================
-# Le .pkg vit maintenant dans une GitHub Release (uploadé juste avant via gh).
-# On ne commit QUE le YAML (qui contient l'URL release + le hash mis à jour).
-# Pas de race condition possible avec Fleet GitOps puisque la release existe
-# DÉJÀ au moment où l'on push le YAML.
-# ===========================================================================
-echo -e "${BLUE}[*] Commit + push du YAML...${NC}"
-
+echo -e "${BLUE}[*] Commit du YAML (anti race-condition : pkg déjà en ligne)...${NC}"
 cd "$REPO_ROOT"
-git add "$YAML_FILE"
+git add "lib/macos/software/capture_one.yml" "lib/macos/software/install_capture_one.sh" "lib/macos/software/uninstall_capture_one.sh"
 
-if git diff --staged --quiet; then
-    echo -e "${YELLOW}  ⚠ Aucun changement à committer${NC}"
+if git diff --cached --quiet; then
+    echo -e "${YELLOW}  Aucun changement à committer.${NC}"
 else
-    COMMIT_MSG="package release: $RELEASE_TAG $LATEST_VERSION"
-    git commit -m "$COMMIT_MSG"
-    git push
-    echo -e "${GREEN}  ✓ Pushed: $COMMIT_MSG${NC}"
+    git commit -m "Capture One → $LATEST_VERSION (auto)" >/dev/null
+    echo -e "${YELLOW}  Commit créé localement. Ouvre une PR ou push manuellement.${NC}"
 fi
-echo ""
-# --- Récap ---
-echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
-echo -e "${YELLOW}  Build terminé${NC}"
-echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
-echo "  Version    : $LATEST_VERSION"
-echo "  Bundle ID  : $PKG_IDENTIFIER"
-echo "  PKG        : $OUTPUT_PKG"
-echo "  Size       : $PKG_SIZE"
-echo "  SHA256     : $PKG_HASH"
-echo "  TeamID     : $EXPECTED_TEAM_ID"
-echo ""
+
+# Sortie GitHub Actions
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    { echo "version=$LATEST_VERSION"; echo "sha256=$SHA256"; } >> "$GITHUB_OUTPUT"
+fi
+echo -e "${GREEN}╔════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}  ✓ Capture One $LATEST_VERSION prêt pour Fleet${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════╝${NC}"
+
