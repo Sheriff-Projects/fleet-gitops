@@ -43,6 +43,31 @@ curl -sSL --fail --max-time 1800 "$DOWNLOAD_URL" -o "$ART" || { log "[ERROR] dow
 
 
 
+MNT="$TEMP_DIR/mnt"; mkdir -p "$MNT"
+hdiutil attach "$ART" -mountpoint "$MNT" -nobrowse -quiet || { log "[ERROR] montage DMG échoué"; exit 1; }
+SRC=$(find "$MNT" -maxdepth 2 -name "*.app" | head -n 1)
+
+[ -n "$SRC" ] && [ -d "$SRC" ] || { log "[ERROR] .app introuvable dans l'artefact"; exit 1; }
+
+codesign --verify --deep --strict "$SRC" 2>&1 | tee -a "$LOG" || { log "[ERROR] codesign invalide"; exit 1; }
+
+
+TID=$(codesign -dvv "$SRC" 2>&1 | grep "TeamIdentifier=" | cut -d= -f2 || echo "")
+[ "$TID" = "$EXPECTED_TEAM_ID" ] || { log "[ERROR] TeamID inattendu : $TID (attendu $EXPECTED_TEAM_ID)"; exit 1; }
+log "TeamID OK ($TID)"
+
+
+spctl -a -vv -t install "$SRC" 2>&1 | tee -a "$LOG" || log "[WARN] notarisation non confirmée"
+
+
+osascript -e 'quit app "Capture One"' 2>/dev/null || pkill -f "Capture One" 2>/dev/null || true
+
+[ -d "$APP_PATH" ] && rm -rf "$APP_PATH"
+ditto "$SRC" "$APP_PATH"
+log "App copiée dans $APP_PATH"
+
+
+
 
 log "=== Install terminée ==="
 exit 0
