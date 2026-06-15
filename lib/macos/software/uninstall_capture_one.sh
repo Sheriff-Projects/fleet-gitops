@@ -1,11 +1,8 @@
 #!/bin/bash
-
-
-
+set -o pipefail
 # 3. Fermeture agressive
 pkill -9 -f "com.captureone"*
 sleep 3
-
 
 # 2. Retirer du Dock pour tous les utilisateurs
 
@@ -74,3 +71,5 @@ for item in "${TARGETS[@]}"; do
 done
 
 echo "--- Désinstallation terminée ---"
+
+
