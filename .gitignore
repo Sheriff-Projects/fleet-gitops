@@ -1,6 +1,6 @@
 .DS_Store
 **/.DS_Store
-scripts/*.sh
+/scripts/*.sh
 lib/macos/download/*.pkg
 #*.dmg
 lib/windows/download/*.exe
