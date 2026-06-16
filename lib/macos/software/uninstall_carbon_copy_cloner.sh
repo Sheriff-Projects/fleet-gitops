@@ -1,14 +1,4 @@
 #!/bin/bash
-# Désinstallation de Carbon Copy Cloner.
-# CCC installe plusieurs composants au-delà de l'app elle-même :
-#   - L'app dans /Applications
-#   - Un privileged helper tool (LaunchDaemon) qui tourne en root
-#   - Des fichiers de support utilisateur et système
-#   - Des preferences
-
-
-
-
 
 set -uo pipefail
 
@@ -105,3 +95,6 @@ pkgutil --forget com.bombich.ccc 2>/dev/null || true
 
 log "=== Uninstall complete ==="
 exit 0
+
+
+
