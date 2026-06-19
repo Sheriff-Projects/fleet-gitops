@@ -333,17 +333,7 @@ policies:
     platform: darwin
     critical: false
     query: |
-      SELECT 1 WHERE NOT (
-        -- TEST : limite l'application à ce seul poste (à retirer après validation)
-        EXISTS (SELECT 1 FROM system_info WHERE hardware_serial = 'FVFGJ3HLQ05P')
-        AND EXISTS (SELECT 1 FROM apps WHERE bundle_identifier = 'com.bombich.ccc')
-        AND NOT EXISTS (
-          SELECT 1 FROM authorizations
-          WHERE label = 'com.bombich.ccc.helper'
-            AND session_owner NOT IN ('0', 'false', 'False', 'FALSE', '')
-        )
-      );
-      -- Le test "utilisateur standard" est fait dans le script ccc_standard_user_righ.sh
+      SELECT 1 FROM apps WHERE bundle_identifier = 'com.bombich.ccc'      
     run_script:
       path: ../lib/macos/scripts/ccc_standard_user_righ.sh
 
