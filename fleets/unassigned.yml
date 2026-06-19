@@ -126,7 +126,7 @@ software:
       setup_experience: true
 
     - path: ../lib/macos/software/06_desktoppr.yml
-      display_name: Installation - desktoppr
+      display_name: desktoppr
       self_service: true
       setup_experience: true
 
