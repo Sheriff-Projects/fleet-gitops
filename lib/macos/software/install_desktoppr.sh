@@ -3,8 +3,8 @@
 # Exécuté en root par Fleet. Re-détecte la version au runtime (URL toujours fraîche).
 set -euo pipefail
 LOG="/var/log/desktoppr_install.log"
-APP_PATH=""
-
+APP_PATH="usr/local/bin/desktoppr"
+EXPECTED_TEAM_ID="JME5BW3F3R"
 EXPECTED_BUNDLE_ID="com.scriptingosx.desktoppr"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
 TEMP_DIR=$(mktemp -d)
@@ -14,9 +14,7 @@ log "=== Install desktoppr ==="
 
 
 
-REPO_SLUG=$(echo "https://github.com/scriptingosx/desktoppr" | perl -ne 'print $1 and exit if m{github\.com/([^/]+/[^/]+?)(?:\.git|/|$)}')
-GH_JSON=$(curl -sSL --fail -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO_SLUG/releases/latest")
-DOWNLOAD_URL=$(echo "$GH_JSON" | python3 -c "import json,sys;a=json.load(sys.stdin).get('assets',[]);u=[x['browser_download_url'] for x in a if x['browser_download_url'].endswith(('.dmg','.pkg','.zip'))];print(u[0] if u else '')")
+DOWNLOAD_URL="https://github.com/scriptingosx/desktoppr/releases/download/v0.5/desktoppr-0.5-218.pkg"  # curl -sSL suivra les redirections au téléchargement
 
 log "URL : $DOWNLOAD_URL"
 ART="$TEMP_DIR/artifact"

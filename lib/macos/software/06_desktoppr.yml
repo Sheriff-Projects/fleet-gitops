@@ -1,11 +1,7 @@
-# ---------------------------------------------------------------------------
-# DesktopprManage — outil pour gérer le wallpaper macOS via configuration profile
-# https://github.com/scriptingosx/desktoppr
-
-- url: https://github.com/scriptingosx/desktoppr/releases/download/v0.5/desktoppr-0.5-218.pkg
-  hash_sha256: 1cfb67d7023bc6bc7b1e3c8ccf5c891a1bad22876df77f3fbc77d27877cc7b9d 
+- url: https://github.com/Sheriff-Projects/fleet-gitops©/releases/download/desktoppr/desktoppr.pkg
+  hash_sha256: 86bfebdc84cbe4d9148389b94794184ef3bcee140e0b5d793d79d4c158113a31
   icon:
-    path: ../../all/icons/s_p.png
+    path: ../../all/icons/desktoppr.png
   install_script:
     path: ./install_desktoppr.sh
   uninstall_script:
