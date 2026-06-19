@@ -93,6 +93,7 @@ controls:
     - path: ../lib/macos/scripts/03_install_homebrew.sh 
     - path: ../lib/macos/scripts/post-enrollment.sh
     - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
+    - path: ../lib/macos/scripts/ccc_standard_user_righ.sh
     
   setup_experience:
     macos_manual_agent_install: false
@@ -119,20 +120,8 @@ software:
       display_name: "Installation - Homebrew"
       setup_experience: true
 
-    # - path: ../lib/macos/software/cask_raycast.yml
-    #   display_name: "Installation - Raycast"
-    #   self_service: true
-    #   setup_experience: true
-    #   categories:
-    #     - Productivity
-
     - path: ../lib/macos/software/05_wallpapers_sp.yml
       display_name: "Installation - S•P fond d'écran"
-      self_service: true
-      setup_experience: true
-
-    - path: ../lib/macos/software/desktoppr.yml
-      display_name: desktoppr
       self_service: true
       setup_experience: true
 
@@ -333,6 +322,39 @@ policies:
     install_software:
       package_path: ../lib/macos/software/forticlient.yml
 
+  - name: macOS - Carbon Copy Cloner - droits utilisateur standard
+    description: |
+      Quand CCC est installé et que l'utilisateur de la console est standard (non-admin),
+      accorde au session-owner le droit d'utiliser le helper privilégié de CCC sans
+      identifiants admin.
+    resolution: |
+      Le script ajuste le droit com.bombich.ccc.helper (authenticate-user=NO, session-owner=YES).
+      La policy repasse conforme dès que session-owner est activé.
+    platform: darwin
+    critical: false
+    query: |
+      SELECT 1 WHERE NOT (
+        -- TEST : limite l'application à ce seul poste (à retirer après validation)
+        EXISTS (SELECT 1 FROM system_info WHERE hardware_serial = 'FVFGJ3HLQ05P')
+        AND EXISTS (SELECT 1 FROM apps WHERE bundle_identifier = 'com.bombich.ccc')
+        AND NOT EXISTS (
+          SELECT 1 FROM authorizations
+          WHERE label = 'com.bombich.ccc.helper'
+            AND session_owner NOT IN ('0', 'false', 'False', 'FALSE', '')
+        )
+        AND EXISTS (
+          SELECT 1
+          FROM logged_in_users liu
+          JOIN users u ON u.username = liu.user
+          WHERE liu.type = 'user' AND liu.tty = 'console'
+            AND NOT EXISTS (
+              SELECT 1 FROM user_groups ug
+              WHERE ug.uid = u.uid AND ug.gid = 80
+            )
+        )
+      );
+    run_script:
+      path: ../lib/macos/scripts/ccc_standard_user_righ.sh
 
 
 
