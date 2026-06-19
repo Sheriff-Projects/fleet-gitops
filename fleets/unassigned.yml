@@ -342,23 +342,17 @@ policies:
           WHERE label = 'com.bombich.ccc.helper'
             AND session_owner NOT IN ('0', 'false', 'False', 'FALSE', '')
         )
-        AND EXISTS (
-          SELECT 1
-          FROM logged_in_users liu
-          JOIN users u ON u.username = liu.user
-          WHERE liu.type = 'user' AND liu.tty = 'console'
-            AND NOT EXISTS (
-              SELECT 1 FROM user_groups ug
-              WHERE ug.uid = u.uid AND ug.gid = 80
-            )
-        )
       );
+      -- Le test "utilisateur standard" est fait dans le script ccc_standard_user_righ.sh
     run_script:
       path: ../lib/macos/scripts/ccc_standard_user_righ.sh
 
 
 
+
 # fleet_maintained_app_slug: zoom/darwin
 # install_software: true
+
+
 
 
