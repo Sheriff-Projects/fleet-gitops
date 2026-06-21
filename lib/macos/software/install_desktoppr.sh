@@ -23,8 +23,16 @@ curl -sSL --fail --max-time 1800 "$DOWNLOAD_URL" -o "$ART" || { log "[ERROR] dow
 
 
 
+PKG_FILE="$ART.pkg"; mv "$ART" "$PKG_FILE" 2>/dev/null || cp "$ART" "$PKG_FILE"
+# Vérifie que le téléchargement est bien un .pkg (archive xar), sinon échec clair
+# (proxy renvoyant du HTML, fichier vide, URL invalide…).
+if [ "$(head -c4 "$PKG_FILE" 2>/dev/null)" != "xar!" ]; then
+    log "[ERROR] Fichier téléchargé non valide ($(wc -c < "$PKG_FILE" | tr -d ' ') octets). Début du contenu :"
+    head -c 300 "$PKG_FILE" | tee -a "$LOG"
+    exit 1
+fi
 log "Installation du PKG..."
-installer -pkg "$ART" -target / | tee -a "$LOG"
+installer -pkg "$PKG_FILE" -target / | tee -a "$LOG"
 
 
 

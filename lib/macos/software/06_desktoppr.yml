@@ -1,5 +1,5 @@
 - url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/desktoppr/desktoppr.pkg
-  hash_sha256: a34036ca0e84378e1f7181991a70f16dc74e8c205c4f4c28b305bacf3a733316
+  hash_sha256: 2eb849905d7ae7fd66b810b2ba3a01a212404bbc6d8f93ba4f324cb5425b3f8a
   icon:
     path: ../../all/icons/desktoppr.png
   install_script:
