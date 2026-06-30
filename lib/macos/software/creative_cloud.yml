@@ -1,5 +1,5 @@
-- url:
-  hash_sha256:
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/creative_cloud/creative_cloud.pkg
+  hash_sha256: aa535b5e31cee87bd0155ee29bc3edf1740b5a2a7b1dd2129128e33f69879587
   install_script:
     path: ./install_creative_cloud.sh
   uninstall_script:

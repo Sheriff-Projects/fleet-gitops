@@ -150,16 +150,14 @@ software:
       self_service: true
       setup_experience: true
 
-    # Adobe Creative Cloud Desktop — package "Self-Service" genere dans
-    # l'Adobe Admin Console (remplace l'ancien "ccdl" bricole, supprime).
-    # ⚠️ DE-COMMENTER UNIQUEMENT apres avoir depose creative_cloud.pkg dans
-    #    lib/macos/download/ : le workflow release-new-packages remplit alors
-    #    url + hash_sha256 dans creative_cloud.yml. Sans pkg, l'apply echoue.
-    # - path: ../lib/macos/software/creative_cloud.yml
-    #   display_name: "Adobe Creative Cloud"
-    #   self_service: true
-    #   categories:
-    #     - Productivity
+    # Adobe Creative Cloud Desktop — package "Self-Service" (build FULL autonome)
+    # genere via l'Adobe Admin Console, heberge en GitHub Release 'creative_cloud'.
+    # Remplace l'ancien "ccdl" (downloader bricole, supprime).
+    - path: ../lib/macos/software/creative_cloud.yml
+      display_name: "Adobe Creative Cloud"
+      self_service: true
+      categories:
+        - Productivity
 
     # - path: ../lib/macos/software/cask_deltawalker.yml
     #   display_name: "DeltaWalker"
