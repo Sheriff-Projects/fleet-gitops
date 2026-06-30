@@ -1,0 +1,6 @@
+- url:
+  hash_sha256:
+  install_script:
+    path: ./install_creative_cloud.sh
+  uninstall_script:
+    path: ./uninstall_creative_cloud.sh
