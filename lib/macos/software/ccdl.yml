@@ -1,6 +1,0 @@
-- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/ccdl/ccdl.pkg
-  hash_sha256: 37eddf93a7de01dcb29a064c4fd5e916190c412d31d4610884b223b025849b8d
-  install_script:
-    path: ./install_ccdl.sh
-  uninstall_script:
-    path: ./uninstall_ccdl.sh
