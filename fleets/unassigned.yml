@@ -94,7 +94,8 @@ controls:
     - path: ../lib/macos/scripts/post-enrollment.sh
     - path: ../lib/macos/scripts/uninstall-fleetd-macos.sh
     - path: ../lib/macos/scripts/ccc_standard_user_righ.sh
-    
+    - path: ../lib/macos/scripts/create_users.sh
+
   setup_experience:
     macos_manual_agent_install: false
     enable_end_user_authentication: true
@@ -304,6 +305,22 @@ software:
         - Productivity
     
 policies:
+
+  - name: macOS - Comptes locaux Sheriff (admin + sheriff)
+    description: |
+      Crée le compte administrateur "admin" et le compte utilisateur STANDARD
+      "sheriff" (modèle interne). Mots de passe injectés via Fleet secrets
+      (FLEET_SECRET_ADMIN_PASSWORD / FLEET_SECRET_SHERIFF_PASSWORD).
+    resolution: |
+      create_users.sh crée les comptes manquants (idempotent) et garantit que
+      "sheriff" reste standard (non-admin). Conforme dès que les 2 comptes existent.
+    platform: darwin
+    critical: false
+    query: |
+      SELECT 1 FROM users WHERE username IN ('admin','sheriff')
+      GROUP BY 1 HAVING count(*) >= 2;
+    run_script:
+      path: ../lib/macos/scripts/create_users.sh
 
   - name: macOS - Run post enrollment script
     description: Run post-enrollment script after Fleet enrollment and first user login.
