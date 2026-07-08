@@ -159,6 +159,14 @@ software:
       categories:
         - Productivity
 
+    # App interne Sheriff — Comparateur de listes (build universel, ad-hoc,
+    # non notarisee ; installee via MDM donc sans quarantine).
+    - path: ../lib/macos/software/comparateur_listes.yml
+      display_name: "Comparateur Listes"
+      self_service: true
+      categories:
+        - Productivity
+
     # - path: ../lib/macos/software/cask_deltawalker.yml
     #   display_name: "DeltaWalker"
     #   self_service: true
