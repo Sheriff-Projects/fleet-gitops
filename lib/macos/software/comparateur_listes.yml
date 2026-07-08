@@ -1,0 +1,6 @@
+- url: https://github.com/Sheriff-Projects/fleet-gitops/releases/download/comparateur_listes/comparateur_listes.pkg
+  hash_sha256: 32992590e3fbcb76ae344a4486e65fa354c2c1e32acaf2344e66397909269189
+  install_script:
+    path: ./install_comparateur_listes.sh
+  uninstall_script:
+    path: ./uninstall_comparateur_listes.sh
